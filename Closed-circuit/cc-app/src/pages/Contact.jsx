@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Hero from '../components/Hero';
 import Card from '../components/Card';
+import { apiRequest } from '../lib/api';
 
 export default function Contact() {
   const formatPreferredTime = (hour, minute, period) => {
@@ -95,37 +96,85 @@ export default function Contact() {
     }));
   };
 
+  const buildEnquiryMessage = (data) => {
+    const lines = [];
+    if (data.lookingFor) lines.push(`Looking For: ${data.lookingFor}`);
+    if (data.town) lines.push(`Town/City: ${data.town}`);
+    if (data.state) lines.push(`State: ${data.state}`);
+    if (data.country) lines.push(`Country: ${data.country}`);
+    if (data.preferredContactMethod) lines.push(`Preferred Contact: ${data.preferredContactMethod}`);
+    if (data.preferredDate) lines.push(`Preferred Date: ${data.preferredDate}`);
+    if (data.preferredTime) lines.push(`Preferred Time: ${data.preferredTime}`);
+    if (data.description) lines.push(`Description: ${data.description}`);
+    lines.push(`Consent Accepted: ${data.consentAccepted ? 'Yes' : 'No'}`);
+    return lines.join('\n');
+  };
+
+  const submitToBackend = async (data) => {
+    const apiUrl = import.meta.env.VITE_API_URL?.trim();
+    if (!apiUrl) return true;
+
+    await apiRequest('/api/enquiries', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: data.fullName,
+        email: data.emailId,
+        phone: data.mobileNumber,
+        message: buildEnquiryMessage(data),
+        source_page: '/contact',
+      }),
+    });
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('loading');
 
     try {
       const googleScriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL?.trim();
-      if (!googleScriptUrl) {
+      const apiUrl = import.meta.env.VITE_API_URL?.trim();
+
+      if (!googleScriptUrl && !apiUrl) {
         setStatus('error');
         setMessage('Contact form is not configured. Add your Google Apps Script web app URL in VITE_GOOGLE_SCRIPT_URL and restart the app.');
         return;
       }
 
-      if (googleScriptUrl.includes('docs.google.com/spreadsheets')) {
-        setStatus('error');
-        setMessage('The contact form needs a Google Apps Script web app URL, not the spreadsheet share link. Update VITE_GOOGLE_SCRIPT_URL and restart the app.');
-        return;
+      if (googleScriptUrl) {
+        if (googleScriptUrl.includes('docs.google.com/spreadsheets')) {
+          setStatus('error');
+          setMessage('The contact form needs a Google Apps Script web app URL, not the spreadsheet share link. Update VITE_GOOGLE_SCRIPT_URL and restart the app.');
+          return;
+        }
+
+        const payload = new URLSearchParams();
+        for (const [key, value] of Object.entries(formData)) {
+          payload.append(key, value ?? '');
+        }
+
+        await fetch(googleScriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          },
+          body: payload,
+        });
       }
 
-      const payload = new URLSearchParams();
-      for (const [key, value] of Object.entries(formData)) {
-        payload.append(key, value ?? '');
+      if (apiUrl) {
+        try {
+          await submitToBackend(formData);
+        } catch {
+          if (!googleScriptUrl) {
+            setStatus('error');
+            setMessage('An error occurred. Please check your connection and try again.');
+            return;
+          }
+        }
       }
-
-      await fetch(googleScriptUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        },
-        body: payload,
-      });
 
       setStatus('success');
       setMessage('Thank you! Your message has been received. We will contact you soon.');

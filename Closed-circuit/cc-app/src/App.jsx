@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import Navbar from './components/Navbar';
+import AdminRoute from './components/AdminRoute';
 
 // Pages
 import Home from './pages/Home';
@@ -18,6 +19,8 @@ import Gifts from './pages/Gifts';
 import UseCases from './pages/UseCases';
 import Taglines from './pages/Taglines';
 import Contact from './pages/Contact';
+import AdminLogin from './pages/admin/AdminLogin';
+import EnquiryDashboard from './pages/admin/EnquiryDashboard';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -122,35 +125,55 @@ function Footer() {
 }
 
 // Main App
+function AppShell() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname === '/login' || location.pathname === '/enquiries';
+
+  return (
+    <div className={`min-h-screen flex flex-col ${isAdminRoute ? 'bg-[#030712]' : 'bg-slate-50'}`}>
+      {!isAdminRoute && <Navbar />}
+
+      <div className="flex-grow">
+        <AnimatePresence mode="wait">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/flow-text" element={<FlowText />} />
+            <Route path="/flow-diagram" element={<FlowDiagram />} />
+            <Route path="/flow-voice" element={<FlowVoice />} />
+            <Route path="/differ-social" element={<DifferSocial />} />
+            <Route path="/differ-facebook" element={<DifferFacebook />} />
+            <Route path="/differ-whatsapp" element={<DifferWhatsapp />} />
+            <Route path="/top-reasons" element={<TopReasons />} />
+            <Route path="/gifts" element={<Gifts />} />
+            <Route path="/use-cases" element={<UseCases />} />
+            <Route path="/taglines" element={<Taglines />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<AdminLogin />} />
+            <Route
+              path="/enquiries"
+              element={
+                <AdminRoute>
+                  <EnquiryDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+            <Route path="/admin" element={<Navigate to="/enquiries" replace />} />
+          </Routes>
+        </AnimatePresence>
+      </div>
+
+      {!isAdminRoute && <Footer />}
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <ScrollToTop />
-        <Navbar />
-
-        <div className="flex-grow">
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/features" element={<Features />} />
-              <Route path="/flow-text" element={<FlowText />} />
-              <Route path="/flow-diagram" element={<FlowDiagram />} />
-              <Route path="/flow-voice" element={<FlowVoice />} />
-              <Route path="/differ-social" element={<DifferSocial />} />
-              <Route path="/differ-facebook" element={<DifferFacebook />} />
-              <Route path="/differ-whatsapp" element={<DifferWhatsapp />} />
-              <Route path="/top-reasons" element={<TopReasons />} />
-              <Route path="/gifts" element={<Gifts />} />
-              <Route path="/use-cases" element={<UseCases />} />
-              <Route path="/taglines" element={<Taglines />} />
-              <Route path="/contact" element={<Contact />} />
-            </Routes>
-          </AnimatePresence>
-        </div>
-
-        <Footer />
-      </div>
+      <ScrollToTop />
+      <AppShell />
     </Router>
   );
 }
