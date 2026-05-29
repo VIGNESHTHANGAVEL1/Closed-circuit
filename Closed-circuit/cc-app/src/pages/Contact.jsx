@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle } from 'lucide-react';
 import Hero from '../components/Hero';
 import Card from '../components/Card';
-import { apiRequest } from '../lib/api';
+import { apiRequest, getGoogleScriptUrl, isApiEnabled } from '../lib/api';
 
 export default function Contact() {
   const formatPreferredTime = (hour, minute, period) => {
@@ -96,9 +96,6 @@ export default function Contact() {
     }));
   };
 
-  const getApiUrl = () =>
-    (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL)?.trim();
-
   const submitToBackend = async (data) => {
     const { consentAccepted, ...contactFields } = data;
 
@@ -123,40 +120,18 @@ export default function Contact() {
     setStatus('loading');
 
     try {
-      const googleScriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL?.trim();
-      const apiUrl = getApiUrl();
+      const useBackendApi = isApiEnabled();
+      const googleScriptUrl = getGoogleScriptUrl();
 
-      if (!googleScriptUrl && !apiUrl) {
+      if (!useBackendApi && !googleScriptUrl) {
         setStatus('error');
         setMessage(
-          'Contact form is not configured. Set VITE_API_BASE_URL (or VITE_API_URL) for MySQL storage, or VITE_GOOGLE_SCRIPT_URL for Google Sheets, then restart the app.'
+          'Contact form is not configured. Set VITE_API_BASE_URL (or VITE_API_URL) for MySQL storage, or a valid VITE_GOOGLE_SCRIPT_URL for Google Sheets, then restart the app.'
         );
         return;
       }
 
-      if (googleScriptUrl) {
-        if (googleScriptUrl.includes('docs.google.com/spreadsheets')) {
-          setStatus('error');
-          setMessage('The contact form needs a Google Apps Script web app URL, not the spreadsheet share link. Update VITE_GOOGLE_SCRIPT_URL and restart the app.');
-          return;
-        }
-
-        const payload = new URLSearchParams();
-        for (const [key, value] of Object.entries(formData)) {
-          payload.append(key, value ?? '');
-        }
-
-        await fetch(googleScriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-          },
-          body: payload,
-        });
-      }
-
-      if (apiUrl) {
+      if (useBackendApi) {
         try {
           await submitToBackend(formData);
         } catch (err) {
@@ -166,6 +141,24 @@ export default function Contact() {
           setStatus('error');
           setMessage(err.message || 'An error occurred. Please check your connection and try again.');
           return;
+        }
+      } else {
+        const payload = new URLSearchParams();
+        for (const [key, value] of Object.entries(formData)) {
+          payload.append(key, value ?? '');
+        }
+
+        const googleResponse = await fetch(googleScriptUrl, {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          },
+          body: payload,
+        });
+
+        if (!googleResponse.ok) {
+          throw new Error('Unable to save your message to Google Sheets.');
         }
       }
 

@@ -1,9 +1,67 @@
-const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL)?.replace(/\/$/, '') ||
-  'http://localhost:5000';
+function trimTrailingSlash(url) {
+  return url.replace(/\/$/, '');
+}
+
+function resolveApiBaseUrl() {
+  const fromEnv = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL)?.trim();
+
+  if (fromEnv) {
+    return trimTrailingSlash(fromEnv);
+  }
+
+  // Production: API is served from the same host (e.g. closedcircuit.in/api/...)
+  if (import.meta.env.PROD && typeof window !== 'undefined') {
+    return trimTrailingSlash(window.location.origin);
+  }
+
+  return 'http://localhost:5000';
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 export function getApiBaseUrl() {
   return API_BASE_URL;
+}
+
+/** Backend API is used unless explicitly disabled (Google Sheets–only mode). */
+export function isApiEnabled() {
+  if (import.meta.env.VITE_DISABLE_API === 'true') {
+    return false;
+  }
+
+  const fromEnv = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL)?.trim();
+  if (fromEnv) {
+    return true;
+  }
+
+  if (import.meta.env.PROD) {
+    return true;
+  }
+
+  return true;
+}
+
+/** Valid deployed Google Apps Script /exec URL only (ignores .env.example placeholders). */
+export function getGoogleScriptUrl() {
+  const url = import.meta.env.VITE_GOOGLE_SCRIPT_URL?.trim() || '';
+
+  if (!url) {
+    return '';
+  }
+
+  if (url.includes('YOUR_DEPLOYMENT_ID') || url.includes('DEPLOYMENT_ID/exec')) {
+    return '';
+  }
+
+  if (url.includes('docs.google.com/spreadsheets')) {
+    return '';
+  }
+
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[a-zA-Z0-9_-]+\/exec/.test(url)) {
+    return '';
+  }
+
+  return url;
 }
 
 export async function apiRequest(path, options = {}) {
