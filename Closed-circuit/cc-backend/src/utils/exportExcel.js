@@ -6,28 +6,40 @@ function formatDateTime(value) {
   return date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 }
 
-export async function buildEnquiriesExcel(enquiries) {
+export async function buildEnquiriesExcel(contacts) {
   const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet('Enquiries');
+  const sheet = workbook.addWorksheet('Contacts');
 
   sheet.columns = [
     { header: 'S.No', key: 'sno', width: 8 },
-    { header: 'Name', key: 'name', width: 24 },
-    { header: 'Email', key: 'email', width: 28 },
-    { header: 'Phone', key: 'phone', width: 18 },
-    { header: 'Message', key: 'message', width: 50 },
-    { header: 'Source Page', key: 'source_page', width: 18 },
+    { header: 'Full Name', key: 'fullName', width: 24 },
+    { header: 'Mobile', key: 'mobileNumber', width: 18 },
+    { header: 'Email', key: 'emailId', width: 28 },
+    { header: 'Town', key: 'town', width: 18 },
+    { header: 'State', key: 'state', width: 18 },
+    { header: 'Country', key: 'country', width: 18 },
+    { header: 'Looking For', key: 'lookingFor', width: 22 },
+    { header: 'Preferred Contact', key: 'preferredContactMethod', width: 20 },
+    { header: 'Preferred Date', key: 'preferredDate', width: 16 },
+    { header: 'Preferred Time', key: 'preferredTime', width: 16 },
+    { header: 'Description', key: 'description', width: 40 },
     { header: 'Submitted Date & Time', key: 'created_at', width: 24 },
   ];
 
-  enquiries.forEach((row, index) => {
+  contacts.forEach((row, index) => {
     sheet.addRow({
       sno: index + 1,
-      name: row.name,
-      email: row.email,
-      phone: row.phone,
-      message: row.message,
-      source_page: row.source_page || '',
+      fullName: row.fullName,
+      mobileNumber: row.mobileNumber,
+      emailId: row.emailId,
+      town: row.town,
+      state: row.state,
+      country: row.country,
+      lookingFor: row.lookingFor,
+      preferredContactMethod: row.preferredContactMethod,
+      preferredDate: row.preferredDate,
+      preferredTime: row.preferredTime,
+      description: row.description || '',
       created_at: formatDateTime(row.created_at),
     });
   });

@@ -96,36 +96,26 @@ export default function Contact() {
     }));
   };
 
-  const buildEnquiryMessage = (data) => {
-    const lines = [];
-    if (data.lookingFor) lines.push(`Looking For: ${data.lookingFor}`);
-    if (data.town) lines.push(`Town/City: ${data.town}`);
-    if (data.state) lines.push(`State: ${data.state}`);
-    if (data.country) lines.push(`Country: ${data.country}`);
-    if (data.preferredContactMethod) lines.push(`Preferred Contact: ${data.preferredContactMethod}`);
-    if (data.preferredDate) lines.push(`Preferred Date: ${data.preferredDate}`);
-    if (data.preferredTime) lines.push(`Preferred Time: ${data.preferredTime}`);
-    if (data.description) lines.push(`Description: ${data.description}`);
-    lines.push(`Consent Accepted: ${data.consentAccepted ? 'Yes' : 'No'}`);
-    return lines.join('\n');
-  };
+  const getApiUrl = () =>
+    (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL)?.trim();
 
   const submitToBackend = async (data) => {
-    const apiUrl = import.meta.env.VITE_API_URL?.trim();
-    if (!apiUrl) return true;
+    const { consentAccepted, ...contactFields } = data;
 
-    await apiRequest('/api/enquiries', {
+    const response = await apiRequest('/api/contact', {
       method: 'POST',
-      body: JSON.stringify({
-        name: data.fullName,
-        email: data.emailId,
-        phone: data.mobileNumber,
-        message: buildEnquiryMessage(data),
-        source_page: '/contact',
-      }),
+      body: JSON.stringify(contactFields),
     });
 
-    return true;
+    if (import.meta.env.DEV) {
+      console.log('[contact] API response:', response);
+    }
+
+    if (!response?.success) {
+      throw new Error(response?.message || 'Unable to save your message.');
+    }
+
+    return response;
   };
 
   const handleSubmit = async (e) => {
@@ -134,11 +124,13 @@ export default function Contact() {
 
     try {
       const googleScriptUrl = import.meta.env.VITE_GOOGLE_SCRIPT_URL?.trim();
-      const apiUrl = import.meta.env.VITE_API_URL?.trim();
+      const apiUrl = getApiUrl();
 
       if (!googleScriptUrl && !apiUrl) {
         setStatus('error');
-        setMessage('Contact form is not configured. Add your Google Apps Script web app URL in VITE_GOOGLE_SCRIPT_URL and restart the app.');
+        setMessage(
+          'Contact form is not configured. Set VITE_API_BASE_URL (or VITE_API_URL) for MySQL storage, or VITE_GOOGLE_SCRIPT_URL for Google Sheets, then restart the app.'
+        );
         return;
       }
 
@@ -167,12 +159,13 @@ export default function Contact() {
       if (apiUrl) {
         try {
           await submitToBackend(formData);
-        } catch {
-          if (!googleScriptUrl) {
-            setStatus('error');
-            setMessage('An error occurred. Please check your connection and try again.');
-            return;
+        } catch (err) {
+          if (import.meta.env.DEV) {
+            console.error('[contact] API error:', err);
           }
+          setStatus('error');
+          setMessage(err.message || 'An error occurred. Please check your connection and try again.');
+          return;
         }
       }
 

@@ -1,23 +1,17 @@
-import { normalizeEnquiryInput } from '../services/enquiry.service.js';
+import { normalizeContactInput, validateContactPayload } from '../services/enquiry.service.js';
 
 export function validateEnquiryBody(req, res, next) {
-  const { name, email, phone, message } = normalizeEnquiryInput(req.body);
+  const payload = normalizeContactInput(req.body);
+  const validationError = validateContactPayload(payload);
 
-  if (!name || !email || !phone || !message) {
+  if (validationError) {
     return res.status(400).json({
       success: false,
-      message: 'Name, email, phone, and message are required.',
+      message: validationError,
     });
   }
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(email)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Please provide a valid email address.',
-    });
-  }
-
+  req.contactPayload = payload;
   next();
 }
 

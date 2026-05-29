@@ -1,78 +1,139 @@
-import { insertEnquiry, findEnquiryById, findEnquiries, findEnquiriesForExport } from '../models/enquiry.model.js';
+import {
+  insertContact,
+  findContactById,
+  findContacts,
+  findContactsForExport,
+} from '../models/contact.model.js';
 
-export function buildMessageFromContactPayload(body) {
-  if (body.message?.trim()) {
-    return body.message.trim();
-  }
+const REQUIRED_CONTACT_FIELDS = [
+  'fullName',
+  'mobileNumber',
+  'emailId',
+  'town',
+  'state',
+  'country',
+  'lookingFor',
+  'preferredContactMethod',
+  'preferredDate',
+  'preferredTime',
+];
 
-  const lines = [];
-
-  if (body.lookingFor) lines.push(`Looking For: ${body.lookingFor}`);
-  if (body.town) lines.push(`Town/City: ${body.town}`);
-  if (body.state) lines.push(`State: ${body.state}`);
-  if (body.country) lines.push(`Country: ${body.country}`);
-  if (body.preferredContactMethod) lines.push(`Preferred Contact: ${body.preferredContactMethod}`);
-  if (body.preferredDate) lines.push(`Preferred Date: ${body.preferredDate}`);
-  if (body.preferredTime) lines.push(`Preferred Time: ${body.preferredTime}`);
-  if (body.description) lines.push(`Description: ${body.description}`);
-  if (body.consentAccepted !== undefined) {
-    lines.push(`Consent Accepted: ${body.consentAccepted ? 'Yes' : 'No'}`);
-  }
-
-  return lines.join('\n') || 'Contact form submission';
-}
-
-export function normalizeEnquiryInput(body) {
-  const name = body.name || body.fullName;
-  const email = body.email || body.emailId;
-  const phone = body.phone || body.mobileNumber;
-  const message = buildMessageFromContactPayload(body);
-
+export function normalizeContactInput(body) {
   return {
-    name: name?.trim(),
-    email: email?.trim(),
-    phone: phone?.trim(),
-    message: message?.trim(),
-    sourcePage: body.source_page || body.sourcePage || '/contact',
+    fullName: (body.fullName || body.name || '').trim(),
+    mobileNumber: (body.mobileNumber || body.phone || '').trim(),
+    emailId: (body.emailId || body.email || '').trim(),
+    town: (body.town || '').trim(),
+    state: (body.state || '').trim(),
+    country: (body.country || '').trim(),
+    lookingFor: (body.lookingFor || '').trim(),
+    preferredContactMethod: (body.preferredContactMethod || '').trim(),
+    preferredDate: (body.preferredDate || '').trim(),
+    preferredTime: (body.preferredTime || '').trim(),
+    description: (body.description || body.message || '').trim(),
   };
 }
 
-export async function createEnquiry(payload, ipAddress) {
-  const data = normalizeEnquiryInput(payload);
+export function validateContactPayload(payload) {
+  const missing = REQUIRED_CONTACT_FIELDS.filter((field) => !payload[field]);
 
-  const id = await insertEnquiry({
-    name: data.name,
-    email: data.email,
-    phone: data.phone,
-    message: data.message,
-    sourcePage: data.sourcePage,
-    ipAddress,
-  });
+  if (missing.length) {
+    return `Missing required fields: ${missing.join(', ')}`;
+  }
 
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(payload.emailId)) {
+    return 'Please provide a valid email address.';
+  }
+
+  return null;
+}
+
+export function formatContactSummary(row) {
+  const lines = [];
+
+  if (row.lookingFor) lines.push(`Looking For: ${row.lookingFor}`);
+  if (row.town) lines.push(`Town/City: ${row.town}`);
+  if (row.state) lines.push(`State: ${row.state}`);
+  if (row.country) lines.push(`Country: ${row.country}`);
+  if (row.preferredContactMethod) {
+    lines.push(`Preferred Contact: ${row.preferredContactMethod}`);
+  }
+  if (row.preferredDate) lines.push(`Preferred Date: ${row.preferredDate}`);
+  if (row.preferredTime) lines.push(`Preferred Time: ${row.preferredTime}`);
+  if (row.description) lines.push(`Description: ${row.description}`);
+
+  return lines.join('\n') || '-';
+}
+
+export function mapContactForDashboard(row) {
+  return {
+    id: row.id,
+    name: row.fullName,
+    email: row.emailId,
+    phone: row.mobileNumber,
+    message: formatContactSummary(row),
+    source_page: '/contact',
+    created_at: row.created_at,
+    fullName: row.fullName,
+    mobileNumber: row.mobileNumber,
+    emailId: row.emailId,
+    town: row.town,
+    state: row.state,
+    country: row.country,
+    lookingFor: row.lookingFor,
+    preferredContactMethod: row.preferredContactMethod,
+    preferredDate: row.preferredDate,
+    preferredTime: row.preferredTime,
+    description: row.description,
+  };
+}
+
+export async function createEnquiry(payload) {
+  const data = normalizeContactInput(payload);
+  const validationError = validateContactPayload(data);
+
+  if (validationError) {
+    const error = new Error(validationError);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const id = await insertContact(data);
   return { id };
 }
 
 export async function getEnquiryById(id) {
-  return findEnquiryById(id);
+  const row = await findContactById(id);
+  return row ? mapContactForDashboard(row) : null;
 }
 
 export async function listEnquiries(filters) {
   const page = Math.max(1, Number(filters.page) || 1);
   const limit = Math.min(100, Math.max(1, Number(filters.limit) || 10));
 
-  return findEnquiries({
+  const result = await findContacts({
     search: filters.search?.trim() || '',
     dateFrom: filters.dateFrom || '',
     dateTo: filters.dateTo || '',
     page,
     limit,
   });
+
+  return {
+    rows: result.rows.map(mapContactForDashboard),
+    total: result.total,
+    page: result.page,
+    limit: result.limit,
+  };
 }
 
 export async function exportEnquiries(filters) {
-  return findEnquiriesForExport({
+  const rows = await findContactsForExport({
     search: filters.search?.trim() || '',
     dateFrom: filters.dateFrom || '',
     dateTo: filters.dateTo || '',
   });
+
+  return rows;
 }
