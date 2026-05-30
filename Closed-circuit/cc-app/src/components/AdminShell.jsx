@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Users, LogOut, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Users, LogOut, Menu, X } from 'lucide-react';
 import { clearAuthSession, getStoredUser } from '../lib/auth';
 
 const navLinks = [
@@ -8,70 +9,113 @@ const navLinks = [
   { label: 'Clients', path: '/admin/clients', icon: Users },
 ];
 
-export default function AdminShell({ title, subtitle, children, showBack }) {
+export default function AdminShell({ title, subtitle, children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const user = getStoredUser();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     clearAuthSession();
     navigate('/login', { replace: true });
   };
 
-  return (
-    <div className="min-h-screen bg-[#030712] px-4 py-10">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-6 flex flex-wrap items-center gap-3 border-b border-white/10 pb-4">
-          {navLinks.map(({ label, path, icon: Icon }) => {
-            const active = location.pathname === path;
-            return (
-              <Link
-                key={path}
-                to={path}
-                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                  active
-                    ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                    : 'text-slate-400 border border-transparent hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <Icon size={16} />
-                {label}
-              </Link>
-            );
-          })}
-        </div>
+  const closeSidebar = () => setSidebarOpen(false);
 
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            {showBack && (
-              <button
-                type="button"
-                onClick={() => navigate('/admin/dashboard')}
-                className="mb-2 inline-flex items-center gap-1 text-sm text-slate-400 hover:text-white"
-              >
-                <ArrowLeft size={14} />
-                Back to dashboard
-              </button>
-            )}
-            <h1 className="text-2xl font-bold text-white">{title}</h1>
-            {subtitle && <p className="text-slate-400 text-sm mt-1">{subtitle}</p>}
-            {user?.username && (
-              <p className="text-slate-500 text-xs mt-1">
-                Signed in as <span className="text-slate-300">{user.username}</span>
-              </p>
-            )}
-          </div>
+  const sidebarContent = (
+    <>
+      <div className="border-b border-white/10 px-5 py-5">
+        <Link to="/admin/dashboard" onClick={closeSidebar} className="block">
+          <p className="text-lg font-bold text-white">Closed Circuit</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-indigo-400 mt-0.5">
+            Admin Panel
+          </p>
+        </Link>
+        {user?.username && (
+          <p className="text-xs text-slate-500 mt-3 truncate">
+            {user.username}
+          </p>
+        )}
+      </div>
+
+      <nav className="flex-1 space-y-1 px-3 py-4">
+        {navLinks.map(({ label, path, icon: Icon }) => {
+          const active = location.pathname === path;
+          return (
+            <Link
+              key={path}
+              to={path}
+              onClick={closeSidebar}
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                active
+                  ? 'bg-gradient-to-r from-indigo-500/25 to-purple-600/15 text-white border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.15)]'
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white border border-transparent'
+              }`}
+            >
+              <Icon size={18} className={active ? 'text-indigo-300' : 'text-slate-500'} />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="border-t border-white/10 p-3">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-slate-400 transition hover:bg-red-500/10 hover:text-red-300"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#030712]">
+      {sidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close menu"
+          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          onClick={closeSidebar}
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/10 bg-[#0a0f1a]/95 backdrop-blur-xl transition-transform duration-300 lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <button
+          type="button"
+          onClick={closeSidebar}
+          className="absolute right-3 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white lg:hidden"
+          aria-label="Close sidebar"
+        >
+          <X size={20} />
+        </button>
+        {sidebarContent}
+      </aside>
+
+      <div className="lg:pl-64">
+        <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-white/10 bg-[#030712]/90 px-4 py-4 backdrop-blur-xl sm:px-6">
           <button
             type="button"
-            onClick={handleLogout}
-            className="inline-flex items-center gap-2 self-start rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
+            onClick={() => setSidebarOpen(true)}
+            className="rounded-lg border border-white/10 p-2 text-slate-300 hover:bg-white/5 lg:hidden"
+            aria-label="Open menu"
           >
-            <LogOut size={16} />
-            Logout
+            <Menu size={20} />
           </button>
-        </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-xl font-bold text-white sm:text-2xl">{title}</h1>
+            {subtitle && <p className="truncate text-sm text-slate-400 mt-0.5">{subtitle}</p>}
+          </div>
+        </header>
 
-        {children}
+        <main className="px-4 py-6 sm:px-6 sm:py-8">{children}</main>
       </div>
     </div>
   );

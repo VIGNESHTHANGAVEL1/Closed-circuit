@@ -13,6 +13,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import AdminShell from '../../components/AdminShell';
+import StatusBadge from '../../components/StatusBadge';
 import { ENQUIRY_STATUSES } from '../../constants/enquiryStatus';
 import { apiDownload, apiRequest, triggerBlobDownload } from '../../lib/api';
 import { clearAuthSession, getStoredToken } from '../../lib/auth';
@@ -37,7 +38,8 @@ export default function EnquiryDashboard() {
   const [selected, setSelected] = useState(null);
   const [exporting, setExporting] = useState(null);
   const [statusToast, setStatusToast] = useState(null);
-  const [updatingId, setUpdatingId] = useState(null);
+  const [modalStatus, setModalStatus] = useState('');
+  const [savingStatus, setSavingStatus] = useState(false);
 
   const showStatusToast = (type, message) => {
     setStatusToast({ type, message });
@@ -94,36 +96,34 @@ export default function EnquiryDashboard() {
     loadEnquiries(1);
   };
 
-  const handleStatusChange = async (rowId, newStatus) => {
+  const openEnquiry = (row) => {
+    setSelected(row);
+    setModalStatus(row.status || 'New');
+  };
+
+  const handleSaveStatus = async () => {
+    if (!selected) return;
     const token = getStoredToken();
     if (!token) return;
 
-    const previous = rows.find((r) => r.id === rowId)?.status;
-    setUpdatingId(rowId);
-    setRows((current) =>
-      current.map((row) => (row.id === rowId ? { ...row, status: newStatus } : row))
-    );
-
+    setSavingStatus(true);
     try {
-      const data = await apiRequest(`/api/admin/enquiries/${rowId}/status`, {
+      const data = await apiRequest(`/api/admin/enquiries/${selected.id}/status`, {
         token,
         method: 'PATCH',
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: modalStatus }),
       });
       const updated = data.enquiry;
-      if (updated) {
-        setRows((current) =>
-          current.map((row) => (row.id === rowId ? { ...row, status: updated.status } : row))
-        );
-      }
+      const newStatus = updated?.status || modalStatus;
+      setRows((current) =>
+        current.map((row) => (row.id === selected.id ? { ...row, status: newStatus } : row))
+      );
+      setSelected((prev) => (prev ? { ...prev, status: newStatus } : prev));
       showStatusToast('success', data.message || 'Status updated.');
     } catch (err) {
-      setRows((current) =>
-        current.map((row) => (row.id === rowId ? { ...row, status: previous } : row))
-      );
       showStatusToast('error', err.data?.message || 'Status update failed.');
     } finally {
-      setUpdatingId(null);
+      setSavingStatus(false);
     }
   };
 
@@ -158,7 +158,7 @@ export default function EnquiryDashboard() {
     'px-3 py-2 bg-[#0f172a]/80 text-white border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40';
 
   return (
-    <AdminShell title="Enquiry Dashboard" subtitle="Contact form submissions" showBack>
+    <AdminShell title="Enquiry Dashboard" subtitle="Contact form submissions">
       {statusToast && (
         <div
           className={`mb-4 flex items-center gap-2 rounded-lg border px-4 py-3 text-sm ${
@@ -282,25 +282,14 @@ export default function EnquiryDashboard() {
                     <td className="px-4 py-3">{row.email}</td>
                     <td className="px-4 py-3">{row.phone}</td>
                     <td className="px-4 py-3 max-w-xs truncate">{row.message}</td>
-                    <td className="px-4 py-3 min-w-[160px]">
-                      <select
-                        value={row.status || 'New'}
-                        disabled={updatingId === row.id}
-                        onChange={(e) => handleStatusChange(row.id, e.target.value)}
-                        className={`${inputClasses} w-full min-w-[140px] disabled:opacity-50`}
-                      >
-                        {ENQUIRY_STATUSES.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={row.status} />
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">{formatDateTime(row.created_at)}</td>
                     <td className="px-4 py-3">
                       <button
                         type="button"
-                        onClick={() => setSelected(row)}
+                        onClick={() => openEnquiry(row)}
                         className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-white/5"
                       >
                         <Eye size={14} />
@@ -354,17 +343,44 @@ export default function EnquiryDashboard() {
                 <X size={20} />
               </button>
             </div>
-            <div className="space-y-3 text-sm text-slate-300">
-              <p><span className="text-slate-500">Name:</span> {selected.name}</p>
-              <p><span className="text-slate-500">Email:</span> {selected.email}</p>
-              <p><span className="text-slate-500">Phone:</span> {selected.phone}</p>
-              <p><span className="text-slate-500">Status:</span> {selected.status}</p>
-              <p><span className="text-slate-500">Submitted:</span> {formatDateTime(selected.created_at)}</p>
+            <div className="space-y-4 text-sm text-slate-300">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <p><span className="text-slate-500 block text-xs mb-0.5">Name</span> {selected.name}</p>
+                <p><span className="text-slate-500 block text-xs mb-0.5">Phone</span> {selected.phone}</p>
+                <p className="sm:col-span-2"><span className="text-slate-500 block text-xs mb-0.5">Email</span> {selected.email}</p>
+                <p><span className="text-slate-500 block text-xs mb-0.5">Submitted</span> {formatDateTime(selected.created_at)}</p>
+              </div>
               <div>
                 <p className="text-slate-500 mb-1">Message:</p>
-                <pre className="whitespace-pre-wrap rounded-lg border border-white/10 bg-black/20 p-4 text-slate-200">
+                <pre className="whitespace-pre-wrap rounded-lg border border-white/10 bg-black/20 p-4 text-slate-200 max-h-48 overflow-y-auto">
                   {selected.message}
                 </pre>
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                <label htmlFor="enquiry-modal-status" className="block text-xs font-semibold text-slate-400 mb-2">
+                  Status
+                </label>
+                <select
+                  id="enquiry-modal-status"
+                  value={modalStatus}
+                  onChange={(e) => setModalStatus(e.target.value)}
+                  disabled={savingStatus}
+                  className={`${inputClasses} w-full disabled:opacity-50`}
+                >
+                  {ENQUIRY_STATUSES.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => void handleSaveStatus()}
+                  disabled={savingStatus || modalStatus === (selected.status || 'New')}
+                  className="mt-3 w-full rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-600 disabled:opacity-50"
+                >
+                  {savingStatus ? 'Updating...' : 'Update Status'}
+                </button>
               </div>
             </div>
           </div>

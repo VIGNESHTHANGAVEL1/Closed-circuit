@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <AdminShell title="Admin Dashboard" subtitle="Closed Circuit administration">
+    <AdminShell title="Dashboard" subtitle="Closed Circuit administration overview">
       {error && (
         <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
           {error}
