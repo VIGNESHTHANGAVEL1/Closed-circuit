@@ -117,6 +117,27 @@ export async function apiDownload(path, { token, params = {} } = {}) {
   return { blob, filename };
 }
 
+export async function apiFormRequest(path, { token, method = 'POST', formData } = {}) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    body: formData,
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const error = new Error(data.message || 'Request failed');
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
+}
+
 export function triggerBlobDownload(blob, filename) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

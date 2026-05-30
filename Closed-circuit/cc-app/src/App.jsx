@@ -20,7 +20,10 @@ import UseCases from './pages/UseCases';
 import Taglines from './pages/Taglines';
 import Contact from './pages/Contact';
 import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import EnquiryDashboard from './pages/admin/EnquiryDashboard';
+import ClientManagement from './pages/admin/ClientManagement';
+import Clients from './pages/Clients';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -127,7 +130,10 @@ function Footer() {
 // Main App
 function AppShell() {
   const location = useLocation();
-  const isAdminRoute = location.pathname === '/login' || location.pathname === '/enquiries';
+  const isAdminRoute =
+    location.pathname === '/login' ||
+    location.pathname.startsWith('/admin') ||
+    location.pathname === '/enquiries';
 
   return (
     <div className={`min-h-screen flex flex-col ${isAdminRoute ? 'bg-[#030712]' : 'bg-slate-50'}`}>
@@ -149,17 +155,39 @@ function AppShell() {
             <Route path="/use-cases" element={<UseCases />} />
             <Route path="/taglines" element={<Taglines />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/client" element={<Navigate to="/clients" replace />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route
-              path="/enquiries"
+              path="/admin/dashboard"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/enquiries"
               element={
                 <AdminRoute>
                   <EnquiryDashboard />
                 </AdminRoute>
               }
             />
+            <Route
+              path="/admin/clients"
+              element={
+                <AdminRoute>
+                  <ClientManagement />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/enquiries"
+              element={<Navigate to="/admin/enquiries" replace />}
+            />
             <Route path="/admin/login" element={<Navigate to="/login" replace />} />
-            <Route path="/admin" element={<Navigate to="/enquiries" replace />} />
+            <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           </Routes>
         </AnimatePresence>
       </div>

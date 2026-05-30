@@ -1,4 +1,10 @@
-import { createEnquiry, getEnquiryById, listEnquiries, exportEnquiries } from '../services/enquiry.service.js';
+import {
+  createEnquiry,
+  getEnquiryById,
+  listEnquiries,
+  exportEnquiries,
+  updateEnquiryStatus,
+} from '../services/enquiry.service.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 import { buildEnquiriesExcel } from '../utils/exportExcel.js';
 import { buildEnquiriesPdf } from '../utils/exportPdf.js';
@@ -33,6 +39,24 @@ export async function getEnquiries(req, res) {
   } catch (err) {
     console.error('getEnquiries error:', err);
     return sendError(res, 'Unable to load enquiries.', 500);
+  }
+}
+
+export async function patchEnquiryStatus(req, res) {
+  try {
+    const enquiry = await updateEnquiryStatus(req.params.id, req.validatedStatus);
+
+    if (!enquiry) {
+      return sendError(res, 'Enquiry not found.', 404);
+    }
+
+    return sendSuccess(res, { enquiry, message: 'Status updated successfully.' });
+  } catch (err) {
+    if (err.statusCode === 400) {
+      return sendError(res, err.message, 400);
+    }
+    console.error('patchEnquiryStatus error:', err);
+    return sendError(res, 'Unable to update enquiry status.', 500);
   }
 }
 

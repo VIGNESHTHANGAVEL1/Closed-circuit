@@ -2,18 +2,20 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  LogOut,
   Search,
-  Download,
   FileSpreadsheet,
   FileText,
   Eye,
   X,
   ChevronLeft,
   ChevronRight,
+  CheckCircle,
+  AlertCircle,
 } from 'lucide-react';
+import AdminShell from '../../components/AdminShell';
+import { ENQUIRY_STATUSES } from '../../constants/enquiryStatus';
 import { apiDownload, apiRequest, triggerBlobDownload } from '../../lib/api';
-import { clearAuthSession, getStoredToken, getStoredUser } from '../../lib/auth';
+import { clearAuthSession, getStoredToken } from '../../lib/auth';
 
 function formatDateTime(value) {
   if (!value) return '-';
@@ -22,18 +24,25 @@ function formatDateTime(value) {
 
 export default function EnquiryDashboard() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(getStoredUser());
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selected, setSelected] = useState(null);
   const [exporting, setExporting] = useState(null);
+  const [statusToast, setStatusToast] = useState(null);
+  const [updatingId, setUpdatingId] = useState(null);
+
+  const showStatusToast = (type, message) => {
+    setStatusToast({ type, message });
+    setTimeout(() => setStatusToast(null), 3000);
+  };
 
   const loadEnquiries = useCallback(async (pageOverride) => {
     const token = getStoredToken();
@@ -54,13 +63,13 @@ export default function EnquiryDashboard() {
       });
 
       if (search.trim()) params.set('search', search.trim());
+      if (statusFilter) params.set('status', statusFilter);
       if (dateFrom) params.set('dateFrom', dateFrom);
       if (dateTo) params.set('dateTo', dateTo);
 
       const data = await apiRequest(`/api/admin/enquiries?${params.toString()}`, { token });
       setRows(data.rows || []);
       setTotal(data.total || 0);
-      setUser(getStoredUser());
     } catch (err) {
       if (err.status === 401) {
         clearAuthSession();
@@ -71,7 +80,7 @@ export default function EnquiryDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, search, dateFrom, dateTo, navigate]);
+  }, [page, limit, search, statusFilter, dateFrom, dateTo, navigate]);
 
   useEffect(() => {
     loadEnquiries();
@@ -85,9 +94,37 @@ export default function EnquiryDashboard() {
     loadEnquiries(1);
   };
 
-  const handleLogout = () => {
-    clearAuthSession();
-    navigate('/login', { replace: true });
+  const handleStatusChange = async (rowId, newStatus) => {
+    const token = getStoredToken();
+    if (!token) return;
+
+    const previous = rows.find((r) => r.id === rowId)?.status;
+    setUpdatingId(rowId);
+    setRows((current) =>
+      current.map((row) => (row.id === rowId ? { ...row, status: newStatus } : row))
+    );
+
+    try {
+      const data = await apiRequest(`/api/admin/enquiries/${rowId}/status`, {
+        token,
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const updated = data.enquiry;
+      if (updated) {
+        setRows((current) =>
+          current.map((row) => (row.id === rowId ? { ...row, status: updated.status } : row))
+        );
+      }
+      showStatusToast('success', data.message || 'Status updated.');
+    } catch (err) {
+      setRows((current) =>
+        current.map((row) => (row.id === rowId ? { ...row, status: previous } : row))
+      );
+      showStatusToast('error', err.data?.message || 'Status update failed.');
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   const handleExport = async (type) => {
@@ -99,6 +136,7 @@ export default function EnquiryDashboard() {
     try {
       const params = {};
       if (search.trim()) params.search = search.trim();
+      if (statusFilter) params.status = statusFilter;
       if (dateFrom) params.dateFrom = dateFrom;
       if (dateTo) params.dateTo = dateTo;
 
@@ -120,170 +158,191 @@ export default function EnquiryDashboard() {
     'px-3 py-2 bg-[#0f172a]/80 text-white border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40';
 
   return (
-    <div className="min-h-screen bg-[#030712] px-4 py-10">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Enquiry Dashboard</h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Signed in as <span className="text-white">{user?.username}</span>
-            </p>
+    <AdminShell title="Enquiry Dashboard" subtitle="Contact form submissions" showBack>
+      {statusToast && (
+        <div
+          className={`mb-4 flex items-center gap-2 rounded-lg border px-4 py-3 text-sm ${
+            statusToast.type === 'success'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+              : 'border-red-500/30 bg-red-500/10 text-red-300'
+          }`}
+        >
+          {statusToast.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
+          {statusToast.message}
+        </div>
+      )}
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl border border-white/10 bg-[#0f172a]/60 p-6 shadow-2xl backdrop-blur-xl"
+      >
+        <form onSubmit={handleSearch} className="grid gap-4 md:grid-cols-2 xl:grid-cols-6 mb-6">
+          <div className="xl:col-span-2 relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search name, email, phone, status..."
+              className={`${inputClasses} w-full pl-9`}
+            />
           </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className={inputClasses}
+          >
+            <option value="">All statuses</option>
+            {ENQUIRY_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className={`${inputClasses} [color-scheme:dark]`}
+          />
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className={`${inputClasses} [color-scheme:dark]`}
+          />
+          <button
+            type="submit"
+            className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600"
+          >
+            Apply Filters
+          </button>
+        </form>
+
+        <div className="flex flex-wrap gap-3 mb-6">
           <button
             type="button"
-            onClick={handleLogout}
-            className="inline-flex items-center gap-2 self-start rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white"
+            onClick={() => handleExport('excel')}
+            disabled={exporting}
+            className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300 disabled:opacity-60"
           >
-            <LogOut size={16} />
-            Logout
+            <FileSpreadsheet size={16} />
+            {exporting === 'excel' ? 'Exporting...' : 'Download Excel'}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleExport('pdf')}
+            disabled={exporting}
+            className="inline-flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-300 disabled:opacity-60"
+          >
+            <FileText size={16} />
+            {exporting === 'pdf' ? 'Exporting...' : 'Download PDF'}
           </button>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-white/10 bg-[#0f172a]/60 p-6 shadow-2xl backdrop-blur-xl"
-        >
-          <form onSubmit={handleSearch} className="grid gap-4 md:grid-cols-2 xl:grid-cols-5 mb-6">
-            <div className="xl:col-span-2 relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name, email, phone..."
-                className={`${inputClasses} w-full pl-9`}
-              />
-            </div>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className={`${inputClasses} [color-scheme:dark]`}
-            />
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className={`${inputClasses} [color-scheme:dark]`}
-            />
-            <button
-              type="submit"
-              className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600"
-            >
-              Apply Filters
-            </button>
-          </form>
-
-          <div className="flex flex-wrap gap-3 mb-6">
-            <button
-              type="button"
-              onClick={() => handleExport('excel')}
-              disabled={exporting}
-              className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300 disabled:opacity-60"
-            >
-              <FileSpreadsheet size={16} />
-              {exporting === 'excel' ? 'Exporting...' : 'Download Excel'}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleExport('pdf')}
-              disabled={exporting}
-              className="inline-flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-300 disabled:opacity-60"
-            >
-              <FileText size={16} />
-              {exporting === 'pdf' ? 'Exporting...' : 'Download PDF'}
-            </button>
+        {error && (
+          <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            {error}
           </div>
+        )}
 
-          {error && (
-            <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-              {error}
-            </div>
-          )}
-
-          <div className="overflow-x-auto rounded-xl border border-white/10">
-            <table className="min-w-full text-sm">
-              <thead className="bg-white/5 text-left text-slate-300">
+        <div className="overflow-x-auto rounded-xl border border-white/10">
+          <table className="min-w-full text-sm">
+            <thead className="bg-white/5 text-left text-slate-300">
+              <tr>
+                <th className="px-4 py-3 font-semibold">S.No</th>
+                <th className="px-4 py-3 font-semibold">Name</th>
+                <th className="px-4 py-3 font-semibold">Email</th>
+                <th className="px-4 py-3 font-semibold">Phone</th>
+                <th className="px-4 py-3 font-semibold">Message</th>
+                <th className="px-4 py-3 font-semibold">Status</th>
+                <th className="px-4 py-3 font-semibold">Submitted Date & Time</th>
+                <th className="px-4 py-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
                 <tr>
-                  <th className="px-4 py-3 font-semibold">S.No</th>
-                  <th className="px-4 py-3 font-semibold">Name</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold">Phone</th>
-                  <th className="px-4 py-3 font-semibold">Message</th>
-                  <th className="px-4 py-3 font-semibold">Submitted Date & Time</th>
-                  <th className="px-4 py-3 font-semibold">Actions</th>
+                  <td colSpan={8} className="px-4 py-10 text-center text-slate-400">
+                    Loading enquiries...
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center text-slate-400">
-                      Loading enquiries...
+              ) : rows.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-10 text-center text-slate-400">
+                    No enquiries found.
+                  </td>
+                </tr>
+              ) : (
+                rows.map((row, index) => (
+                  <tr key={row.id} className="border-t border-white/5 text-slate-300">
+                    <td className="px-4 py-3">{(page - 1) * limit + index + 1}</td>
+                    <td className="px-4 py-3 text-white">{row.name}</td>
+                    <td className="px-4 py-3">{row.email}</td>
+                    <td className="px-4 py-3">{row.phone}</td>
+                    <td className="px-4 py-3 max-w-xs truncate">{row.message}</td>
+                    <td className="px-4 py-3 min-w-[160px]">
+                      <select
+                        value={row.status || 'New'}
+                        disabled={updatingId === row.id}
+                        onChange={(e) => handleStatusChange(row.id, e.target.value)}
+                        className={`${inputClasses} w-full min-w-[140px] disabled:opacity-50`}
+                      >
+                        {ENQUIRY_STATUSES.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">{formatDateTime(row.created_at)}</td>
+                    <td className="px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelected(row)}
+                        className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-white/5"
+                      >
+                        <Eye size={14} />
+                        View
+                      </button>
                     </td>
                   </tr>
-                ) : rows.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center text-slate-400">
-                      No enquiries found.
-                    </td>
-                  </tr>
-                ) : (
-                  rows.map((row, index) => (
-                    <tr key={row.id} className="border-t border-white/5 text-slate-300">
-                      <td className="px-4 py-3">{(page - 1) * limit + index + 1}</td>
-                      <td className="px-4 py-3 text-white">{row.name}</td>
-                      <td className="px-4 py-3">{row.email}</td>
-                      <td className="px-4 py-3">{row.phone}</td>
-                      <td className="px-4 py-3 max-w-xs truncate">{row.message}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">{formatDateTime(row.created_at)}</td>
-                      <td className="px-4 py-3">
-                        <button
-                          type="button"
-                          onClick={() => setSelected(row)}
-                          className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-white/5"
-                        >
-                          <Eye size={14} />
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-slate-400">
-              Showing {rows.length} of {total} enquiries
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => p - 1)}
-                className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-300 disabled:opacity-40"
-              >
-                <ChevronLeft size={16} />
-                Prev
-              </button>
-              <span className="text-sm text-slate-400">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                type="button"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-300 disabled:opacity-40"
-              >
-                Next
-                <ChevronRight size={16} />
-              </button>
-            </div>
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-slate-400">
+            Showing {rows.length} of {total} enquiries
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-300 disabled:opacity-40"
+            >
+              <ChevronLeft size={16} />
+              Prev
+            </button>
+            <span className="text-sm text-slate-400">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              type="button"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-3 py-2 text-sm text-slate-300 disabled:opacity-40"
+            >
+              Next
+              <ChevronRight size={16} />
+            </button>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -299,10 +358,8 @@ export default function EnquiryDashboard() {
               <p><span className="text-slate-500">Name:</span> {selected.name}</p>
               <p><span className="text-slate-500">Email:</span> {selected.email}</p>
               <p><span className="text-slate-500">Phone:</span> {selected.phone}</p>
+              <p><span className="text-slate-500">Status:</span> {selected.status}</p>
               <p><span className="text-slate-500">Submitted:</span> {formatDateTime(selected.created_at)}</p>
-              {selected.source_page && (
-                <p><span className="text-slate-500">Source:</span> {selected.source_page}</p>
-              )}
               <div>
                 <p className="text-slate-500 mb-1">Message:</p>
                 <pre className="whitespace-pre-wrap rounded-lg border border-white/10 bg-black/20 p-4 text-slate-200">
@@ -313,6 +370,6 @@ export default function EnquiryDashboard() {
           </div>
         </div>
       )}
-    </div>
+    </AdminShell>
   );
 }

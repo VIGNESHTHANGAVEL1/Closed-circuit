@@ -1,4 +1,6 @@
 import PDFDocument from 'pdfkit';
+import { resolveEnquiryStatus } from '../constants/enquiryStatus.js';
+import { formatContactSummary } from '../services/enquiry.service.js';
 
 function formatDateTime(value) {
   if (!value) return '';
@@ -15,7 +17,7 @@ export function buildEnquiriesPdf(contacts) {
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    doc.fontSize(18).text('Closed Circuit — Contact Enquiries Export', { align: 'center' });
+    doc.fontSize(18).text('Closed Circuit — Enquiries Export', { align: 'center' });
     doc.moveDown();
     doc.fontSize(10).fillColor('#555555').text(`Generated: ${formatDateTime(new Date())}`, { align: 'center' });
     doc.moveDown(1.5);
@@ -31,18 +33,12 @@ export function buildEnquiriesPdf(contacts) {
       doc.fontSize(12).font('Helvetica-Bold').text(`${index + 1}. ${row.fullName}`);
       doc.font('Helvetica').fontSize(10);
       doc.text(`Email: ${row.emailId}`);
-      doc.text(`Mobile: ${row.mobileNumber}`);
-      doc.text(`Town: ${row.town}`);
-      doc.text(`State: ${row.state}`);
-      doc.text(`Country: ${row.country}`);
-      doc.text(`Looking For: ${row.lookingFor}`);
-      doc.text(`Preferred Contact: ${row.preferredContactMethod}`);
-      doc.text(`Preferred Date: ${row.preferredDate}`);
-      doc.text(`Preferred Time: ${row.preferredTime}`);
+      doc.text(`Phone: ${row.mobileNumber}`);
+      doc.text(`Status: ${resolveEnquiryStatus(row.status)}`);
       doc.text(`Submitted: ${formatDateTime(row.created_at)}`);
       doc.moveDown(0.3);
-      doc.font('Helvetica-Bold').text('Description:');
-      doc.font('Helvetica').text(row.description || '-', { width: 500 });
+      doc.font('Helvetica-Bold').text('Message/Description:');
+      doc.font('Helvetica').text(formatContactSummary(row), { width: 500 });
       doc.moveDown(1);
 
       if (doc.y > 700 && index < contacts.length - 1) {

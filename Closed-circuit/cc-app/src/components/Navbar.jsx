@@ -26,6 +26,7 @@ const navItems = [
   { label: 'Gifts', path: '/gifts' },
   { label: 'Use Cases', path: '/use-cases' },
   { label: 'Taglines', path: '/taglines' },
+  { label: 'Clients', path: '/clients' },
   { label: 'Contact', path: '/contact' },
 ];
 

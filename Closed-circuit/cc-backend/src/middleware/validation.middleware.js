@@ -1,4 +1,5 @@
 import { normalizeContactInput, validateContactPayload } from '../services/enquiry.service.js';
+import { normalizeEnquiryStatus } from '../constants/enquiryStatus.js';
 
 export function validateEnquiryBody(req, res, next) {
   const payload = normalizeContactInput(req.body);
@@ -12,6 +13,20 @@ export function validateEnquiryBody(req, res, next) {
   }
 
   req.contactPayload = payload;
+  next();
+}
+
+export function validateEnquiryStatusBody(req, res, next) {
+  const status = normalizeEnquiryStatus(req.body?.status);
+
+  if (!status) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid status. Allowed: New, Processing, Rejected temporarily, Rejected permanently, Closed.',
+    });
+  }
+
+  req.validatedStatus = status;
   next();
 }
 

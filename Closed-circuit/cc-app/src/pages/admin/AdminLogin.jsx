@@ -8,7 +8,7 @@ import { isAuthenticated, setAuthSession } from '../../lib/auth';
 export default function AdminLogin() {
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from || '/enquiries';
+  const redirectTo = location.state?.from || '/admin/dashboard';
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');

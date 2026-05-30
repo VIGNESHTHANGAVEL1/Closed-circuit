@@ -1,4 +1,6 @@
 import ExcelJS from 'exceljs';
+import { resolveEnquiryStatus } from '../constants/enquiryStatus.js';
+import { formatContactSummary } from '../services/enquiry.service.js';
 
 function formatDateTime(value) {
   if (!value) return '';
@@ -8,38 +10,26 @@ function formatDateTime(value) {
 
 export async function buildEnquiriesExcel(contacts) {
   const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet('Contacts');
+  const sheet = workbook.addWorksheet('Enquiries');
 
   sheet.columns = [
     { header: 'S.No', key: 'sno', width: 8 },
-    { header: 'Full Name', key: 'fullName', width: 24 },
-    { header: 'Mobile', key: 'mobileNumber', width: 18 },
-    { header: 'Email', key: 'emailId', width: 28 },
-    { header: 'Town', key: 'town', width: 18 },
-    { header: 'State', key: 'state', width: 18 },
-    { header: 'Country', key: 'country', width: 18 },
-    { header: 'Looking For', key: 'lookingFor', width: 22 },
-    { header: 'Preferred Contact', key: 'preferredContactMethod', width: 20 },
-    { header: 'Preferred Date', key: 'preferredDate', width: 16 },
-    { header: 'Preferred Time', key: 'preferredTime', width: 16 },
-    { header: 'Description', key: 'description', width: 40 },
+    { header: 'Name', key: 'name', width: 24 },
+    { header: 'Email', key: 'email', width: 28 },
+    { header: 'Phone', key: 'phone', width: 18 },
+    { header: 'Message/Description', key: 'message', width: 50 },
+    { header: 'Status', key: 'status', width: 22 },
     { header: 'Submitted Date & Time', key: 'created_at', width: 24 },
   ];
 
   contacts.forEach((row, index) => {
     sheet.addRow({
       sno: index + 1,
-      fullName: row.fullName,
-      mobileNumber: row.mobileNumber,
-      emailId: row.emailId,
-      town: row.town,
-      state: row.state,
-      country: row.country,
-      lookingFor: row.lookingFor,
-      preferredContactMethod: row.preferredContactMethod,
-      preferredDate: row.preferredDate,
-      preferredTime: row.preferredTime,
-      description: row.description || '',
+      name: row.fullName,
+      email: row.emailId,
+      phone: row.mobileNumber,
+      message: formatContactSummary(row),
+      status: resolveEnquiryStatus(row.status),
       created_at: formatDateTime(row.created_at),
     });
   });

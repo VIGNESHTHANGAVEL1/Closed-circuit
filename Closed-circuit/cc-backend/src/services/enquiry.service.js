@@ -3,7 +3,16 @@ import {
   findContactById,
   findContacts,
   findContactsForExport,
+  updateContactStatus,
+  countContactsByStatus,
+  countAllContacts,
 } from '../models/contact.model.js';
+import { countAllClients } from '../models/client.model.js';
+import {
+  DEFAULT_ENQUIRY_STATUS,
+  normalizeEnquiryStatus,
+  resolveEnquiryStatus,
+} from '../constants/enquiryStatus.js';
 
 const REQUIRED_CONTACT_FIELDS = [
   'fullName',
@@ -73,6 +82,7 @@ export function mapContactForDashboard(row) {
     email: row.emailId,
     phone: row.mobileNumber,
     message: formatContactSummary(row),
+    status: resolveEnquiryStatus(row.status),
     source_page: '/contact',
     created_at: row.created_at,
     fullName: row.fullName,
@@ -114,6 +124,7 @@ export async function listEnquiries(filters) {
 
   const result = await findContacts({
     search: filters.search?.trim() || '',
+    status: normalizeEnquiryStatus(filters.status) || '',
     dateFrom: filters.dateFrom || '',
     dateTo: filters.dateTo || '',
     page,
@@ -131,9 +142,38 @@ export async function listEnquiries(filters) {
 export async function exportEnquiries(filters) {
   const rows = await findContactsForExport({
     search: filters.search?.trim() || '',
+    status: normalizeEnquiryStatus(filters.status) || '',
     dateFrom: filters.dateFrom || '',
     dateTo: filters.dateTo || '',
   });
 
   return rows;
+}
+
+export async function updateEnquiryStatus(id, statusValue) {
+  const status = normalizeEnquiryStatus(statusValue);
+
+  if (!status) {
+    const error = new Error('Invalid status value.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const updated = await updateContactStatus(id, status);
+  if (!updated) {
+    return null;
+  }
+
+  const row = await findContactById(id);
+  return mapContactForDashboard(row);
+}
+
+export async function getDashboardStats() {
+  const [totalEnquiries, newEnquiries, totalClients] = await Promise.all([
+    countAllContacts(),
+    countContactsByStatus(DEFAULT_ENQUIRY_STATUS),
+    countAllClients(),
+  ]);
+
+  return { totalEnquiries, newEnquiries, totalClients };
 }
