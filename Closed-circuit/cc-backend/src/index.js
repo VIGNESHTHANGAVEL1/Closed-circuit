@@ -1,13 +1,51 @@
 import { config } from './config/env.js';
+import { bootstrapDatabase } from './config/bootstrap.js';
 import { createApp } from './app.js';
 import { seedDefaultAdmin } from './scripts/seedAdmin.js';
 import { ensureClientFoldersExist } from './services/spaces.service.js';
 
-const app = createApp();
+function exitWithError(message, code = 1) {
+  console.error(`❌ ${message}`);
+  process.exit(code);
+}
 
-await seedDefaultAdmin();
-await ensureClientFoldersExist();
+function handleStartupError(err) {
+  if (err.code === 'MISSING_ENV') {
+    exitWithError(`Missing required environment variables: ${err.missing.join(', ')}`);
+  }
 
-app.listen(config.port, () => {
-  console.log(`Backend running on port ${config.port}`);
-});
+  if (err.code === 'MISSING_SPACES_CONFIG') {
+    exitWithError(`DigitalOcean Spaces configuration incomplete: ${err.missing.join(', ')}`);
+  }
+
+  if (err.code === 'MIGRATION_FAILED') {
+    exitWithError(err.message);
+  }
+
+  if (err.code === 'ECONNREFUSED' || err.code === 'ER_ACCESS_DENIED_ERROR') {
+    exitWithError(`Database connection failed: ${err.message}`);
+  }
+
+  if (err.code === 'EADDRINUSE') {
+    exitWithError(`Port ${config.port} is already in use`);
+  }
+
+  exitWithError(err.message || 'Backend startup failed');
+}
+
+try {
+  await bootstrapDatabase();
+  await seedDefaultAdmin();
+  await ensureClientFoldersExist();
+
+  const app = createApp();
+
+  await new Promise((resolve, reject) => {
+    const server = app.listen(config.port, () => resolve(server));
+    server.on('error', reject);
+  });
+
+  console.log(`✅ Backend ready on PORT ${config.port}`);
+} catch (err) {
+  handleStartupError(err);
+}
