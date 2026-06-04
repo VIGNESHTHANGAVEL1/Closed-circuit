@@ -22,6 +22,7 @@ export async function buildEnquiriesExcel(contacts) {
     { header: 'Looking For', key: 'lookingFor', width: 42 },
     { header: 'Message', key: 'message', width: 40 },
     { header: 'Status', key: 'status', width: 22 },
+    { header: 'Domain', key: 'domain', width: 28 },
     { header: 'Created At', key: 'created_at', width: 24 },
   ];
 
@@ -37,6 +38,7 @@ export async function buildEnquiriesExcel(contacts) {
       lookingFor: row.lookingFor,
       message: row.description || '',
       status: resolveEnquiryStatus(row.status),
+      domain: '',
       created_at: formatDateTime(row.created_at),
     });
   });

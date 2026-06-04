@@ -276,8 +276,8 @@ export default function ClientManagement() {
                 <th className="px-4 py-3 font-semibold">Name</th>
                 <th className="px-4 py-3 font-semibold">Type</th>
                 <th className="px-4 py-3 font-semibold">Business</th>
-                <th className="px-4 py-3 font-semibold">Onboard</th>
                 <th className="px-4 py-3 font-semibold">Domain</th>
+                <th className="px-4 py-3 font-semibold">Onboard</th>
                 <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
             </thead>
@@ -307,13 +307,12 @@ export default function ClientManagement() {
                     <td className="px-4 py-3 text-white">{row.name}</td>
                     <td className="px-4 py-3 uppercase">{row.client_type}</td>
                     <td className="px-4 py-3">{row.business_type}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{formatDate(row.onboard_date)}</td>
                     <td className="px-4 py-3 max-w-[200px]">
                       {row.domain_url ? (
                         <button
                           type="button"
                           onClick={() => openDomainPreview(row.domain_url)}
-                          className="text-left text-xs text-indigo-300 hover:text-indigo-200 hover:underline break-all"
+                          className="cursor-pointer text-left text-xs text-indigo-300 hover:text-indigo-200 hover:underline break-all"
                         >
                           {row.domain_url}
                         </button>
@@ -321,6 +320,7 @@ export default function ClientManagement() {
                         <span className="text-slate-500">—</span>
                       )}
                     </td>
+                    <td className="px-4 py-3 whitespace-nowrap">{formatDate(row.onboard_date)}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">
                         <button
@@ -525,7 +525,7 @@ export default function ClientManagement() {
                   <button
                     type="button"
                     onClick={() => openDomainPreview(viewClient.domain_url)}
-                    className="text-indigo-300 hover:text-indigo-200 hover:underline break-all text-left"
+                    className="cursor-pointer text-indigo-300 hover:text-indigo-200 hover:underline break-all text-left"
                   >
                     {viewClient.domain_url}
                   </button>

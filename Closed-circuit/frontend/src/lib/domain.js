@@ -19,12 +19,21 @@ export function normalizeDomainUrl(value) {
   }
 }
 
-/** Open client domain in a sized popup (admin + public). */
+/** Open client domain in a centered half-screen popup (admin + public). */
 export function openDomainPreview(domainUrl) {
-  if (!domainUrl) return;
+  if (!domainUrl || typeof window === 'undefined') return;
+
+  const normalized = normalizeDomainUrl(domainUrl);
+  if (!normalized) return;
+
+  const width = Math.floor(window.screen.width * 0.5);
+  const height = Math.floor(window.screen.height * 0.75);
+  const left = Math.floor((window.screen.width - width) / 2);
+  const top = Math.floor((window.screen.height - height) / 2);
+
   window.open(
-    domainUrl,
-    'domainPreview',
-    'width=800,height=600,resizable=yes,scrollbars=yes'
+    normalized,
+    'clientDomainPreview',
+    `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
   );
 }

@@ -6,6 +6,7 @@ export default function Hero({
   eyebrow,
   gradient = 'from-[#030712] via-[#0f172a] to-[#030712]',
   contentClassName = 'mx-auto max-w-6xl px-6 py-16 md:py-24 text-center',
+  compact = false,
 }) {
   return (
     <motion.section
@@ -26,7 +27,9 @@ export default function Hero({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
-            className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.3em] text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.2)]"
+            className={`inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-xs font-bold uppercase tracking-[0.3em] text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.2)] ${
+              compact ? 'px-4 py-1.5' : 'px-5 py-2.5'
+            }`}
           >
             {eyebrow}
           </motion.span>
@@ -35,7 +38,11 @@ export default function Hero({
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.8 }}
-          className="font-display mt-8 text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.1] tracking-tight"
+          className={`font-display font-bold leading-[1.1] tracking-tight ${
+            compact
+              ? 'mt-4 text-3xl sm:text-4xl md:text-5xl'
+              : 'mt-8 text-5xl sm:text-6xl md:text-7xl'
+          }`}
         >
           {title}
         </motion.h1>
@@ -44,7 +51,11 @@ export default function Hero({
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.35, duration: 0.8 }}
-            className="mx-auto mt-8 max-w-3xl text-xl md:text-2xl text-slate-400 leading-relaxed font-normal"
+            className={`mx-auto max-w-3xl text-slate-400 font-normal ${
+              compact
+                ? 'mt-3 text-base md:text-lg leading-snug'
+                : 'mt-8 text-xl md:text-2xl leading-relaxed'
+            }`}
           >
             {subtitle}
           </motion.p>
