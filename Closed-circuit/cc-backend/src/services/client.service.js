@@ -7,6 +7,7 @@ import {
   findAllClientsPublic,
 } from '../models/client.model.js';
 import { uploadClientImage, deleteObjectByKey } from './spaces.service.js';
+import { validateDomainUrlOptional } from '../utils/domainUrl.js';
 
 const CLIENT_TYPES = new Set(['b2b', 'b2c']);
 
@@ -19,6 +20,7 @@ function parseClientBody(body) {
     client_type: (body.client_type || '').trim().toLowerCase(),
     business_type: (body.business_type || '').trim(),
     onboard_date: (body.onboard_date || '').trim(),
+    domain_url: (body.domain_url || body.domainUrl || body.domainName || '').trim(),
   };
 }
 
@@ -43,7 +45,22 @@ function validateClientPayload(payload) {
     return 'onboard_date must be YYYY-MM-DD.';
   }
 
+  const domainCheck = validateDomainUrlOptional(payload.domain_url);
+  if (!domainCheck.ok) {
+    return domainCheck.message;
+  }
+
   return null;
+}
+
+function resolveDomainForSave(payload) {
+  const domainCheck = validateDomainUrlOptional(payload.domain_url);
+  if (!domainCheck.ok) {
+    const error = new Error(domainCheck.message);
+    error.statusCode = 400;
+    throw error;
+  }
+  return domainCheck.url;
 }
 
 function mapClientRow(row) {
@@ -61,6 +78,7 @@ function mapClientRow(row) {
     client_logo_url: row.client_logo_url,
     client_profile_pic_key: row.client_profile_pic_key,
     client_profile_pic_url: row.client_profile_pic_url,
+    domain_url: row.domain_url || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -75,6 +93,7 @@ function mapClientPublic(row) {
     onboard_date: row.onboard_date,
     logo_url: row.client_logo_url || null,
     profile_pic_url: row.client_profile_pic_url || null,
+    domain_url: row.domain_url || null,
   };
 }
 
@@ -124,7 +143,8 @@ export async function createClient(body, files) {
   }
 
   const images = await applyUploadedImages(files);
-  const id = await insertClient({ ...payload, ...images });
+  const domain_url = resolveDomainForSave(payload);
+  const id = await insertClient({ ...payload, domain_url, ...images });
   const row = await findClientById(id);
   return mapClientRow(row);
 }
@@ -174,7 +194,8 @@ export async function updateClientById(id, body, files) {
   }
 
   const images = await applyUploadedImages(files, existing);
-  await updateClient(id, { ...payload, ...images });
+  const domain_url = resolveDomainForSave(payload);
+  await updateClient(id, { ...payload, domain_url, ...images });
   const row = await findClientById(id);
   return mapClientRow(row);
 }

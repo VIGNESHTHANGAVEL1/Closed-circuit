@@ -40,12 +40,17 @@ export default function Contact() {
   const [preferredPeriod, setPreferredPeriod] = useState('');
 
   const lookingForOptions = [
-    'DOB',
-    'Marriage Anniversary',
-    'Gated Community',
-    'School',
-    'Colleges',
-    'Customers',
+    'Gift for a Birthday',
+    'Gift for a Marriage Anniversary',
+    'Private Space for My Family',
+    'Private Network for My Gated Community (RWA)',
+    'Private Platform for My Educational Institute',
+    'Private Platform for My Clinical Center',
+    'Private Platform for My CA Firm',
+    'Private Platform for My Law Firm',
+    'Private Platform for My Wellness Center',
+    'Private Platform for My Business Center',
+    'Private Platform for My Realtor Company',
   ];
 
   const preferredContactMethods = ['Call', 'Chat'];
@@ -175,8 +180,10 @@ export default function Contact() {
     }
   };
 
-  const inputClasses = "w-full px-4 py-3 bg-[#0f172a]/50 text-white border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-medium placeholder-slate-500";
-  const labelClasses = "block text-sm font-semibold text-slate-300 mb-2";
+  const formTextClasses = 'text-sm leading-relaxed';
+  const inputClasses =
+    `w-full px-4 py-3 bg-[#0f172a]/50 text-white border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-medium placeholder-slate-500 placeholder:text-sm ${formTextClasses}`;
+  const labelClasses = `block font-semibold text-slate-300 mb-2 ${formTextClasses}`;
 
   return (
     <motion.div
@@ -342,7 +349,7 @@ export default function Contact() {
                                 required
                                 className="h-4 w-4 border-white/20 bg-transparent text-indigo-500 focus:ring-indigo-500/40"
                               />
-                              <span className="text-sm font-semibold">{method}</span>
+                              <span className={`font-semibold ${formTextClasses}`}>{method}</span>
                             </label>
                           ))}
                         </div>
@@ -434,7 +441,7 @@ export default function Contact() {
       required
       className="mt-1 h-5 w-5 rounded border-white/20 bg-[#0f172a]/50 text-indigo-500 focus:ring-indigo-500/40"
     />
-    <span className="text-sm leading-6 text-slate-300">
+    <span className={`${formTextClasses} text-slate-300`}>
       I agree to receive communications, updates, and promotional messages from Closed Circuit AI Pvt Ltd via SMS, WhatsApp, and RCS on my provided contact details.
     </span>
   </label>

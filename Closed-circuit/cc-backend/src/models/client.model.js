@@ -3,7 +3,7 @@ import { db } from '../config/database.js';
 const CLIENT_COLUMNS = `
   id, name, mobile_number, email_id, address, client_type, business_type,
   onboard_date, client_logo_key, client_logo_url, client_profile_pic_key,
-  client_profile_pic_url, created_at, updated_at
+  client_profile_pic_url, domain_url, created_at, updated_at
 `;
 
 function buildClientFilterClauses({ search, clientType }) {
@@ -14,9 +14,9 @@ function buildClientFilterClauses({ search, clientType }) {
     const term = `%${search}%`;
     conditions.push(`(
       name LIKE ? OR mobile_number LIKE ? OR email_id LIKE ? OR
-      business_type LIKE ? OR address LIKE ?
+      business_type LIKE ? OR address LIKE ? OR domain_url LIKE ?
     )`);
-    params.push(term, term, term, term, term);
+    params.push(term, term, term, term, term, term);
   }
 
   if (clientType === 'b2b' || clientType === 'b2c') {
@@ -32,8 +32,8 @@ export async function insertClient(data) {
   const [result] = await db.query(
     `INSERT INTO clients
      (name, mobile_number, email_id, address, client_type, business_type, onboard_date,
-      client_logo_key, client_logo_url, client_profile_pic_key, client_profile_pic_url)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      client_logo_key, client_logo_url, client_profile_pic_key, client_profile_pic_url, domain_url)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.name,
       data.mobile_number,
@@ -46,6 +46,7 @@ export async function insertClient(data) {
       data.client_logo_url || null,
       data.client_profile_pic_key || null,
       data.client_profile_pic_url || null,
+      data.domain_url || null,
     ]
   );
   return result.insertId;
@@ -72,7 +73,8 @@ export async function updateClient(id, data) {
       client_logo_key = ?,
       client_logo_url = ?,
       client_profile_pic_key = ?,
-      client_profile_pic_url = ?
+      client_profile_pic_url = ?,
+      domain_url = ?
      WHERE id = ?`,
     [
       data.name,
@@ -86,6 +88,7 @@ export async function updateClient(id, data) {
       data.client_logo_url || null,
       data.client_profile_pic_key || null,
       data.client_profile_pic_url || null,
+      data.domain_url || null,
       id,
     ]
   );
@@ -122,7 +125,7 @@ export async function findClients({ search, clientType, page, limit }) {
 export async function findAllClientsPublic() {
   const [rows] = await db.query(
     `SELECT id, name, client_type, business_type, onboard_date,
-            client_logo_url, client_profile_pic_url
+            client_logo_url, client_profile_pic_url, domain_url
      FROM clients
      ORDER BY onboard_date DESC, name ASC`
   );

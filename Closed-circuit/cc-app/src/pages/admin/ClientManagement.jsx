@@ -17,6 +17,7 @@ import AdminShell from '../../components/AdminShell';
 import ClientImageThumb from '../../components/ClientImageThumb';
 import { apiFormRequest, apiRequest } from '../../lib/api';
 import { clearAuthSession, getStoredToken } from '../../lib/auth';
+import { normalizeDomainUrl, openDomainPreview } from '../../lib/domain';
 
 const emptyForm = {
   name: '',
@@ -26,6 +27,7 @@ const emptyForm = {
   client_type: 'b2b',
   business_type: '',
   onboard_date: '',
+  domain_url: '',
 };
 
 function formatDate(value) {
@@ -116,6 +118,7 @@ export default function ClientManagement() {
       client_type: row.client_type,
       business_type: row.business_type,
       onboard_date: row.onboard_date?.slice?.(0, 10) || row.onboard_date || '',
+      domain_url: row.domain_url || '',
     });
     setLogoFile(null);
     setProfileFile(null);
@@ -135,11 +138,24 @@ export default function ClientManagement() {
     const token = getStoredToken();
     if (!token) return;
 
+    const domainTrimmed = form.domain_url?.trim();
+    let domainToSave = '';
+
+    if (domainTrimmed) {
+      const normalized = normalizeDomainUrl(domainTrimmed);
+      if (!normalized) {
+        setError('Please enter a valid domain URL (e.g. https://example.com).');
+        return;
+      }
+      domainToSave = normalized;
+    }
+
     setSaving(true);
     setError('');
 
     try {
       const formData = buildFormData();
+      formData.set('domain_url', domainToSave);
       if (modal === 'create') {
         await apiFormRequest('/api/admin/clients', { token, method: 'POST', formData });
         showToast('success', 'Client created successfully.');
@@ -261,19 +277,20 @@ export default function ClientManagement() {
                 <th className="px-4 py-3 font-semibold">Type</th>
                 <th className="px-4 py-3 font-semibold">Business</th>
                 <th className="px-4 py-3 font-semibold">Onboard</th>
+                <th className="px-4 py-3 font-semibold">Domain</th>
                 <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-slate-400">
+                  <td colSpan={9} className="px-4 py-10 text-center text-slate-400">
                     Loading clients...
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-slate-400">
+                  <td colSpan={9} className="px-4 py-10 text-center text-slate-400">
                     No clients found.
                   </td>
                 </tr>
@@ -291,6 +308,19 @@ export default function ClientManagement() {
                     <td className="px-4 py-3 uppercase">{row.client_type}</td>
                     <td className="px-4 py-3">{row.business_type}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{formatDate(row.onboard_date)}</td>
+                    <td className="px-4 py-3 max-w-[200px]">
+                      {row.domain_url ? (
+                        <button
+                          type="button"
+                          onClick={() => openDomainPreview(row.domain_url)}
+                          className="text-left text-xs text-indigo-300 hover:text-indigo-200 hover:underline break-all"
+                        >
+                          {row.domain_url}
+                        </button>
+                      ) : (
+                        <span className="text-slate-500">—</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">
                         <button
@@ -376,9 +406,17 @@ export default function ClientManagement() {
                   ['email_id', 'Email', 'email'],
                   ['business_type', 'Business Type', 'text'],
                   ['onboard_date', 'Onboard Date', 'date'],
+                  ['domain_url', 'Domain Name', 'url'],
                   ['client_type', 'Client Type', 'select'],
                 ].map(([key, label, type]) => (
-                  <div key={key} className={key === 'name' || key === 'email_id' ? 'sm:col-span-2' : ''}>
+                  <div
+                    key={key}
+                    className={
+                      key === 'name' || key === 'email_id' || key === 'domain_url'
+                        ? 'sm:col-span-2'
+                        : ''
+                    }
+                  >
                     <label className="block text-xs font-semibold text-slate-400 mb-1.5">{label}</label>
                     {type === 'select' ? (
                       <select
@@ -392,10 +430,11 @@ export default function ClientManagement() {
                     ) : (
                       <input
                         type={type}
-                        required={key !== 'address'}
+                        required={key !== 'address' && key !== 'domain_url'}
                         value={form[key]}
                         onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
                         className={inputClasses}
+                        placeholder={key === 'domain_url' ? 'https://example.com' : undefined}
                       />
                     )}
                   </div>
@@ -480,6 +519,18 @@ export default function ClientManagement() {
               <p><span className="text-slate-500 block text-xs">Type</span>{viewClient.client_type?.toUpperCase()}</p>
               <p><span className="text-slate-500 block text-xs">Business</span>{viewClient.business_type}</p>
               <p><span className="text-slate-500 block text-xs">Onboard</span>{formatDate(viewClient.onboard_date)}</p>
+              {viewClient.domain_url && (
+                <p className="sm:col-span-2">
+                  <span className="text-slate-500 block text-xs">Domain</span>
+                  <button
+                    type="button"
+                    onClick={() => openDomainPreview(viewClient.domain_url)}
+                    className="text-indigo-300 hover:text-indigo-200 hover:underline break-all text-left"
+                  >
+                    {viewClient.domain_url}
+                  </button>
+                </p>
+              )}
               {viewClient.address && (
                 <p className="sm:col-span-2"><span className="text-slate-500 block text-xs">Address</span>{viewClient.address}</p>
               )}

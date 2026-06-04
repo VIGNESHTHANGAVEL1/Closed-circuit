@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { adminLogin, getAdminProfile } from '../controllers/auth.controller.js';
+import { adminLogin, getAdminProfile, changePassword } from '../controllers/auth.controller.js';
 import {
   getEnquiries,
   getEnquiryDetail,
@@ -19,6 +19,7 @@ import { requireAuth } from '../middleware/auth.middleware.js';
 import {
   validateAdminLoginBody,
   validateEnquiryStatusBody,
+  validateChangePasswordBody,
 } from '../middleware/validation.middleware.js';
 import { loginRateLimiter } from '../middleware/rateLimit.middleware.js';
 import { clientImageUpload } from '../middleware/upload.middleware.js';
@@ -27,6 +28,7 @@ const router = Router();
 
 router.post('/login', loginRateLimiter, validateAdminLoginBody, adminLogin);
 router.get('/me', requireAuth, getAdminProfile);
+router.post('/change-password', requireAuth, validateChangePasswordBody, changePassword);
 router.get('/dashboard/stats', requireAuth, getAdminDashboardStats);
 
 router.get('/enquiries', requireAuth, getEnquiries);

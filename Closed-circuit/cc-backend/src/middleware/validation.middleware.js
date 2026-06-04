@@ -42,3 +42,30 @@ export function validateAdminLoginBody(req, res, next) {
 
   next();
 }
+
+export function validateChangePasswordBody(req, res, next) {
+  const { currentPassword, newPassword, confirmPassword } = req.body || {};
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({
+      success: false,
+      message: 'Current password, new password, and confirm password are required.',
+    });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({
+      success: false,
+      message: 'New password and confirm password must match.',
+    });
+  }
+
+  if (String(newPassword).length < 8) {
+    return res.status(400).json({
+      success: false,
+      message: 'New password must be at least 8 characters.',
+    });
+  }
+
+  next();
+}

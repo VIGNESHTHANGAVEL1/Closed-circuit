@@ -1,6 +1,7 @@
 import {
   authenticateAdmin,
   createAccessToken,
+  changeAdminPassword,
 } from '../services/auth.service.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 
@@ -31,4 +32,20 @@ export async function adminLogin(req, res) {
 
 export async function getAdminProfile(req, res) {
   return sendSuccess(res, { user: req.user });
+}
+
+export async function changePassword(req, res) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const result = await changeAdminPassword(req.user.id, currentPassword, newPassword);
+
+    if (!result.ok) {
+      return sendError(res, result.message, 400);
+    }
+
+    return sendSuccess(res, { message: 'Password updated successfully.' });
+  } catch (err) {
+    console.error('changePassword error:', err.message);
+    return sendError(res, 'Password update failed.', 500);
+  }
 }

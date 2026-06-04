@@ -23,6 +23,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import EnquiryDashboard from './pages/admin/EnquiryDashboard';
 import ClientManagement from './pages/admin/ClientManagement';
+import ChangePassword from './pages/admin/ChangePassword';
 import Clients from './pages/Clients';
 
 // Scroll to top on route change
@@ -179,6 +180,14 @@ function AppShell() {
               element={
                 <AdminRoute>
                   <ClientManagement />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/change-password"
+              element={
+                <AdminRoute>
+                  <ChangePassword />
                 </AdminRoute>
               }
             />

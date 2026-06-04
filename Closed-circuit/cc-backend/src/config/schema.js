@@ -93,6 +93,7 @@ export const TABLE_DEFINITIONS = {
         client_logo_url VARCHAR(1024) NULL,
         client_profile_pic_key VARCHAR(512) NULL,
         client_profile_pic_url VARCHAR(1024) NULL,
+        domain_url VARCHAR(1024) NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
@@ -117,6 +118,7 @@ export const TABLE_DEFINITIONS = {
       { name: 'client_logo_url', definition: 'VARCHAR(1024) NULL' },
       { name: 'client_profile_pic_key', definition: 'VARCHAR(512) NULL' },
       { name: 'client_profile_pic_url', definition: 'VARCHAR(1024) NULL' },
+      { name: 'domain_url', definition: 'VARCHAR(1024) NULL' },
       {
         name: 'created_at',
         definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
