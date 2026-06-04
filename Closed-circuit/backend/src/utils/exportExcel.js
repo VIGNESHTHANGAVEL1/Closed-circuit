@@ -21,24 +21,28 @@ export async function buildEnquiriesExcel(contacts) {
     { header: 'Country', key: 'country', width: 18 },
     { header: 'Looking For', key: 'lookingFor', width: 42 },
     { header: 'Message', key: 'message', width: 40 },
+    { header: 'Preferred Date', key: 'preferredDate', width: 16 },
+    { header: 'Preferred Contact Method', key: 'preferredContactMethod', width: 24 },
+    { header: 'Preferred Time', key: 'preferredTime', width: 16 },
     { header: 'Status', key: 'status', width: 22 },
-    { header: 'Domain', key: 'domain', width: 28 },
     { header: 'Created At', key: 'created_at', width: 24 },
   ];
 
   contacts.forEach((row, index) => {
     sheet.addRow({
       sno: index + 1,
-      fullName: row.fullName,
-      mobileNumber: row.mobileNumber,
-      emailId: row.emailId,
-      town: row.town,
-      state: row.state,
-      country: row.country,
-      lookingFor: row.lookingFor,
+      fullName: row.fullName || '',
+      mobileNumber: row.mobileNumber || '',
+      emailId: row.emailId || '',
+      town: row.town || '',
+      state: row.state || '',
+      country: row.country || '',
+      lookingFor: row.lookingFor || '',
       message: row.description || '',
+      preferredDate: row.preferredDate || '',
+      preferredContactMethod: row.preferredContactMethod || '',
+      preferredTime: row.preferredTime || '',
       status: resolveEnquiryStatus(row.status),
-      domain: '',
       created_at: formatDateTime(row.created_at),
     });
   });
