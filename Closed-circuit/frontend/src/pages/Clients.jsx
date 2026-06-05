@@ -22,24 +22,26 @@ function formatClientType(type) {
 
 function ClientCardHeader({ logoUrl, profileUrl, clientType, name }) {
   return (
-    <div className="mb-1.5 flex items-center justify-center gap-1">
-      {logoUrl ? (
-        <img
-          src={logoUrl}
-          alt={`${name} logo`}
-          className="h-14 w-[4.75rem] shrink-0 rounded-[24px] border border-white/15 bg-[#0f172a] object-cover shadow-md"
-        />
-      ) : (
-        <div className="flex h-14 w-[4.75rem] shrink-0 items-center justify-center rounded-[24px] border border-indigo-500/30 bg-gradient-to-br from-indigo-600/40 to-purple-700/30 text-white shadow-md">
-          {clientType === 'b2b' ? <Building2 size={26} /> : <User size={26} />}
-        </div>
-      )}
+    <div className="flex items-center justify-center gap-2.5">
+      <div className="flex h-[90px] w-[180px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-[0_2px_12px_rgba(0,0,0,0.15)]">
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={`${name} logo`}
+            className="h-full w-full object-contain px-4 py-2"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-indigo-600">
+            {clientType === 'b2b' ? <Building2 size={36} /> : <User size={36} />}
+          </div>
+        )}
+      </div>
 
       {profileUrl ? (
         <img
           src={profileUrl}
           alt=""
-          className="h-[3.25rem] w-[3.25rem] shrink-0 rounded-full border-2 border-indigo-500/30 object-cover shadow-md ring-2 ring-indigo-500/25"
+          className="h-[90px] w-[90px] shrink-0 rounded-full border-2 border-indigo-500/25 object-cover shadow-[0_4px_16px_rgba(99,102,241,0.2)]"
         />
       ) : null}
     </div>
@@ -53,7 +55,7 @@ function DomainLink({ domainUrl }) {
     <button
       type="button"
       onClick={() => openDomainPreview(domainUrl)}
-      className="inline-flex max-w-full items-center justify-center gap-1.5 text-sm text-indigo-400 transition-colors hover:text-indigo-300 hover:underline cursor-pointer"
+      className="inline-flex max-w-full items-center justify-center gap-1.5 text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300 hover:underline cursor-pointer"
     >
       <Globe size={14} className="shrink-0" />
       <span className="truncate">{domainUrl}</span>
@@ -111,10 +113,8 @@ export default function Clients() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05, duration: 0.35 }}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f172a]/90 to-[#030712]/90 px-3 py-3 text-center shadow-[0_0_32px_rgba(99,102,241,0.08)] backdrop-blur-sm transition duration-300 hover:border-indigo-500/30 hover:shadow-[0_0_40px_rgba(99,102,241,0.12)]"
+              className="group relative flex flex-col overflow-hidden rounded-[20px] border border-indigo-500/30 bg-gradient-to-b from-[#0f172a]/95 via-[#0c1425]/90 to-[#060d1f]/95 p-5 text-center shadow-[0_8px_32px_rgba(99,102,241,0.15),0_0_0_1px_rgba(139,92,246,0.12)] backdrop-blur-md transition duration-300 hover:border-indigo-400/45 hover:shadow-[0_12px_40px_rgba(99,102,241,0.22)]"
             >
-              <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
-
               <ClientCardHeader
                 logoUrl={client.logo_url}
                 profileUrl={client.profile_pic_url}
@@ -122,24 +122,24 @@ export default function Clients() {
                 name={client.name}
               />
 
-              <div className="flex flex-col items-center gap-0.5">
-                <h3 className="text-base font-bold leading-tight text-white transition-colors group-hover:text-indigo-200">
+              <div className="mt-2.5 flex flex-col items-center gap-2">
+                <h3 className="text-xl font-bold leading-tight text-white transition-colors group-hover:text-indigo-100">
                   {client.name}
                 </h3>
 
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/25 bg-indigo-500/10 px-3.5 py-1 text-sm font-bold uppercase tracking-wider text-indigo-300">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/35 bg-[#0f172a]/80 px-3.5 py-1 text-sm font-bold uppercase tracking-wider text-indigo-300">
                   <Sparkles size={13} />
                   {formatClientType(client.client_type)}
                 </span>
 
                 {client.business_type && (
-                  <p className="text-sm leading-tight text-white/95">
+                  <p className="text-sm leading-snug text-white">
                     {client.business_type}
                   </p>
                 )}
 
                 {client.onboard_date && (
-                  <p className="text-sm leading-tight text-white/90">
+                  <p className="text-sm leading-snug text-white/90">
                     Partner since {formatOnboardDate(client.onboard_date)}
                   </p>
                 )}
