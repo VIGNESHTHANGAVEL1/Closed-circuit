@@ -8,7 +8,7 @@ import { clearAuthSession, getStoredToken } from '../../lib/auth';
 function PasswordField({ label, name, value, onChange, show, onToggle, autoComplete }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-slate-400 mb-1.5">{label}</label>
+      <label className="block text-xs font-semibold text-white mb-1.5">{label}</label>
       <div className="relative">
         <input
           type={show ? 'text' : 'password'}
@@ -22,7 +22,7 @@ function PasswordField({ label, name, value, onChange, show, onToggle, autoCompl
         <button
           type="button"
           onClick={onToggle}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-white"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 text-white"
           aria-label={show ? 'Hide password' : 'Show password'}
         >
           {show ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -133,7 +133,7 @@ export default function ChangePassword() {
           autoComplete="new-password"
         />
 
-        <p className="text-xs text-slate-500 leading-relaxed">
+        <p className="text-xs text-white leading-relaxed">
           Your username stays the same. Passwords are stored securely and are never shown in logs
           or exports.
         </p>

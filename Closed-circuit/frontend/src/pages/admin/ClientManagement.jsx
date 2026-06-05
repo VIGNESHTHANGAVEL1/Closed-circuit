@@ -472,7 +472,7 @@ export default function ClientManagement() {
                         : ''
                     }
                   >
-                    <label className="block text-xs font-semibold text-slate-400 mb-1.5">{label}</label>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1.5 text-white">{label}</label>
                     {type === 'select' ? (
                       <select
                         value={form.client_type}
@@ -509,7 +509,7 @@ export default function ClientManagement() {
                 </label>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1.5">Address</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 text-white">Address</label>
                 <input
                   type="text"
                   value={form.address}
@@ -520,18 +520,18 @@ export default function ClientManagement() {
               {modal !== 'create' && editRow && (
                 <div className="flex items-center justify-center gap-8 py-2 border-b border-white/10">
                   <div className="text-center">
-                    <p className="text-[10px] uppercase text-slate-500 mb-2">Current logo</p>
+                    <p className="text-[10px] uppercase text-slate-500 mb-2 text-white">Current logo</p>
                     <ClientImageThumb url={editRow.client_logo_url} variant="logo" />
                   </div>
                   <div className="text-center">
-                    <p className="text-[10px] uppercase text-slate-500 mb-2">Current profile</p>
+                    <p className="text-[10px] uppercase text-slate-500 mb-2 text-white">Current profile</p>
                     <ClientImageThumb url={editRow.client_profile_pic_url} variant="profile" />
                   </div>
                 </div>
               )}
               <div className="grid gap-4 sm:grid-cols-2 rounded-xl border border-white/10 bg-white/[0.02] p-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">Client Logo</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-2 text-white">Client Logo</label>
                   <input
                     type="file"
                     accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
@@ -540,7 +540,7 @@ export default function ClientManagement() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-2">Profile Picture</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-2 text-white">Profile Picture</label>
                   <input
                     type="file"
                     accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
@@ -562,7 +562,7 @@ export default function ClientManagement() {
       )}
 
       {viewClient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 ">
           <div className="absolute inset-0 bg-black/70" onClick={() => setViewClient(null)} />
           <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/10 bg-[#0f172a] p-6">
             <div className="flex justify-between items-start mb-5">
@@ -573,27 +573,27 @@ export default function ClientManagement() {
             </div>
             <div className="flex items-center gap-6 mb-6 pb-5 border-b border-white/10">
               <div className="text-center">
-                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-2">Logo</p>
+                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-2 text-white">Logo</p>
                 <ClientImageThumb url={viewClient.client_logo_url} variant="logo" alt="" />
               </div>
               <div className="text-center">
-                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-2">Profile</p>
+                <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-2 text-white">Profile</p>
                 <ClientImageThumb url={viewClient.client_profile_pic_url} variant="profile" alt="" />
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 text-sm text-slate-300">
-              <p><span className="text-slate-500 block text-xs">Mobile</span>{viewClient.mobile_number}</p>
-              <p><span className="text-slate-500 block text-xs">Email</span>{viewClient.email_id}</p>
-              <p><span className="text-slate-500 block text-xs">Type</span>{viewClient.client_type?.toUpperCase()}</p>
-              <p><span className="text-slate-500 block text-xs">Business</span>{viewClient.business_type}</p>
-              <p><span className="text-slate-500 block text-xs">Onboard</span>{formatDate(viewClient.onboard_date)}</p>
+              <p><span className="text-slate-500 block text-xs text-white">Mobile</span>{viewClient.mobile_number}</p>
+              <p><span className="text-slate-500 block text-xs text-white">Email</span>{viewClient.email_id}</p>
+              <p><span className="text-slate-500 block text-xs text-white">Type</span>{viewClient.client_type?.toUpperCase()}</p>
+              <p><span className="text-slate-500 block text-xs text-white">Business</span>{viewClient.business_type}</p>
+              <p><span className="text-slate-500 block text-xs text-white">Onboard</span>{formatDate(viewClient.onboard_date)}</p>
               <p>
-                <span className="text-slate-500 block text-xs">Display Status</span>
+                <span className="text-slate-500 block text-xs text-white">Display Status</span>
                 {viewClient.display_status ? '✅ Visible' : '❌ Hidden'}
               </p>
               {viewClient.domain_url && (
                 <p className="sm:col-span-2">
-                  <span className="text-slate-500 block text-xs">Domain</span>
+                  <span className="text-slate-500 block text-xs text-white">Domain</span>
                   <button
                     type="button"
                     onClick={() => openDomainPreview(viewClient.domain_url)}
@@ -604,7 +604,7 @@ export default function ClientManagement() {
                 </p>
               )}
               {viewClient.address && (
-                <p className="sm:col-span-2"><span className="text-slate-500 block text-xs">Address</span>{viewClient.address}</p>
+                <p className="sm:col-span-2"><span className="text-slate-500 block text-xs text-white">Address</span>{viewClient.address}</p>
               )}
             </div>
           </div>

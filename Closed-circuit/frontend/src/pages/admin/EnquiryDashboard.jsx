@@ -345,19 +345,19 @@ export default function EnquiryDashboard() {
             </div>
             <div className="space-y-4 text-sm text-slate-300">
               <div className="grid gap-3 sm:grid-cols-2">
-                <p><span className="text-slate-500 block text-xs mb-0.5">Name</span> {selected.name}</p>
-                <p><span className="text-slate-500 block text-xs mb-0.5">Phone</span> {selected.phone}</p>
-                <p className="sm:col-span-2"><span className="text-slate-500 block text-xs mb-0.5">Email</span> {selected.email}</p>
-                <p><span className="text-slate-500 block text-xs mb-0.5">Submitted</span> {formatDateTime(selected.created_at)}</p>
+                <p><span className="text-slate-500 block text-xs mb-0.5 text-white">Name</span> {selected.name}</p>
+                <p><span className="text-slate-500 block text-xs mb-0.5 text-white">Phone</span> {selected.phone}</p>
+                <p className="sm:col-span-2"><span className="text-slate-500 block text-xs mb-0.5 text-white">Email</span> {selected.email}</p>
+                <p><span className="text-slate-500 block text-xs mb-0.5 text-white">Submitted</span> {formatDateTime(selected.created_at)}</p>
               </div>
               <div>
-                <p className="text-slate-500 mb-1">Message:</p>
+                <p className="text-slate-500 mb-1 text-white">Message:</p>
                 <pre className="whitespace-pre-wrap rounded-lg border border-white/10 bg-black/20 p-4 text-slate-200 max-h-48 overflow-y-auto">
                   {selected.message}
                 </pre>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <label htmlFor="enquiry-modal-status" className="block text-xs font-semibold text-slate-400 mb-2">
+                <label htmlFor="enquiry-modal-status" className="block text-xs font-semibold text-slate-400 mb-2 text-white">
                   Status
                 </label>
                 <select
