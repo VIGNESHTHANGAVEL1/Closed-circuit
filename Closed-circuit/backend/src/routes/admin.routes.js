@@ -13,12 +13,14 @@ import {
   getClientDetail,
   createClientHandler,
   updateClientHandler,
+  patchClientDisplayStatus,
   deleteClientHandler,
 } from '../controllers/client.controller.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
 import {
   validateAdminLoginBody,
   validateEnquiryStatusBody,
+  validateClientDisplayStatusBody,
   validateChangePasswordBody,
 } from '../middleware/validation.middleware.js';
 import { loginRateLimiter } from '../middleware/rateLimit.middleware.js';
@@ -41,6 +43,12 @@ router.get('/clients', requireAuth, getClients);
 router.get('/clients/:id', requireAuth, getClientDetail);
 router.post('/clients', requireAuth, clientImageUpload, createClientHandler);
 router.put('/clients/:id', requireAuth, clientImageUpload, updateClientHandler);
+router.patch(
+  '/clients/:id/display-status',
+  requireAuth,
+  validateClientDisplayStatusBody,
+  patchClientDisplayStatus
+);
 router.delete('/clients/:id', requireAuth, deleteClientHandler);
 
 export default router;

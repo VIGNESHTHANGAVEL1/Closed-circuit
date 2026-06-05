@@ -3,7 +3,7 @@ import { db } from '../config/database.js';
 const CLIENT_COLUMNS = `
   id, name, mobile_number, email_id, address, client_type, business_type,
   onboard_date, client_logo_key, client_logo_url, client_profile_pic_key,
-  client_profile_pic_url, domain_url, created_at, updated_at
+  client_profile_pic_url, domain_url, display_status, created_at, updated_at
 `;
 
 function buildClientFilterClauses({ search, clientType }) {
@@ -32,8 +32,9 @@ export async function insertClient(data) {
   const [result] = await db.query(
     `INSERT INTO clients
      (name, mobile_number, email_id, address, client_type, business_type, onboard_date,
-      client_logo_key, client_logo_url, client_profile_pic_key, client_profile_pic_url, domain_url)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      client_logo_key, client_logo_url, client_profile_pic_key, client_profile_pic_url,
+      domain_url, display_status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.name,
       data.mobile_number,
@@ -47,6 +48,7 @@ export async function insertClient(data) {
       data.client_profile_pic_key || null,
       data.client_profile_pic_url || null,
       data.domain_url || null,
+      data.display_status ? 1 : 0,
     ]
   );
   return result.insertId;
@@ -74,7 +76,8 @@ export async function updateClient(id, data) {
       client_logo_url = ?,
       client_profile_pic_key = ?,
       client_profile_pic_url = ?,
-      domain_url = ?
+      domain_url = ?,
+      display_status = ?
      WHERE id = ?`,
     [
       data.name,
@@ -89,6 +92,7 @@ export async function updateClient(id, data) {
       data.client_profile_pic_key || null,
       data.client_profile_pic_url || null,
       data.domain_url || null,
+      data.display_status ? 1 : 0,
       id,
     ]
   );
@@ -127,9 +131,18 @@ export async function findAllClientsPublic() {
     `SELECT id, name, client_type, business_type, onboard_date,
             client_logo_url, client_profile_pic_url, domain_url
      FROM clients
+     WHERE display_status = 1
      ORDER BY onboard_date DESC, name ASC`
   );
   return rows;
+}
+
+export async function updateClientDisplayStatus(id, displayStatus) {
+  const [result] = await db.query(
+    `UPDATE clients SET display_status = ? WHERE id = ?`,
+    [displayStatus ? 1 : 0, id]
+  );
+  return result.affectedRows > 0;
 }
 
 export async function countAllClients() {

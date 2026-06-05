@@ -94,6 +94,7 @@ export const TABLE_DEFINITIONS = {
         client_profile_pic_key VARCHAR(512) NULL,
         client_profile_pic_url VARCHAR(1024) NULL,
         domain_url VARCHAR(1024) NULL,
+        display_status TINYINT(1) NOT NULL DEFAULT 0,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
@@ -119,6 +120,7 @@ export const TABLE_DEFINITIONS = {
       { name: 'client_profile_pic_key', definition: 'VARCHAR(512) NULL' },
       { name: 'client_profile_pic_url', definition: 'VARCHAR(1024) NULL' },
       { name: 'domain_url', definition: 'VARCHAR(1024) NULL' },
+      { name: 'display_status', definition: 'TINYINT(1) NOT NULL DEFAULT 0' },
       {
         name: 'created_at',
         definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',

@@ -4,6 +4,7 @@ import {
   listClients,
   listPublicClients,
   updateClientById,
+  updateClientDisplayStatusById,
   removeClient,
 } from '../services/client.service.js';
 import { sendSuccess, sendError } from '../utils/response.js';
@@ -67,6 +68,22 @@ export async function updateClientHandler(req, res) {
       return sendError(res, err.message, err.statusCode);
     }
     return sendError(res, 'Unable to update client.', 500);
+  }
+}
+
+export async function patchClientDisplayStatus(req, res) {
+  try {
+    const client = await updateClientDisplayStatusById(
+      req.params.id,
+      req.validatedDisplayStatus
+    );
+    if (!client) {
+      return sendError(res, 'Client not found.', 404);
+    }
+    return sendSuccess(res, { client });
+  } catch (err) {
+    console.error('patchClientDisplayStatus error:', err);
+    return sendError(res, 'Unable to update display status.', 500);
   }
 }
 

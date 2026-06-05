@@ -28,6 +28,7 @@ const emptyForm = {
   business_type: '',
   onboard_date: '',
   domain_url: '',
+  display_status: false,
 };
 
 function formatDate(value) {
@@ -54,6 +55,8 @@ export default function ClientManagement() {
   const [saving, setSaving] = useState(false);
   const [viewClient, setViewClient] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [toggleTarget, setToggleTarget] = useState(null);
+  const [toggling, setToggling] = useState(false);
 
   const showToast = (type, message) => {
     setToast({ type, message });
@@ -119,6 +122,7 @@ export default function ClientManagement() {
       business_type: row.business_type,
       onboard_date: row.onboard_date?.slice?.(0, 10) || row.onboard_date || '',
       domain_url: row.domain_url || '',
+      display_status: Boolean(row.display_status),
     });
     setLogoFile(null);
     setProfileFile(null);
@@ -127,10 +131,46 @@ export default function ClientManagement() {
 
   const buildFormData = () => {
     const fd = new FormData();
-    Object.entries(form).forEach(([key, value]) => fd.append(key, value));
+    Object.entries(form).forEach(([key, value]) => {
+      if (key === 'display_status') {
+        fd.append(key, value ? 'true' : 'false');
+      } else {
+        fd.append(key, value);
+      }
+    });
     if (logoFile) fd.append('client_logo', logoFile);
     if (profileFile) fd.append('client_profile_pic', profileFile);
     return fd;
+  };
+
+  const handleToggleDisplayStatus = async () => {
+    if (!toggleTarget) return;
+    const token = getStoredToken();
+    if (!token) return;
+
+    const nextStatus = !toggleTarget.display_status;
+    setToggling(true);
+    setError('');
+
+    try {
+      await apiRequest(`/api/admin/clients/${toggleTarget.id}/display-status`, {
+        token,
+        method: 'PATCH',
+        body: JSON.stringify({ display_status: nextStatus }),
+      });
+      showToast(
+        'success',
+        nextStatus
+          ? `${toggleTarget.name} is now visible on the public website.`
+          : `${toggleTarget.name} is now hidden from the public website.`
+      );
+      setToggleTarget(null);
+      loadClients(page);
+    } catch (err) {
+      setError(err.message || 'Unable to update display status.');
+    } finally {
+      setToggling(false);
+    }
   };
 
   const handleSave = async (event) => {
@@ -277,6 +317,7 @@ export default function ClientManagement() {
                 <th className="px-4 py-3 font-semibold">Type</th>
                 <th className="px-4 py-3 font-semibold">Business</th>
                 <th className="px-4 py-3 font-semibold">Domain</th>
+                <th className="px-4 py-3 font-semibold">Display Status</th>
                 <th className="px-4 py-3 font-semibold">Onboard</th>
                 <th className="px-4 py-3 font-semibold">Actions</th>
               </tr>
@@ -284,13 +325,13 @@ export default function ClientManagement() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-10 text-center text-slate-400">
+                  <td colSpan={10} className="px-4 py-10 text-center text-slate-400">
                     Loading clients...
                   </td>
                 </tr>
               ) : rows.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-10 text-center text-slate-400">
+                  <td colSpan={10} className="px-4 py-10 text-center text-slate-400">
                     No clients found.
                   </td>
                 </tr>
@@ -319,6 +360,20 @@ export default function ClientManagement() {
                       ) : (
                         <span className="text-slate-500">—</span>
                       )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={() => setToggleTarget(row)}
+                        className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-colors ${
+                          row.display_status
+                            ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
+                            : 'border-slate-500/30 bg-slate-500/10 text-slate-400 hover:bg-slate-500/20'
+                        }`}
+                        title="Click to toggle display status"
+                      >
+                        {row.display_status ? '✅ Visible' : '❌ Hidden'}
+                      </button>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">{formatDate(row.onboard_date)}</td>
                     <td className="px-4 py-3">
@@ -440,6 +495,19 @@ export default function ClientManagement() {
                   </div>
                 ))}
               </div>
+              <div className="sm:col-span-2">
+                <label className="flex items-center gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.display_status}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, display_status: e.target.checked }))
+                    }
+                    className="h-4 w-4 rounded border-white/20 bg-[#0f172a]/80 text-indigo-500 focus:ring-indigo-500/40"
+                  />
+                  <span className="text-sm text-slate-300">Display this client on homepage</span>
+                </label>
+              </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-400 mb-1.5">Address</label>
                 <input
@@ -519,6 +587,10 @@ export default function ClientManagement() {
               <p><span className="text-slate-500 block text-xs">Type</span>{viewClient.client_type?.toUpperCase()}</p>
               <p><span className="text-slate-500 block text-xs">Business</span>{viewClient.business_type}</p>
               <p><span className="text-slate-500 block text-xs">Onboard</span>{formatDate(viewClient.onboard_date)}</p>
+              <p>
+                <span className="text-slate-500 block text-xs">Display Status</span>
+                {viewClient.display_status ? '✅ Visible' : '❌ Hidden'}
+              </p>
               {viewClient.domain_url && (
                 <p className="sm:col-span-2">
                   <span className="text-slate-500 block text-xs">Domain</span>
@@ -534,6 +606,57 @@ export default function ClientManagement() {
               {viewClient.address && (
                 <p className="sm:col-span-2"><span className="text-slate-500 block text-xs">Address</span>{viewClient.address}</p>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toggleTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/70"
+            onClick={() => !toggling && setToggleTarget(null)}
+          />
+          <div className="relative z-10 w-full max-w-sm rounded-2xl border border-white/10 bg-[#0f172a] p-6 text-center">
+            <p className="text-white font-semibold mb-2">
+              {toggleTarget.display_status ? 'Hide client from public pages?' : 'Show client on public pages?'}
+            </p>
+            <p className="text-sm text-slate-400 mb-6">
+              {toggleTarget.display_status ? (
+                <>
+                  <strong className="text-white">{toggleTarget.name}</strong> will be removed from the
+                  homepage and Our Clients page.
+                </>
+              ) : (
+                <>
+                  <strong className="text-white">{toggleTarget.name}</strong> will appear on the
+                  homepage and Our Clients page.
+                </>
+              )}
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                type="button"
+                disabled={toggling}
+                onClick={() => setToggleTarget(null)}
+                className="rounded-lg border border-white/10 px-4 py-2 text-sm text-slate-300 disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={toggling}
+                onClick={handleToggleDisplayStatus}
+                className={`rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 ${
+                  toggleTarget.display_status ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'
+                }`}
+              >
+                {toggling
+                  ? 'Updating...'
+                  : toggleTarget.display_status
+                    ? 'Hide Client'
+                    : 'Show Client'}
+              </button>
             </div>
           </div>
         </div>

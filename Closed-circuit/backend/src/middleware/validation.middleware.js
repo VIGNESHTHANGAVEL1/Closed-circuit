@@ -43,6 +43,31 @@ export function validateAdminLoginBody(req, res, next) {
   next();
 }
 
+export function validateClientDisplayStatusBody(req, res, next) {
+  const raw = req.body?.display_status;
+  if (raw === undefined || raw === null) {
+    return res.status(400).json({
+      success: false,
+      message: 'display_status is required.',
+    });
+  }
+
+  const isTruthy =
+    raw === true || raw === 'true' || raw === '1' || raw === 1 || raw === 'on';
+  const isFalsy =
+    raw === false || raw === 'false' || raw === '0' || raw === 0 || raw === 'off';
+
+  if (!isTruthy && !isFalsy) {
+    return res.status(400).json({
+      success: false,
+      message: 'display_status must be a boolean value.',
+    });
+  }
+
+  req.validatedDisplayStatus = isTruthy;
+  next();
+}
+
 export function validateChangePasswordBody(req, res, next) {
   const { currentPassword, newPassword, confirmPassword } = req.body || {};
 

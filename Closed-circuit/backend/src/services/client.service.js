@@ -5,11 +5,20 @@ import {
   deleteClient,
   findClients,
   findAllClientsPublic,
+  updateClientDisplayStatus,
 } from '../models/client.model.js';
 import { uploadClientImage, deleteObjectByKey } from './spaces.service.js';
 import { validateDomainUrlOptional } from '../utils/domainUrl.js';
 
 const CLIENT_TYPES = new Set(['b2b', 'b2c']);
+
+function parseDisplayStatus(value) {
+  if (value === undefined || value === null || value === '') return false;
+  if (value === true || value === 'true' || value === '1' || value === 1 || value === 'on') {
+    return true;
+  }
+  return false;
+}
 
 function parseClientBody(body) {
   return {
@@ -21,6 +30,7 @@ function parseClientBody(body) {
     business_type: (body.business_type || '').trim(),
     onboard_date: (body.onboard_date || '').trim(),
     domain_url: (body.domain_url || body.domainUrl || body.domainName || '').trim(),
+    display_status: parseDisplayStatus(body.display_status),
   };
 }
 
@@ -79,6 +89,7 @@ function mapClientRow(row) {
     client_profile_pic_key: row.client_profile_pic_key,
     client_profile_pic_url: row.client_profile_pic_url,
     domain_url: row.domain_url || null,
+    display_status: Boolean(row.display_status),
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -212,4 +223,14 @@ export async function removeClient(id) {
     await deleteObjectByKey(existing.client_profile_pic_key);
   }
   return deleted;
+}
+
+export async function updateClientDisplayStatusById(id, displayStatus) {
+  const display_status = parseDisplayStatus(displayStatus);
+  const updated = await updateClientDisplayStatus(id, display_status);
+  if (!updated) {
+    return null;
+  }
+  const row = await findClientById(id);
+  return mapClientRow(row);
 }
