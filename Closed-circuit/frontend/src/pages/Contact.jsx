@@ -190,11 +190,11 @@ export default function Contact() {
     }
   };
 
-  const formTextClasses = 'text-sm leading-relaxed';
+  const formFieldTextClasses = 'text-2xl md:text-0xl leading-relaxed';
+  const labelClasses = `block font-semibold text-white mb-3 ${formFieldTextClasses}`;
   const inputClasses =
-    `w-full px-4 py-3 bg-[#0f172a]/50 text-white border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-medium placeholder-slate-500 placeholder:text-sm ${formTextClasses}`;
-  // const labelClasses = `block font-semibold text-slate-300 mb-2 ${formTextClasses}`;
-  const labelClasses ="block text-2xl md:text-0xl font-semibold text-white mb-3";
+    `w-full px-4 py-3 bg-[#0f172a]/50 text-white border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-semibold placeholder-slate-500 ${formFieldTextClasses}`;
+  const selectOptionClasses = '[&>option]:bg-slate-900 [&>option]:text-white [&>option]:text-2xl [&>option]:md:text-0xl';
 
   return (
     <motion.div
@@ -330,7 +330,7 @@ export default function Contact() {
                           value={formData.lookingFor}
                           onChange={handleChange}
                           required
-                          className={`${inputClasses} [&>option]:bg-slate-900 [&>option]:text-white`}
+                          className={`${inputClasses} ${selectOptionClasses}`}
                         >
                           <option value="">Select an option</option>
                           {lookingForOptions.map((option) => (
@@ -360,7 +360,7 @@ export default function Contact() {
                                 required
                                 className="h-4 w-4 border-white/20 bg-transparent text-indigo-500 focus:ring-indigo-500/40"
                               />
-                              <span className={`font-semibold ${formTextClasses}`}>{method}</span>
+                              <span className={`font-semibold ${formFieldTextClasses}`}>{method}</span>
                             </label>
                           ))}
                         </div>
@@ -393,7 +393,7 @@ export default function Contact() {
                             value={preferredHour}
                             onChange={(e) => handleTimeChange('hour', e.target.value)}
                             required
-                            className={`${inputClasses} [&>option]:bg-slate-900 [&>option]:text-white`}
+                            className={`${inputClasses} ${selectOptionClasses}`}
                           >
                             <option value="">Hour</option>
                             {hourOptions.map((hour) => (
@@ -404,7 +404,7 @@ export default function Contact() {
                             value={preferredMinute}
                             onChange={(e) => handleTimeChange('minute', e.target.value)}
                             required
-                            className={`${inputClasses} [&>option]:bg-slate-900 [&>option]:text-white`}
+                            className={`${inputClasses} ${selectOptionClasses}`}
                           >
                             <option value="">Minute</option>
                             {minuteOptions.map((minute) => (
@@ -415,7 +415,7 @@ export default function Contact() {
                             value={preferredPeriod}
                             onChange={(e) => handleTimeChange('period', e.target.value)}
                             required
-                            className={`${inputClasses} [&>option]:bg-slate-900 [&>option]:text-white`}
+                            className={`${inputClasses} ${selectOptionClasses}`}
                           >
                             <option value="">AM/PM</option>
                             {periodOptions.map((period) => (
@@ -460,7 +460,7 @@ export default function Contact() {
       required
       className="mt-1 h-5 w-5 rounded border-white/20 bg-[#0f172a]/50 text-indigo-500 focus:ring-indigo-500/40"
     />
-    <span className={`${formTextClasses} text-slate-300`}>
+    <span className={`${formFieldTextClasses} text-slate-300`}>
       I agree to receive communications, updates, and promotional messages from Closed Circuit AI Pvt Ltd via SMS, WhatsApp, and RCS on my provided contact details.
     </span>
   </label>
