@@ -161,8 +161,8 @@ export default function ClientManagement() {
       showToast(
         'success',
         nextStatus
-          ? `${toggleTarget.name} is now visible on the public website.`
-          : `${toggleTarget.name} is now hidden from the public website.`
+          ? `${toggleTarget.name} is now Yes on the public website.`
+          : `${toggleTarget.name} is now No from the public website.`
       );
       setToggleTarget(null);
       loadClients(page);
@@ -372,7 +372,7 @@ export default function ClientManagement() {
                         }`}
                         title="Click to toggle display status"
                       >
-                        {row.display_status ? '✅ Visible' : '❌ Hidden'}
+                        {row.display_status ? '✅ Yes' : '❌ No'}
                       </button>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">{formatDate(row.onboard_date)}</td>
@@ -589,7 +589,7 @@ export default function ClientManagement() {
               <p><span className="text-slate-500 block text-xs text-white">Onboard</span>{formatDate(viewClient.onboard_date)}</p>
               <p>
                 <span className="text-slate-500 block text-xs text-white">Display Status</span>
-                {viewClient.display_status ? '✅ Visible' : '❌ Hidden'}
+                {viewClient.display_status ? '✅ Yes' : '❌ No'}
               </p>
               {viewClient.domain_url && (
                 <p className="sm:col-span-2">
