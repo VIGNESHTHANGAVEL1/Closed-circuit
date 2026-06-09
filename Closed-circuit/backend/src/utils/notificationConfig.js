@@ -34,7 +34,7 @@ export function logNotificationConfigStatus() {
     console.log('  ✅ SMS gateway configured');
     console.log(`     URL: ${config.sms.gatewayUrl}`);
     console.log(
-      `     Send mode: ${config.sms.sendMode} (dlt_entity = Xtend/username API, dlt_variables = Fast2SMS, full_message = JSON body)`
+      `     Send mode: ${config.sms.sendMode} (dlt_entity = SMS Just/Kapsystem POST+query, dlt_variables = Fast2SMS)`
     );
     console.log(`     Sender ID: ${config.sms.senderId}`);
     if (config.sms.sendMode === 'dlt_entity') {

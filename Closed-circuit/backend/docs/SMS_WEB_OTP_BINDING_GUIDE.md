@@ -13,7 +13,7 @@ This document explains how **mobile verification OTP** SMS text is chosen when `
 | Why does production log a different body than `.env`? | Production DB row may still have **older text**, or you are reading **`rendered message`** (after Web OTP line logic), not raw DB content. |
 | Why does `SMS_WEB_OTP_BINDING=true` fail to deliver SMS? | **DLT / gateway validation**: the final string (including `@domain #123456`) must **exactly** match a registered template. |
 | Why does local behave the same for `true` and `false`? | With **`web_otp_host` invalid** (e.g. `localhost`), Web OTP binding is **disabled at runtime** even if the env flag is `true`. |
-| Which gateway mode? | **Xtend/username** (`dlt_entity`, default when `SMS_USERNAME` is set): same as working Postman (`username`, `pass`, `dest_mobileno`, `message`, `dltentityid`, `dlttempid`, `response=Y`). **Fast2SMS** (`dlt_variables`): template ID + variables only. |
+| Which gateway mode? | **SMS Just / Kapsystem** (`dlt_entity`): POST with query params — same as College CSM (`username`, `pass`, `dest_mobileno`, `message`, `dltentityid`, `dlttempid`, `response=Y`). Success response: schedule ID like `5068570-2008_12_29`. **Fast2SMS** (`dlt_variables`): template ID + variables only. |
 
 ---
 
@@ -45,16 +45,19 @@ FROM sms_templates
 WHERE template_key = 'MOBILE_VERIFICATION_OTP';
 ```
 
-2. **Set gateway credentials** (Xtend Online — matches working Postman):
+2. **Set gateway credentials** (SMS Just / Kapsystem — College CSM pattern):
 
 ```env
 SMS_SEND_MODE=dlt_entity
-SMS_GATEWAY_URL=http://smsapi.xtendonline.com/blank/sms/user/urlsms.php
+SMS_GATEWAY_BASE_URL=https://www.smsjust.com/blank/sms/user/urlsms.php
+SMS_BALANCE_URL=https://www.smsjust.com/blank/sms/user/balance_check.php
 SMS_USERNAME=your_username
 SMS_PASSWORD=your_password
 SMS_SENDER_ID=CIRCUI
 SMS_DLT_ENTITY_ID=1101638280000091921
 ```
+
+Xtend alternative: `http://smsapi.xtendonline.com/blank/sms/user/urlsms.php`
 
 3. **Web OTP (optional)**
 

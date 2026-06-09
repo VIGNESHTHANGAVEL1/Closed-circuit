@@ -16,15 +16,27 @@ function resolveSmsSendMode() {
   if (gatewayUrl.includes('fast2sms.com')) {
     return 'dlt_variables';
   }
-  if (gatewayUrl.includes('xtendonline.com') || gatewayUrl.includes('urlsms.php')) {
+  if (
+    gatewayUrl.includes('smsjust.com') ||
+    gatewayUrl.includes('xtendonline.com') ||
+    gatewayUrl.includes('urlsms.php')
+  ) {
     return 'dlt_entity';
   }
 
   return 'full_message';
 }
 
+function resolveSmsGatewayUrl() {
+  return (
+    process.env.SMS_GATEWAY_URL ||
+    process.env.SMS_GATEWAY_BASE_URL ||
+    ''
+  ).trim();
+}
+
 function isSmsGatewayConfigured(sendMode) {
-  const hasBase = Boolean(process.env.SMS_GATEWAY_URL && process.env.SMS_SENDER_ID);
+  const hasBase = Boolean(resolveSmsGatewayUrl() && process.env.SMS_SENDER_ID);
   if (!hasBase) {
     return false;
   }
@@ -91,7 +103,8 @@ export const config = {
     ),
   },
   sms: {
-    gatewayUrl: process.env.SMS_GATEWAY_URL || '',
+    gatewayUrl: resolveSmsGatewayUrl(),
+    balanceUrl: (process.env.SMS_BALANCE_URL || '').trim(),
     apiKey: process.env.SMS_API_KEY || '',
     username: process.env.SMS_USERNAME || '',
     password: process.env.SMS_PASSWORD || '',

@@ -3,6 +3,10 @@ import { buildSmsMessage } from './templateService.js';
 import { logNotificationAttempt } from './notificationLogService.js';
 import { truncateSafe } from '../utils/templateRender.js';
 import { renderOtpSmsMessage } from '../utils/otpSmsRender.js';
+import {
+  buildKapsystemSendUrl,
+  parseKapsystemResponse,
+} from '../utils/kapsystemSms.js';
 
 const OTP_TEMPLATE_KEYS = new Set(['MOBILE_VERIFICATION_OTP']);
 
@@ -27,36 +31,23 @@ function formatGatewayMobile(mobile) {
 
 function parseProviderResponse(responseText, sendMode) {
   const trimmed = String(responseText || '').trim();
+
+  if (sendMode === 'dlt_entity') {
+    const result = parseKapsystemResponse(trimmed);
+    return {
+      ok: result.success,
+      error: result.success ? undefined : result.message,
+      providerResponse: trimmed,
+      scheduleId: result.scheduleId,
+    };
+  }
+
   if (!trimmed) {
     return { ok: true, providerResponse: trimmed };
   }
 
-  if (sendMode === 'dlt_entity') {
-    const upper = trimmed.toUpperCase();
-    if (upper === 'Y' || upper === 'YES' || upper === 'SUCCESS') {
-      return { ok: true, providerResponse: trimmed };
-    }
-    if (upper === 'N' || upper === 'NO' || upper === 'FAIL' || upper === 'FAILED') {
-      return { ok: false, error: 'SMS gateway rejected the request', providerResponse: trimmed };
-    }
-  }
-
   try {
     const json = JSON.parse(trimmed);
-
-    if (sendMode === 'dlt_entity') {
-      const status = String(json.status || json.response || json.Response || '').toUpperCase();
-      if (status === 'Y' || status === 'YES' || status === 'SUCCESS' || json.success === true) {
-        return { ok: true, providerResponse: trimmed };
-      }
-      if (status === 'N' || status === 'NO' || status === 'FAIL' || json.success === false) {
-        return {
-          ok: false,
-          error: json.message || json.error || 'SMS gateway rejected the request',
-          providerResponse: trimmed,
-        };
-      }
-    }
 
     if (sendMode === 'dlt_variables') {
       const rejected =
@@ -104,17 +95,21 @@ function parseProviderResponse(responseText, sendMode) {
   }
 }
 
-async function requestSmsGateway({ body, headers = {}, contentType = 'application/json' }) {
-  const response = await fetch(config.sms.gatewayUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': contentType,
-      ...headers,
-    },
+async function requestSmsGateway({ url, method = 'POST', body, headers = {}, contentType }) {
+  const response = await fetch(url, {
+    method,
+    headers: contentType
+      ? {
+          'Content-Type': contentType,
+          ...headers,
+        }
+      : { ...headers },
     body,
   });
 
   const responseText = await response.text();
+  console.log(`[sms] response status: ${response.status} | body: ${truncateSafe(responseText, 200)}`);
+
   const parsed = parseProviderResponse(responseText, config.sms.sendMode);
 
   if (!response.ok) {
@@ -130,6 +125,7 @@ async function requestSmsGateway({ body, headers = {}, contentType = 'applicatio
 
 async function postSmsGateway(body, headers = {}) {
   return requestSmsGateway({
+    url: config.sms.gatewayUrl,
     body: JSON.stringify(body),
     headers,
     contentType: 'application/json',
@@ -152,26 +148,42 @@ async function sendViaDltVariables({ mobile, template, variables, senderId }) {
   return postSmsGateway(body);
 }
 
+/**
+ * SMS Just / Kapsystem / Xtend DLT API — POST with query params (College CSM pattern).
+ */
 async function sendViaDltEntity({ mobile, template, message, senderId }) {
-  const params = new URLSearchParams();
-  params.set('username', config.sms.username);
-  params.set('pass', config.sms.password);
-  params.set('senderid', senderId);
-  params.set('dest_mobileno', normalizeMobile(mobile));
-  params.set('message', message);
-  params.set('msgtype', 'TXT');
-  params.set('dltentityid', config.sms.dltEntityId);
-  params.set('dlttempid', template.template_id);
-  params.set('response', 'Y');
+  const params = new URLSearchParams({
+    username: config.sms.username,
+    pass: config.sms.password,
+    senderid: senderId,
+    dest_mobileno: normalizeMobile(mobile),
+    message: message,
+    response: 'Y',
+  });
 
-  if (config.sms.dltHeaderId) {
-    params.set('dltheaderid', config.sms.dltHeaderId);
+  if (config.sms.dltEntityId) {
+    params.append('dltentityid', config.sms.dltEntityId);
   }
 
-  return requestSmsGateway({
-    body: params.toString(),
-    contentType: 'application/x-www-form-urlencoded',
-  });
+  const dltTemplateId = String(template.template_id || '').trim();
+  if (dltTemplateId) {
+    params.append('dlttempid', dltTemplateId);
+  } else {
+    console.warn(`[sms] dlttempid empty for template ${template.template_key}`);
+  }
+
+  if (config.sms.dltHeaderId) {
+    params.append('dltheaderid', config.sms.dltHeaderId);
+  }
+
+  const gatewayUrl = config.sms.gatewayUrl.toLowerCase();
+  if (gatewayUrl.includes('xtendonline.com')) {
+    params.append('msgtype', 'TXT');
+  }
+
+  const url = buildKapsystemSendUrl(config.sms.gatewayUrl, params);
+
+  return requestSmsGateway({ url, method: 'POST' });
 }
 
 async function sendViaFullMessage({ mobile, template, message, senderId }) {
@@ -236,6 +248,27 @@ function renderSmsPreview(templateContent, variables) {
   });
 }
 
+export async function checkSmsBalance() {
+  if (!config.sms.balanceUrl || !config.sms.username || !config.sms.password) {
+    return { success: false, error: 'SMS balance URL or credentials not configured' };
+  }
+
+  const params = new URLSearchParams({
+    username: config.sms.username,
+    pass: config.sms.password,
+    response: 'Y',
+  });
+
+  const url = buildKapsystemSendUrl(config.sms.balanceUrl, params);
+  const response = await fetch(url, { method: 'POST' });
+  const text = await response.text();
+
+  return {
+    success: response.ok,
+    balance: text.trim(),
+  };
+}
+
 export async function sendTemplateSms({
   mobile,
   templateKey,
@@ -251,7 +284,7 @@ export async function sendTemplateSms({
 
   if (!config.sms.enabled) {
     console.warn(
-      `[sms] SKIPPED ${templateKey} → ${normalizedMobile.slice(0, 2)}**** | SMS gateway not configured in .env`
+      `[sms] SKIPPED ${templateKey} → ${normalizedMobile.slice(0, 2)}**** | SMS gateway not configured`
     );
     await logNotificationAttempt({
       inquiryId,
@@ -264,7 +297,7 @@ export async function sendTemplateSms({
       status: 'SKIPPED',
       errorMessage: 'SMS gateway not configured',
     });
-    return { success: false, skipped: true, reason: 'SMS gateway not configured in .env' };
+    return { success: false, skipped: true, reason: 'SMS gateway not configured' };
   }
 
   try {
@@ -277,11 +310,13 @@ export async function sendTemplateSms({
       smsContext
     );
 
-    console.log(`[sms] Sending ${templateKey} | mode=${config.sms.sendMode} | template_id=${template.template_id}`);
-    console.log(`[sms] template content (from DB): ${truncateSafe(template.template_content, 300)}`);
-    console.log(`[sms] rendered message: ${truncateSafe(renderedMessage || previewMessage, 300)}`);
-
     const outboundMessage = renderedMessage || previewMessage;
+
+    console.log(
+      `[sms] Sending ${templateKey} | mode=${config.sms.sendMode} | dlttempid=${template.template_id}`
+    );
+    console.log(`[sms] template content (from DB): ${truncateSafe(template.template_content, 300)}`);
+    console.log(`[sms] rendered message: ${truncateSafe(outboundMessage, 300)}`);
 
     let providerResponse;
     if (config.sms.sendMode === 'dlt_entity') {
@@ -323,7 +358,7 @@ export async function sendTemplateSms({
 
     console.log(`[sms] SENT ${templateKey} → ${normalizedMobile.slice(0, 2)}****`);
 
-    return { success: true, message: renderedMessage || previewMessage };
+    return { success: true, message: outboundMessage };
   } catch (err) {
     await logNotificationAttempt({
       inquiryId,
