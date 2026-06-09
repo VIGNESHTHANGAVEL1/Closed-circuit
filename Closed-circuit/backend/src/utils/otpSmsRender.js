@@ -21,11 +21,17 @@ export function renderOtpSmsMessage(templateContent, options = {}) {
   let message = String(templateContent || '');
   const host = String(webOtpHost || '').trim().toLowerCase();
   const otpValue = String(otp || '').trim();
-  const hasPlaceholder = message.includes('{web_otp_host}') || message.includes('{otp}');
+  const hasPlaceholder =
+    message.includes('{web_otp_host}') ||
+    message.includes('{{web_otp_host}}') ||
+    message.includes('{otp}') ||
+    message.includes('{{otp}}');
 
   if (hasPlaceholder) {
     message = message
+      .replace(/\{\{web_otp_host\}\}/g, host)
       .replace(/\{web_otp_host\}/g, host)
+      .replace(/\{\{otp\}\}/g, otpValue)
       .replace(/\{otp\}/g, otpValue);
   }
 

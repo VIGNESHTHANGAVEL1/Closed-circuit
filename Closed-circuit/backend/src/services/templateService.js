@@ -1,11 +1,11 @@
-import { findSmsTemplateByKey } from '../models/smsTemplate.model.js';
+import { getSmsTemplateFromEnv } from '../config/smsTemplates.js';
 import { findEmailTemplateByKey } from '../models/emailTemplate.model.js';
 import { renderSmsTemplate, renderEmailTemplate } from '../utils/templateRender.js';
 
 export async function getSmsTemplate(templateKey) {
-  const template = await findSmsTemplateByKey(templateKey);
+  const template = getSmsTemplateFromEnv(templateKey);
   if (!template) {
-    const error = new Error(`SMS template not found: ${templateKey}`);
+    const error = new Error(`SMS template not configured in .env: ${templateKey}`);
     error.statusCode = 500;
     throw error;
   }
@@ -22,7 +22,7 @@ export async function getEmailTemplate(templateKey) {
   return template;
 }
 
-export async function buildSmsMessage(templateKey, variables = []) {
+export async function buildSmsMessage(templateKey, variables = {}) {
   const template = await getSmsTemplate(templateKey);
   return {
     template,

@@ -58,8 +58,10 @@ export default function Contact() {
     const digits = String(value || '').replace(/\D/g, '');
     return digits.length >= 10 && digits.length <= 15;
   };
-  const canVerifyMobile = Boolean(formData.fullName.trim()) && !mobileVerified;
-  const canVerifyEmail = isValidMobile(formData.mobileNumber) && !emailVerified;
+  const hasFullName = Boolean(formData.fullName.trim());
+  const canEnterMobile = hasFullName;
+  const canVerifyMobile = hasFullName && isValidMobile(formData.mobileNumber) && !mobileVerified;
+  const canVerifyEmail = mobileVerified && !emailVerified;
   const bothVerified = !useBackendApi || (mobileVerified && emailVerified);
 
   const lookingForOptions = [
@@ -152,6 +154,12 @@ export default function Contact() {
   }, [mobileOtpSent, mobileVerified]);
 
   const sendMobileOtp = async () => {
+    if (!hasFullName) {
+      setMobileVerifyStatus('error');
+      setMobileVerifyMessage('Please enter your name before mobile verification.');
+      return;
+    }
+
     setMobileVerifyStatus('loading');
     setMobileVerifyMessage('');
 
@@ -208,6 +216,7 @@ export default function Contact() {
         body: JSON.stringify({
           fullName: formData.fullName.trim(),
           emailId: formData.emailId.trim(),
+          mobileNumber: formData.mobileNumber.trim(),
         }),
       });
       setEmailOtpSent(true);
@@ -237,7 +246,7 @@ export default function Contact() {
       setEmailVerified(true);
       setEmailVerificationToken(response.emailVerificationToken || '');
       setEmailVerifyStatus('success');
-      setEmailVerifyMessage('Email verified.');
+      setEmailVerifyMessage('Email verified successfully.');
     } catch (err) {
       setEmailVerifyStatus('error');
       setEmailVerifyMessage(err.message || 'Invalid OTP. Please try again.');
@@ -438,7 +447,8 @@ export default function Contact() {
                           value={formData.mobileNumber}
                           onChange={handleChange}
                           required
-                          className={inputClasses}
+                          disabled={useBackendApi && !canEnterMobile}
+                          className={`${inputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
                           placeholder="+91 XXXXX XXXXX"
                         />
                         {useBackendApi && (
@@ -497,7 +507,8 @@ export default function Contact() {
                           value={formData.emailId}
                           onChange={handleChange}
                           required
-                          className={inputClasses}
+                          disabled={useBackendApi && !mobileVerified}
+                          className={`${inputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
                           placeholder="your@email.com"
                         />
                         {useBackendApi && (

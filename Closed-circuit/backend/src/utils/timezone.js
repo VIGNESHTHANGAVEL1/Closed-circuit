@@ -98,3 +98,22 @@ export function buildScheduledDate(preferredDate, preferredTime) {
 export function addMinutes(date, minutes) {
   return new Date(date.getTime() + minutes * 60 * 1000);
 }
+
+/** Display preferred date as `09 Jun` for SMS templates. */
+export function formatPreferredCallDateDisplay(preferredDate) {
+  const match = String(preferredDate || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) {
+    return String(preferredDate || '').trim();
+  }
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const utcDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: getAppTimezone(),
+    day: '2-digit',
+    month: 'short',
+  }).format(utcDate);
+}

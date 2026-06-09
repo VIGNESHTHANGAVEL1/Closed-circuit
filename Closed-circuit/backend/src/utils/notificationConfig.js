@@ -24,8 +24,8 @@ export function logNotificationConfigStatus() {
   console.log('--- Notification configuration ---');
   console.log(`  Timezone: ${config.timezone}`);
   console.log('');
-  console.log('  SMS/Email TEMPLATES: stored in MySQL (sms_templates, email_templates)');
-  console.log('  Templates are NOT configured in .env — they seed on startup.');
+  console.log('  SMS templates: configured in .env (SMS_TEMPLATE_*_ID / SMS_TEMPLATE_*_TEXT)');
+  console.log('  Email templates: stored in MySQL (email_templates)');
   console.log('');
   console.log('  .env credentials required for actual delivery:');
   console.log('');

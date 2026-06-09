@@ -1,7 +1,12 @@
 import { config } from '../config/env.js';
-import { buildSmsMessage } from './templateService.js';
+import { getSmsTemplateFromEnv } from '../config/smsTemplates.js';
 import { logNotificationAttempt } from './notificationLogService.js';
-import { truncateSafe } from '../utils/templateRender.js';
+import {
+  assertSmsRendered,
+  maskOtpInSmsLog,
+  renderSmsTemplate,
+  truncateSafe,
+} from '../utils/templateRender.js';
 import { renderOtpSmsMessage } from '../utils/otpSmsRender.js';
 import {
   buildKapsystemSendUrl,
@@ -9,6 +14,12 @@ import {
 } from '../utils/kapsystemSms.js';
 
 const OTP_TEMPLATE_KEYS = new Set(['MOBILE_VERIFICATION_OTP']);
+
+function maskMobile(mobile) {
+  const digits = String(mobile || '').replace(/\D/g, '');
+  if (digits.length < 4) return '****';
+  return `${digits.slice(0, 2)}****${digits.slice(-2)}`;
+}
 
 function normalizeMobile(mobile) {
   const digits = String(mobile || '').replace(/\D/g, '');
@@ -108,7 +119,7 @@ async function requestSmsGateway({ url, method = 'POST', body, headers = {}, con
   });
 
   const responseText = await response.text();
-  console.log(`[sms] response status: ${response.status} | body: ${truncateSafe(responseText, 200)}`);
+  console.log(`[sms] provider response status: ${response.status}`);
 
   const parsed = parseProviderResponse(responseText, config.sms.sendMode);
 
@@ -133,7 +144,9 @@ async function postSmsGateway(body, headers = {}) {
 }
 
 async function sendViaDltVariables({ mobile, template, variables, senderId }) {
-  const variablesValues = variables.map((value) => String(value ?? '')).join('|');
+  const variablesValues = Object.values(variables)
+    .map((value) => String(value ?? ''))
+    .join('|');
 
   const body = {
     authorization: config.sms.apiKey,
@@ -148,9 +161,6 @@ async function sendViaDltVariables({ mobile, template, variables, senderId }) {
   return postSmsGateway(body);
 }
 
-/**
- * SMS Just / Kapsystem / Xtend DLT API — POST with query params (College CSM pattern).
- */
 async function sendViaDltEntity({ mobile, template, message, senderId }) {
   const params = new URLSearchParams({
     username: config.sms.username,
@@ -223,29 +233,19 @@ async function sendViaFullMessage({ mobile, template, message, senderId }) {
   return postSmsGateway(legacyBody);
 }
 
-function finalizeOtpMessage(templateKey, templateContent, variables, smsContext) {
-  if (!OTP_TEMPLATE_KEYS.has(templateKey) || !smsContext) {
-    return renderSmsPreview(templateContent, variables);
+function buildRenderedSmsMessage(templateKey, templateContent, variables, smsContext) {
+  let message = renderSmsTemplate(templateContent, variables);
+
+  if (OTP_TEMPLATE_KEYS.has(templateKey) && smsContext) {
+    message = renderOtpSmsMessage(message, {
+      bindingEnabled: smsContext.bindingEnabled,
+      webOtpHost: smsContext.webOtpHost,
+      otp: variables.otp || smsContext.otp,
+    });
   }
 
-  const otp = smsContext.otp ?? variables[variables.length - 1] ?? '';
-  return renderOtpSmsMessage(templateContent, {
-    bindingEnabled: smsContext.bindingEnabled,
-    webOtpHost: smsContext.webOtpHost,
-    otp,
-  });
-}
-
-function renderSmsPreview(templateContent, variables) {
-  let index = 0;
-  return String(templateContent || '').replace(/\{#(alphanumeric|numeric)#\}/g, (_match, type) => {
-    const value = variables[index] ?? '';
-    index += 1;
-    if (type === 'numeric') {
-      return String(value).replace(/\D/g, '');
-    }
-    return String(value).slice(0, 30);
-  });
+  assertSmsRendered(message);
+  return message;
 }
 
 export async function checkSmsBalance() {
@@ -272,7 +272,7 @@ export async function checkSmsBalance() {
 export async function sendTemplateSms({
   mobile,
   templateKey,
-  variables = [],
+  variables = {},
   recipientType = 'CLIENT',
   notificationType,
   recipientName,
@@ -281,11 +281,10 @@ export async function sendTemplateSms({
 }) {
   const sentAt = new Date();
   const normalizedMobile = normalizeMobile(mobile);
+  const maskedRecipient = maskMobile(normalizedMobile);
 
   if (!config.sms.enabled) {
-    console.warn(
-      `[sms] SKIPPED ${templateKey} → ${normalizedMobile.slice(0, 2)}**** | SMS gateway not configured`
-    );
+    console.warn(`[sms] SKIPPED ${templateKey} → ${maskedRecipient} | SMS gateway not configured`);
     await logNotificationAttempt({
       inquiryId,
       recipientType,
@@ -300,23 +299,44 @@ export async function sendTemplateSms({
     return { success: false, skipped: true, reason: 'SMS gateway not configured' };
   }
 
+  const template = getSmsTemplateFromEnv(templateKey);
+  if (!template) {
+    const error = new Error(
+      `SMS template not configured in .env for key: ${templateKey}`
+    );
+    console.error(`[sms] ${error.message}`);
+    await logNotificationAttempt({
+      inquiryId,
+      recipientType,
+      channel: 'SMS',
+      notificationType,
+      recipientName,
+      recipientMobile: normalizedMobile,
+      templateKey,
+      status: 'FAILED',
+      errorMessage: truncateSafe(error.message, 500),
+    });
+    return { success: false, error: error.message };
+  }
+
   try {
-    const { template, message: previewMessage } = await buildSmsMessage(templateKey, variables);
     const senderId = template.sender_id || config.sms.senderId;
-    const renderedMessage = finalizeOtpMessage(
+    const outboundMessage = buildRenderedSmsMessage(
       templateKey,
       template.template_content,
       variables,
       smsContext
     );
 
-    const outboundMessage = renderedMessage || previewMessage;
+    const safeLogMessage = OTP_TEMPLATE_KEYS.has(templateKey)
+      ? maskOtpInSmsLog(outboundMessage, variables)
+      : truncateSafe(outboundMessage, 200);
 
-    console.log(
-      `[sms] Sending ${templateKey} | mode=${config.sms.sendMode} | dlttempid=${template.template_id}`
-    );
-    console.log(`[sms] template content (from DB): ${truncateSafe(template.template_content, 300)}`);
-    console.log(`[sms] rendered message: ${truncateSafe(outboundMessage, 300)}`);
+    console.log(`[sms] template key: ${templateKey}`);
+    console.log(`[sms] template id: ${template.template_id}`);
+    console.log(`[sms] recipient: ${maskedRecipient}`);
+    console.log(`[sms] variable replacement: success`);
+    console.log(`[sms] rendered message (safe): ${safeLogMessage}`);
 
     let providerResponse;
     if (config.sms.sendMode === 'dlt_entity') {
@@ -352,14 +372,19 @@ export async function sendTemplateSms({
       templateKey,
       templateId: template.template_id,
       status: 'SENT',
-      providerResponse,
+      providerResponse: truncateSafe(providerResponse, 500),
       sentAt,
     });
 
-    console.log(`[sms] SENT ${templateKey} → ${normalizedMobile.slice(0, 2)}****`);
+    console.log(`[sms] SENT ${templateKey} → ${maskedRecipient}`);
 
     return { success: true, message: outboundMessage };
   } catch (err) {
+    const isRenderFailure = err.code === 'SMS_TEMPLATE_RENDER_FAILED';
+    if (isRenderFailure) {
+      console.error(`[sms] variable replacement failed for ${templateKey}`);
+    }
+
     await logNotificationAttempt({
       inquiryId,
       recipientType,

@@ -107,7 +107,7 @@ export async function sendMobileVerificationOtp({ fullName, mobileNumber, client
 
   await deleteExpiredOtps();
 
-  const otp = generateOtp(6);
+  const otp = generateOtp(4);
   const expiresAt = addMinutes(new Date(), MOBILE_OTP_MINUTES);
 
   await insertVerificationOtp({
@@ -127,13 +127,16 @@ export async function sendMobileVerificationOtp({ fullName, mobileNumber, client
     config.sms.webOtpBinding && isValidWebOtpSmsDomain(webOtpHost);
 
   console.log(
-    `[verification] Mobile OTP requested | name=${clientName} | mobile=${maskMobile(mobile)} | web_otp_host=${webOtpHost || '(none)'} | binding=${bindingEnabled}`
+    `[verification] Mobile OTP requested | name=${clientName} | mobile=${maskMobile(mobile)}`
   );
 
   const smsResult = await sendTemplateSms({
     mobile,
     templateKey: 'MOBILE_VERIFICATION_OTP',
-    variables: [clientName, otp],
+    variables: {
+      clientName,
+      otp,
+    },
     recipientType: 'CLIENT',
     notificationType: 'OTP_VERIFICATION',
     recipientName: clientName,
@@ -192,16 +195,21 @@ export async function verifyMobileOtp({ mobileNumber, otp }) {
   return {
     verified: true,
     mobileVerificationToken: verificationToken,
-    message: 'Mobile number verified successfully.',
+    message: 'Mobile verified successfully.',
   };
 }
 
-export async function sendEmailVerificationOtp({ fullName, emailId }) {
+export async function sendEmailVerificationOtp({ fullName, emailId, mobileNumber }) {
   const clientName = String(fullName || '').trim();
   const email = normalizeEmail(emailId);
+  const mobile = normalizeMobile(mobileNumber);
 
   if (!clientName) {
     throw createHttpError('Full Name is required before email verification.');
+  }
+
+  if (!isValidMobile(mobile)) {
+    throw createHttpError('Mobile verification is required before email verification.');
   }
 
   if (!isValidEmail(email)) {

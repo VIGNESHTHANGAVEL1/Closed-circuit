@@ -5,7 +5,10 @@ import {
   updateContactReminderFlags,
   findContactsDueForReminder,
 } from '../models/contact.model.js';
-import { buildScheduledDate } from '../utils/timezone.js';
+import {
+  buildScheduledDate,
+  formatPreferredCallDateDisplay,
+} from '../utils/timezone.js';
 
 function isDueWithinNextHour(contact, now = new Date()) {
   const scheduledAt = buildScheduledDate(contact.preferredDate, contact.preferredTime);
@@ -22,13 +25,15 @@ function isDueWithinNextHour(contact, now = new Date()) {
 
 export async function sendInquirySubmissionNotifications(contact, inquiryId) {
   const clientName = contact.fullName;
+  const preferredCallDate = formatPreferredCallDateDisplay(contact.preferredDate);
+  const preferredCallTime = String(contact.preferredTime || '').trim();
   const tasks = [];
 
   tasks.push(
     sendTemplateSms({
       mobile: contact.mobileNumber,
       templateKey: 'ENQUIRY_RECEIVED_CLIENT',
-      variables: [clientName],
+      variables: { clientName },
       recipientType: 'CLIENT',
       notificationType: 'INQUIRY_SUBMISSION',
       recipientName: clientName,
@@ -63,12 +68,12 @@ export async function sendInquirySubmissionNotifications(contact, inquiryId) {
       sendTemplateSms({
         mobile: adminMobile,
         templateKey: 'ENQUIRY_RECEIVED_ADMIN',
-        variables: [
+        variables: {
           clientName,
-          contact.lookingFor,
-          contact.preferredDate,
-          contact.preferredTime,
-        ],
+          lookingFor: contact.lookingFor,
+          preferredCallDate,
+          preferredCallTime,
+        },
         recipientType: 'ADMIN',
         notificationType: 'INQUIRY_SUBMISSION',
         recipientName: adminName,
@@ -104,14 +109,17 @@ export async function sendInquirySubmissionNotifications(contact, inquiryId) {
 export async function sendCallReminderNotifications(contact) {
   const clientName = contact.fullName;
   const adminName = config.notifications.adminName;
-  const scheduledTime = `${contact.preferredDate} ${contact.preferredTime}`;
+  const preferredCallTime = String(contact.preferredTime || '').trim();
   const updates = {};
 
   if (!contact.client_reminder_sms_sent) {
     const result = await sendTemplateSms({
       mobile: contact.mobileNumber,
       templateKey: 'CALL_REMINDER_CLIENT',
-      variables: [clientName, adminName],
+      variables: {
+        clientName,
+        preferredCallTime,
+      },
       recipientType: 'CLIENT',
       notificationType: 'CALL_REMINDER',
       recipientName: clientName,
@@ -152,12 +160,12 @@ export async function sendCallReminderNotifications(contact) {
     const result = await sendTemplateSms({
       mobile: adminMobile,
       templateKey: 'CALL_REMINDER_ADMIN',
-      variables: [
+      variables: {
         clientName,
-        contact.mobileNumber,
-        contact.lookingFor,
-        scheduledTime,
-      ],
+        mobileNumber: contact.mobileNumber,
+        lookingFor: contact.lookingFor,
+        preferredCallTime,
+      },
       recipientType: 'ADMIN',
       notificationType: 'CALL_REMINDER',
       recipientName: adminName,
