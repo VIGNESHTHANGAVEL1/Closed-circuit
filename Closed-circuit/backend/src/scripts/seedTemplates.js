@@ -1,5 +1,9 @@
 import { config } from '../config/env.js';
-import { countSmsTemplateByKey, insertSmsTemplate } from '../models/smsTemplate.model.js';
+import {
+  countSmsTemplateByKey,
+  insertSmsTemplate,
+  updateSmsTemplateContent,
+} from '../models/smsTemplate.model.js';
 import { countEmailTemplateByKey, insertEmailTemplate } from '../models/emailTemplate.model.js';
 import { wrapEmailHtml } from '../utils/emailLayout.js';
 
@@ -10,7 +14,7 @@ const SMS_TEMPLATES = [
     templateName: 'Mobile Verification OTP',
     senderId: null,
     templateContent:
-      'Dear {#alphanumeric#}\nThis is the OTP: {#numeric#} to verify your mobile number.\nIt will be valid only for 2 mins.\nClosed Circuit AI Pvt Ltd\nhttps://closedcircuit.in,',
+      'Dear {#alphanumeric#}\nThis is the OTP: {#numeric#} to verify your  mobile number.\nIt will be valid only for 2 mins.\nClosed Circuit AI Pvt Ltd\nhttps://closedcircuit.in',
   },
   {
     templateKey: 'ENQUIRY_RECEIVED_CLIENT',
@@ -45,6 +49,32 @@ const SMS_TEMPLATES = [
       'Calendar Reminder\nDiscussion with: {#alphanumeric#}\nOn his/her Mobile: {#alphanumeric#}\nProduct: {#alphanumeric#}\nTime: {#alphanumeric#}\nClosed Circuit AI Pvt Ltd',
   },
 ];
+
+const SMS_TEMPLATE_ENV_CONTENT = {
+  MOBILE_VERIFICATION_OTP: 'SMS_TEMPLATE_CONTENT_MOBILE_VERIFICATION_OTP',
+  ENQUIRY_RECEIVED_CLIENT: 'SMS_TEMPLATE_CONTENT_ENQUIRY_RECEIVED_CLIENT',
+  ENQUIRY_RECEIVED_ADMIN: 'SMS_TEMPLATE_CONTENT_ENQUIRY_RECEIVED_ADMIN',
+  CALL_REMINDER_CLIENT: 'SMS_TEMPLATE_CONTENT_CALL_REMINDER_CLIENT',
+  CALL_REMINDER_ADMIN: 'SMS_TEMPLATE_CONTENT_CALL_REMINDER_ADMIN',
+};
+
+async function syncSmsTemplateContentFromEnv() {
+  let synced = 0;
+
+  for (const [templateKey, envName] of Object.entries(SMS_TEMPLATE_ENV_CONTENT)) {
+    const content = String(process.env[envName] || '').trim();
+    if (!content) continue;
+
+    const exists = await countSmsTemplateByKey(templateKey);
+    if (!exists) continue;
+
+    await updateSmsTemplateContent(templateKey, content);
+    synced += 1;
+    console.log(`[templates] Synced ${templateKey} content from ${envName}`);
+  }
+
+  return synced;
+}
 
 const EMAIL_TEMPLATES = [
   {
@@ -193,8 +223,12 @@ export async function seedDefaultTemplates() {
     emailSeeded += 1;
   }
 
-  if (smsSeeded > 0 || emailSeeded > 0) {
-    console.log(`✅ Templates seeded (SMS: ${smsSeeded}, Email: ${emailSeeded})`);
+  const smsSynced = await syncSmsTemplateContentFromEnv();
+
+  if (smsSeeded > 0 || emailSeeded > 0 || smsSynced > 0) {
+    console.log(
+      `✅ Templates seeded (SMS: ${smsSeeded}, Email: ${emailSeeded}, env sync: ${smsSynced})`
+    );
   } else {
     console.log('✅ Templates checked (no new seeds required)');
   }

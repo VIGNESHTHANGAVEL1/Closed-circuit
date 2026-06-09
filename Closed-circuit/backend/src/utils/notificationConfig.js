@@ -16,12 +16,7 @@ export function isSmtpConfigured() {
 }
 
 export function isSmsConfigured() {
-  return Boolean(
-    config.sms.gatewayUrl &&
-      config.sms.apiKey &&
-      config.sms.senderId &&
-      config.sms.enabled
-  );
+  return Boolean(config.sms.enabled);
 }
 
 export function logNotificationConfigStatus() {
@@ -38,14 +33,33 @@ export function logNotificationConfigStatus() {
   if (isSmsConfigured()) {
     console.log('  ✅ SMS gateway configured');
     console.log(`     URL: ${config.sms.gatewayUrl}`);
+    console.log(
+      `     Send mode: ${config.sms.sendMode} (dlt_entity = Xtend/username API, dlt_variables = Fast2SMS, full_message = JSON body)`
+    );
     console.log(`     Sender ID: ${config.sms.senderId}`);
-    console.log('     API key: (set)');
+    if (config.sms.sendMode === 'dlt_entity') {
+      console.log(`     Username: ${config.sms.username}`);
+      console.log(`     DLT entity ID: ${config.sms.dltEntityId || '(not set)'}`);
+    } else {
+      console.log('     API key: (set)');
+    }
+    console.log(`     Web OTP binding: ${config.sms.webOtpBinding ? 'enabled' : 'disabled'}`);
+    if (config.sms.webOtpDomain) {
+      console.log(`     Web OTP domain: ${config.sms.webOtpDomain}`);
+    }
   } else {
     console.log('  ⚠️  SMS gateway NOT configured');
-    console.log('     Add to .env: SMS_GATEWAY_URL, SMS_API_KEY, SMS_SENDER_ID');
+    console.log('     Xtend / username API: SMS_GATEWAY_URL, SMS_USERNAME, SMS_PASSWORD, SMS_SENDER_ID, SMS_DLT_ENTITY_ID');
+    console.log('     Fast2SMS: SMS_GATEWAY_URL, SMS_API_KEY, SMS_SENDER_ID');
     if (!config.sms.gatewayUrl) console.log('     Missing: SMS_GATEWAY_URL');
-    if (!config.sms.apiKey) console.log('     Missing: SMS_API_KEY');
     if (!config.sms.senderId) console.log('     Missing: SMS_SENDER_ID');
+    if (config.sms.sendMode === 'dlt_entity') {
+      if (!config.sms.username) console.log('     Missing: SMS_USERNAME');
+      if (!config.sms.password) console.log('     Missing: SMS_PASSWORD');
+      if (!config.sms.dltEntityId) console.log('     Missing: SMS_DLT_ENTITY_ID');
+    } else if (!config.sms.apiKey) {
+      console.log('     Missing: SMS_API_KEY');
+    }
     if (process.env.SMS_ENABLED === 'false') console.log('     SMS_ENABLED=false');
   }
 

@@ -9,7 +9,11 @@ import { sendSuccess, sendError } from '../utils/response.js';
 export async function requestMobileOtp(req, res) {
   try {
     console.log('[verification] POST /api/verification/mobile/send');
-    const result = await sendMobileVerificationOtp(req.body);
+    const clientOrigin = req.headers.origin || req.body?.clientOrigin || '';
+    const result = await sendMobileVerificationOtp({
+      ...req.body,
+      clientOrigin,
+    });
     console.log(`[verification] Mobile OTP result: deliveryMode=${result.deliveryMode || 'unknown'}`);
     return sendSuccess(res, result);
   } catch (err) {

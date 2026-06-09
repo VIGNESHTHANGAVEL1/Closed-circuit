@@ -2,6 +2,44 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+function resolveSmsSendMode() {
+  const explicit = String(process.env.SMS_SEND_MODE || '').trim().toLowerCase();
+  if (explicit === 'dlt_variables' || explicit === 'full_message' || explicit === 'dlt_entity') {
+    return explicit;
+  }
+
+  if (process.env.SMS_USERNAME && process.env.SMS_PASSWORD) {
+    return 'dlt_entity';
+  }
+
+  const gatewayUrl = String(process.env.SMS_GATEWAY_URL || '').toLowerCase();
+  if (gatewayUrl.includes('fast2sms.com')) {
+    return 'dlt_variables';
+  }
+  if (gatewayUrl.includes('xtendonline.com') || gatewayUrl.includes('urlsms.php')) {
+    return 'dlt_entity';
+  }
+
+  return 'full_message';
+}
+
+function isSmsGatewayConfigured(sendMode) {
+  const hasBase = Boolean(process.env.SMS_GATEWAY_URL && process.env.SMS_SENDER_ID);
+  if (!hasBase) {
+    return false;
+  }
+
+  if (sendMode === 'dlt_entity') {
+    return Boolean(
+      process.env.SMS_USERNAME &&
+        process.env.SMS_PASSWORD &&
+        process.env.SMS_DLT_ENTITY_ID
+    );
+  }
+
+  return Boolean(process.env.SMS_API_KEY);
+}
+
 function spacesConfigured() {
   return Boolean(
     process.env.DO_SPACES_KEY &&
@@ -55,14 +93,17 @@ export const config = {
   sms: {
     gatewayUrl: process.env.SMS_GATEWAY_URL || '',
     apiKey: process.env.SMS_API_KEY || '',
+    username: process.env.SMS_USERNAME || '',
+    password: process.env.SMS_PASSWORD || '',
     senderId: process.env.SMS_SENDER_ID || '',
+    dltEntityId: process.env.SMS_DLT_ENTITY_ID || '',
+    dltHeaderId: process.env.SMS_DLT_HEADER_ID || '',
+    sendMode: resolveSmsSendMode(),
+    webOtpBinding: process.env.SMS_WEB_OTP_BINDING === 'true',
+    webOtpDomain: process.env.SMS_WEB_OTP_DOMAIN || '',
+    publicAppUrl: process.env.PUBLIC_APP_URL || process.env.CLIENT_URL || '',
     enabled:
-      process.env.SMS_ENABLED !== 'false' &&
-      Boolean(
-        process.env.SMS_GATEWAY_URL &&
-          process.env.SMS_API_KEY &&
-          process.env.SMS_SENDER_ID
-      ),
+      process.env.SMS_ENABLED !== 'false' && isSmsGatewayConfigured(resolveSmsSendMode()),
   },
   notifications: {
     adminEmail: process.env.ADMIN_EMAIL || '',

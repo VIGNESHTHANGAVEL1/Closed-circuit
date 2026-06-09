@@ -14,6 +14,10 @@ import { addMinutes } from '../utils/timezone.js';
 import { sendTemplateSms } from './smsService.js';
 import { sendTemplateEmail } from './emailService.js';
 import { isSmsConfigured, isSmtpConfigured } from '../utils/notificationConfig.js';
+import {
+  isValidWebOtpSmsDomain,
+  resolveWebOtpSmsDomain,
+} from '../utils/webOtpSms.js';
 
 function maskMobile(mobile) {
   const digits = String(mobile || '').replace(/\D/g, '');
@@ -89,7 +93,7 @@ async function issueVerificationSession(channel, identifier, clientName) {
   return token;
 }
 
-export async function sendMobileVerificationOtp({ fullName, mobileNumber }) {
+export async function sendMobileVerificationOtp({ fullName, mobileNumber, clientOrigin }) {
   const clientName = String(fullName || '').trim();
   const mobile = normalizeMobile(mobileNumber);
 
@@ -114,7 +118,17 @@ export async function sendMobileVerificationOtp({ fullName, mobileNumber }) {
     expiresAt,
   });
 
-  console.log(`[verification] Mobile OTP requested | name=${clientName} | mobile=${maskMobile(mobile)}`);
+  const webOtpHost = resolveWebOtpSmsDomain({
+    clientOrigin,
+    configuredDomain: config.sms.webOtpDomain,
+    publicAppUrl: config.sms.publicAppUrl,
+  });
+  const bindingEnabled =
+    config.sms.webOtpBinding && isValidWebOtpSmsDomain(webOtpHost);
+
+  console.log(
+    `[verification] Mobile OTP requested | name=${clientName} | mobile=${maskMobile(mobile)} | web_otp_host=${webOtpHost || '(none)'} | binding=${bindingEnabled}`
+  );
 
   const smsResult = await sendTemplateSms({
     mobile,
@@ -123,6 +137,11 @@ export async function sendMobileVerificationOtp({ fullName, mobileNumber }) {
     recipientType: 'CLIENT',
     notificationType: 'OTP_VERIFICATION',
     recipientName: clientName,
+    smsContext: {
+      otp,
+      webOtpHost,
+      bindingEnabled,
+    },
   });
 
   if (smsResult.skipped) {

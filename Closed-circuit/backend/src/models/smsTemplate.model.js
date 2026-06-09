@@ -32,3 +32,12 @@ export async function insertSmsTemplate({
     [templateKey, templateId, templateName, senderId, templateContent]
   );
 }
+
+export async function updateSmsTemplateContent(templateKey, templateContent) {
+  await db.query(
+    `UPDATE sms_templates
+     SET template_content = ?, updated_at = NOW()
+     WHERE template_key = ?`,
+    [templateContent, templateKey]
+  );
+}

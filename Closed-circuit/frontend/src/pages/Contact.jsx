@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { listenForWebOtp } from '../utils/webOtp';
 import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
 import Hero from '../components/Hero';
@@ -135,6 +136,21 @@ export default function Contact() {
     });
   };
 
+  useEffect(() => {
+    if (!mobileOtpSent || mobileVerified) {
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    listenForWebOtp({ signal: controller.signal }).then((code) => {
+      if (code) {
+        setMobileOtp(code);
+      }
+    });
+
+    return () => controller.abort();
+  }, [mobileOtpSent, mobileVerified]);
+
   const sendMobileOtp = async () => {
     setMobileVerifyStatus('loading');
     setMobileVerifyMessage('');
@@ -145,6 +161,7 @@ export default function Contact() {
         body: JSON.stringify({
           fullName: formData.fullName.trim(),
           mobileNumber: formData.mobileNumber.trim(),
+          clientOrigin: typeof window !== 'undefined' ? window.location.origin : '',
         }),
       });
       setMobileOtpSent(true);
@@ -447,6 +464,7 @@ export default function Contact() {
                                 <input
                                   type="text"
                                   inputMode="numeric"
+                                  autoComplete="one-time-code"
                                   value={mobileOtp}
                                   onChange={(e) => setMobileOtp(e.target.value)}
                                   placeholder="Enter mobile OTP"
