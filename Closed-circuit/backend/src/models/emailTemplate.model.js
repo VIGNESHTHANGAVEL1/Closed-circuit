@@ -31,3 +31,17 @@ export async function insertEmailTemplate({
     [templateKey, templateName, subject, htmlContent]
   );
 }
+
+export async function updateEmailTemplate({
+  templateKey,
+  templateName,
+  subject,
+  htmlContent,
+}) {
+  await db.query(
+    `UPDATE email_templates
+     SET template_name = ?, subject = ?, html_content = ?, updated_at = NOW()
+     WHERE template_key = ?`,
+    [templateName, subject, htmlContent, templateKey]
+  );
+}

@@ -4,8 +4,18 @@ import {
   insertSmsTemplate,
   updateSmsTemplateContent,
 } from '../models/smsTemplate.model.js';
-import { countEmailTemplateByKey, insertEmailTemplate } from '../models/emailTemplate.model.js';
+import {
+  countEmailTemplateByKey,
+  insertEmailTemplate,
+  updateEmailTemplate,
+} from '../models/emailTemplate.model.js';
 import { wrapEmailHtml } from '../utils/emailLayout.js';
+import {
+  CALL_REMINDER_CLIENT_BODY,
+  EMAIL_VERIFICATION_OTP_BODY,
+  EMAIL_VERIFICATION_SUCCESS_BODY,
+  ENQUIRY_RECEIVED_CLIENT_BODY,
+} from '../templates/clientEmailBodies.js';
 
 const SMS_TEMPLATES = [
   {
@@ -82,18 +92,10 @@ const EMAIL_TEMPLATES = [
     templateName: 'Verify Email Address',
     subject: 'Verify Your Email Address – OTP for Closed Circuit Account Activation',
     htmlContent: wrapEmailHtml({
-      title: 'Verify Your Email',
-      bodyHtml: `
-        <h2 style="margin:0 0 16px;color:#ffffff;font-size:20px;">Verify Your Email Address</h2>
-        <p style="margin:0 0 16px;">Thank you for starting your enquiry with Closed Circuit. Use the one-time password below to verify your email address.</p>
-        <div style="margin:24px 0;padding:20px;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.35);border-radius:12px;text-align:center;">
-          <p style="margin:0 0 8px;color:#94a3b8;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;">Your OTP</p>
-          <p style="margin:0;color:#ffffff;font-size:32px;font-weight:700;letter-spacing:6px;">{{OTP_CODE}}</p>
-        </div>
-        <p style="margin:0 0 12px;">This OTP is valid for <strong>10 minutes</strong>. Do not share it with anyone.</p>
-        <p style="margin:0;color:#94a3b8;font-size:14px;">If you did not request this verification, you can safely ignore this email.</p>
-      `,
+      title: 'Verify Your Email Address',
+      bodyHtml: EMAIL_VERIFICATION_OTP_BODY,
     }),
+    syncOnStartup: true,
   },
   {
     templateKey: 'EMAIL_VERIFICATION_SUCCESS',
@@ -101,14 +103,9 @@ const EMAIL_TEMPLATES = [
     subject: 'Welcome to Closed Circuit – Your Secure Digital Community',
     htmlContent: wrapEmailHtml({
       title: 'Welcome to Closed Circuit',
-      bodyHtml: `
-        <h2 style="margin:0 0 16px;color:#ffffff;font-size:20px;">Welcome, {{clientName}}!</h2>
-        <p style="margin:0 0 16px;">Your email address has been verified successfully. You are one step closer to building your secure digital community with Closed Circuit.</p>
-        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:24px 0;" />
-        <p style="margin:0 0 12px;">Complete the enquiry form to schedule your preferred discussion time. Our team will connect with you as requested.</p>
-        <p style="margin:0;color:#94a3b8;font-size:14px;">Thank you for choosing Closed Circuit AI Pvt Ltd.</p>
-      `,
+      bodyHtml: EMAIL_VERIFICATION_SUCCESS_BODY,
     }),
+    syncOnStartup: true,
   },
   {
     templateKey: 'ENQUIRY_RECEIVED_CLIENT_EMAIL',
@@ -116,18 +113,9 @@ const EMAIL_TEMPLATES = [
     subject: 'Thank You for Your Enquiry – We Will Connect with You as Scheduled',
     htmlContent: wrapEmailHtml({
       title: 'Enquiry Received',
-      bodyHtml: `
-        <h2 style="margin:0 0 16px;color:#ffffff;font-size:20px;">Thank You, {{clientName}}!</h2>
-        <p style="margin:0 0 16px;">We have received your enquiry and appreciate your interest in Closed Circuit.</p>
-        <div style="margin:20px 0;padding:18px;background:rgba(255,255,255,0.04);border-radius:12px;border:1px solid rgba(255,255,255,0.08);">
-          <p style="margin:0 0 8px;"><strong>Looking For:</strong> {{lookingFor}}</p>
-          <p style="margin:0 0 8px;"><strong>Preferred Date:</strong> {{preferredCallDate}}</p>
-          <p style="margin:0;"><strong>Preferred Time:</strong> {{preferredCallTime}}</p>
-        </div>
-        <p style="margin:0 0 12px;">We will call or message you on your specified date and time to explain the details.</p>
-        <p style="margin:0;color:#94a3b8;font-size:14px;">Submitted at: {{submittedAt}}</p>
-      `,
+      bodyHtml: ENQUIRY_RECEIVED_CLIENT_BODY,
     }),
+    syncOnStartup: true,
   },
   {
     templateKey: 'ENQUIRY_RECEIVED_ADMIN_EMAIL',
@@ -156,17 +144,9 @@ const EMAIL_TEMPLATES = [
     subject: 'Reminder: Your Closed Circuit Product Discussion is Scheduled in One Hour',
     htmlContent: wrapEmailHtml({
       title: 'Call Reminder',
-      bodyHtml: `
-        <h2 style="margin:0 0 16px;color:#ffffff;font-size:20px;">Discussion Reminder</h2>
-        <p style="margin:0 0 16px;">Dear {{clientName}},</p>
-        <p style="margin:0 0 16px;">This is a friendly reminder that your Closed Circuit product discussion is scheduled in approximately one hour.</p>
-        <div style="margin:20px 0;padding:18px;background:rgba(99,102,241,0.12);border-radius:12px;border:1px solid rgba(99,102,241,0.25);">
-          <p style="margin:0 0 8px;"><strong>Date:</strong> {{SCHEDULED_DATE}}</p>
-          <p style="margin:0;"><strong>Time:</strong> {{SCHEDULED_TIME}}</p>
-        </div>
-        <p style="margin:0;">Kindly keep 10 minutes available for the conversation. We look forward to speaking with you.</p>
-      `,
+      bodyHtml: CALL_REMINDER_CLIENT_BODY,
     }),
+    syncOnStartup: true,
   },
   {
     templateKey: 'CALL_REMINDER_ADMIN_EMAIL',
@@ -195,6 +175,7 @@ const EMAIL_TEMPLATES = [
 export async function seedDefaultTemplates() {
   let smsSeeded = 0;
   let emailSeeded = 0;
+  let emailSynced = 0;
 
   for (const template of SMS_TEMPLATES) {
     const exists = await countSmsTemplateByKey(template.templateKey);
@@ -212,22 +193,34 @@ export async function seedDefaultTemplates() {
 
   for (const template of EMAIL_TEMPLATES) {
     const exists = await countEmailTemplateByKey(template.templateKey);
-    if (exists > 0) continue;
+    if (!exists) {
+      await insertEmailTemplate({
+        templateKey: template.templateKey,
+        templateName: template.templateName,
+        subject: template.subject,
+        htmlContent: template.htmlContent,
+      });
+      emailSeeded += 1;
+      continue;
+    }
 
-    await insertEmailTemplate({
-      templateKey: template.templateKey,
-      templateName: template.templateName,
-      subject: template.subject,
-      htmlContent: template.htmlContent,
-    });
-    emailSeeded += 1;
+    if (template.syncOnStartup) {
+      await updateEmailTemplate({
+        templateKey: template.templateKey,
+        templateName: template.templateName,
+        subject: template.subject,
+        htmlContent: template.htmlContent,
+      });
+      emailSynced += 1;
+      console.log(`[templates] Updated email template: ${template.templateKey}`);
+    }
   }
 
   const smsSynced = await syncSmsTemplateContentFromEnv();
 
-  if (smsSeeded > 0 || emailSeeded > 0 || smsSynced > 0) {
+  if (smsSeeded > 0 || emailSeeded > 0 || emailSynced > 0 || smsSynced > 0) {
     console.log(
-      `✅ Templates seeded (SMS: ${smsSeeded}, Email: ${emailSeeded}, env sync: ${smsSynced})`
+      `✅ Templates seeded (SMS: ${smsSeeded}, Email: ${emailSeeded}, email sync: ${emailSynced}, SMS env sync: ${smsSynced})`
     );
   } else {
     console.log('✅ Templates checked (no new seeds required)');

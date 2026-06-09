@@ -27,7 +27,7 @@ export function wrapEmailHtml({ title, bodyHtml }) {
               <p style="margin:0;color:#94a3b8;font-size:12px;line-height:1.6;">
                 <a href="https://closedcircuit.in" style="color:#818cf8;text-decoration:none;">closedcircuit.in</a>
                 &nbsp;|&nbsp;
-                <a href="mailto:cc@closedcircuit.in" style="color:#818cf8;text-decoration:none;">cc@closedcircuit.in</a>
+                <a href="mailto:support@closedcircuit.in" style="color:#818cf8;text-decoration:none;">support@closedcircuit.in</a>
               </p>
               <p style="margin:10px 0 0;color:#64748b;font-size:11px;">&copy; Closed Circuit AI Pvt Ltd. All rights reserved.</p>
             </td>
