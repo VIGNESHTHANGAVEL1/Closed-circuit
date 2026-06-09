@@ -84,7 +84,7 @@ function aboutClosedCircuitCore() {
 }
 
 export const EMAIL_VERIFICATION_OTP_BODY = `
-  <p style="${p}">Dear Customer,</p>
+  <p style="${p}">Dear {{clientName}},</p>
   <p style="${p}">Greetings from <strong>Closed Circuit AI Pvt Ltd</strong>.</p>
   <p style="${p}">Thank you for choosing Closed Circuit, a secure and private platform designed for safe digital interactions and media sharing.</p>
 
@@ -117,7 +117,7 @@ export const EMAIL_VERIFICATION_OTP_BODY = `
 `;
 
 export const EMAIL_VERIFICATION_SUCCESS_BODY = `
-  <p style="${p}">Dear Customer,</p>
+  <p style="${p}">Dear {{clientName}},</p>
   <p style="${p}">Greetings from <strong>Closed Circuit AI Pvt Ltd</strong>.</p>
   <p style="${p}">🎉 Your email address has been successfully verified, and your Closed Circuit account is now active.</p>
   <p style="${p}">Thank you for joining a new generation of private and secure digital communication. Unlike public social media platforms, Closed Circuit is built around trusted relationships, privacy, and meaningful interactions.</p>
@@ -176,7 +176,7 @@ export const EMAIL_VERIFICATION_SUCCESS_BODY = `
 `;
 
 export const ENQUIRY_RECEIVED_CLIENT_BODY = `
-  <p style="${p}">Dear Customer,</p>
+  <p style="${p}">Dear {{clientName}},</p>
   <p style="${p}">Greetings from <strong>Closed Circuit AI Pvt Ltd</strong>.</p>
   <p style="${p}">Thank you for your interest in Closed Circuit. We have successfully received your enquiry and appreciate the opportunity to introduce our platform to you.</p>
 
@@ -198,7 +198,7 @@ export const ENQUIRY_RECEIVED_CLIENT_BODY = `
 `;
 
 export const CALL_REMINDER_CLIENT_BODY = `
-  <p style="${p}">Dear Customer,</p>
+  <p style="${p}">Dear {{clientName}},</p>
   <p style="${p}">Greetings from <strong>Closed Circuit AI Pvt Ltd</strong>.</p>
   <p style="${p}">This is a gentle reminder that your scheduled discussion regarding Closed Circuit is coming up in approximately <strong>one hour</strong>.</p>
 
