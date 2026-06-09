@@ -46,6 +46,35 @@ Required variables:
 | `DO_SPACES_ROOT_FOLDER` | Root folder prefix (may be empty) |
 | `CLIENT_IMAGE_MAX_BYTES` | Max upload size in bytes |
 
+### Inquiry notification variables (add to `.env`)
+
+These are **credentials only**. SMS/email **template content** is stored in the database (`sms_templates`, `email_templates`) and auto-seeded on first startup — do not put template text in `.env`.
+
+| Variable | Description |
+|----------|-------------|
+| `APP_TIMEZONE` | Timezone for scheduler and dashboard (e.g. `Asia/Kolkata`) |
+| `SMTP_HOST` | SMTP server hostname |
+| `SMTP_PORT` | SMTP port (usually `587`) |
+| `SMTP_SECURE` | `true` for port 465, else `false` |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASS` | SMTP password |
+| `SMTP_FROM_EMAIL` | Sender email (e.g. `cc@closedcircuit.in`) |
+| `SMTP_FROM_NAME` | Sender display name |
+| `ADMIN_EMAIL` | Admin email for enquiry/reminder alerts |
+| `ADMIN_MOBILE` | Admin mobile for enquiry/reminder SMS |
+| `ADMIN_NAME` | Admin name used in reminder templates |
+| `SMS_GATEWAY_URL` | SMS provider API URL |
+| `SMS_API_KEY` | SMS provider API key |
+| `SMS_SENDER_ID` | DLT-approved sender ID |
+| `SMS_ENABLED` | `true` to enable SMS (default `true`) |
+
+After `npm start`, check the console for `✅ Templates seeded` or `✅ Templates checked`. Verify in MySQL:
+
+```sql
+SELECT template_key, template_id FROM sms_templates;
+SELECT template_key, subject FROM email_templates;
+```
+
 **Security:** Do not log or commit `.env` values. Secrets are never printed by build or startup scripts.
 
 ## 3. Run production build check
