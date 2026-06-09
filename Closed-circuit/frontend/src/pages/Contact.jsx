@@ -140,7 +140,7 @@ export default function Contact() {
     setMobileVerifyMessage('');
 
     try {
-      await apiRequest('/api/verification/mobile/send', {
+      const response = await apiRequest('/api/verification/mobile/send', {
         method: 'POST',
         body: JSON.stringify({
           fullName: formData.fullName.trim(),
@@ -149,7 +149,10 @@ export default function Contact() {
       });
       setMobileOtpSent(true);
       setMobileVerifyStatus('success');
-      setMobileVerifyMessage('OTP sent to your mobile number. Valid for 2 minutes.');
+      setMobileVerifyMessage(
+        response.message ||
+          'OTP sent to your mobile number. Valid for 2 minutes.'
+      );
     } catch (err) {
       setMobileVerifyStatus('error');
       setMobileVerifyMessage(err.message || 'Unable to send mobile OTP.');
@@ -183,7 +186,7 @@ export default function Contact() {
     setEmailVerifyMessage('');
 
     try {
-      await apiRequest('/api/verification/email/send', {
+      const response = await apiRequest('/api/verification/email/send', {
         method: 'POST',
         body: JSON.stringify({
           fullName: formData.fullName.trim(),
@@ -192,7 +195,10 @@ export default function Contact() {
       });
       setEmailOtpSent(true);
       setEmailVerifyStatus('success');
-      setEmailVerifyMessage('OTP sent to your email. Valid for 10 minutes.');
+      setEmailVerifyMessage(
+        response.message ||
+          'OTP sent to your email. Valid for 10 minutes.'
+      );
     } catch (err) {
       setEmailVerifyStatus('error');
       setEmailVerifyMessage(err.message || 'Unable to send email OTP.');

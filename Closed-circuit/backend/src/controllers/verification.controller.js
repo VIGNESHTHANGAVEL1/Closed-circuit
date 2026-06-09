@@ -8,7 +8,9 @@ import { sendSuccess, sendError } from '../utils/response.js';
 
 export async function requestMobileOtp(req, res) {
   try {
+    console.log('[verification] POST /api/verification/mobile/send');
     const result = await sendMobileVerificationOtp(req.body);
+    console.log(`[verification] Mobile OTP result: deliveryMode=${result.deliveryMode || 'unknown'}`);
     return sendSuccess(res, result);
   } catch (err) {
     if (err.statusCode === 400) {
@@ -34,7 +36,9 @@ export async function confirmMobileOtp(req, res) {
 
 export async function requestEmailOtp(req, res) {
   try {
+    console.log('[verification] POST /api/verification/email/send');
     const result = await sendEmailVerificationOtp(req.body);
+    console.log(`[verification] Email OTP result: deliveryMode=${result.deliveryMode || 'unknown'}`);
     return sendSuccess(res, result);
   } catch (err) {
     if (err.statusCode === 400) {

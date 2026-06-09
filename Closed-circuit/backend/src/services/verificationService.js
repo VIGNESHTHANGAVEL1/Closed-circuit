@@ -13,6 +13,39 @@ import { generateOtp, hashOtp, generateVerificationToken } from '../utils/otp.js
 import { addMinutes } from '../utils/timezone.js';
 import { sendTemplateSms } from './smsService.js';
 import { sendTemplateEmail } from './emailService.js';
+import { isSmsConfigured, isSmtpConfigured } from '../utils/notificationConfig.js';
+
+function maskMobile(mobile) {
+  const digits = String(mobile || '').replace(/\D/g, '');
+  if (digits.length < 4) return '****';
+  return `${digits.slice(0, 2)}****${digits.slice(-2)}`;
+}
+
+function logDevOtp(channel, identifier, otp, minutes) {
+  console.log('');
+  console.log(`[verification] DEV OTP (${channel}) — gateway not configured, use this OTP to test:`);
+  console.log(`[verification]   ${channel === 'MOBILE' ? 'Mobile' : 'Email'}: ${identifier}`);
+  console.log(`[verification]   OTP: ${otp}`);
+  console.log(`[verification]   Valid for ${minutes} minutes`);
+  console.log('[verification]   Configure .env credentials for real SMS/email delivery.');
+  console.log('');
+}
+
+function assertDeliveryResult(sendResult, channel) {
+  if (sendResult.success) {
+    return;
+  }
+
+  if (sendResult.skipped) {
+    return;
+  }
+
+  const error = new Error(
+    `${channel} could not be sent: ${sendResult.error || 'provider error'}`
+  );
+  error.statusCode = 502;
+  throw error;
+}
 
 const MOBILE_OTP_MINUTES = 2;
 const EMAIL_OTP_MINUTES = 10;
@@ -81,7 +114,9 @@ export async function sendMobileVerificationOtp({ fullName, mobileNumber }) {
     expiresAt,
   });
 
-  await sendTemplateSms({
+  console.log(`[verification] Mobile OTP requested | name=${clientName} | mobile=${maskMobile(mobile)}`);
+
+  const smsResult = await sendTemplateSms({
     mobile,
     templateKey: 'MOBILE_VERIFICATION_OTP',
     variables: [clientName, otp],
@@ -90,9 +125,23 @@ export async function sendMobileVerificationOtp({ fullName, mobileNumber }) {
     recipientName: clientName,
   });
 
+  if (smsResult.skipped) {
+    logDevOtp('MOBILE', mobile, otp, MOBILE_OTP_MINUTES);
+    return {
+      message: isSmsConfigured()
+        ? 'Mobile OTP could not be sent. Check backend console logs.'
+        : 'SMS gateway not configured. OTP printed in backend console for local testing.',
+      expiresInMinutes: MOBILE_OTP_MINUTES,
+      deliveryMode: 'console',
+    };
+  }
+
+  assertDeliveryResult(smsResult, 'SMS');
+
   return {
     message: 'Mobile OTP sent successfully.',
     expiresInMinutes: MOBILE_OTP_MINUTES,
+    deliveryMode: 'sms',
   };
 }
 
@@ -153,7 +202,9 @@ export async function sendEmailVerificationOtp({ fullName, emailId }) {
     expiresAt,
   });
 
-  await sendTemplateEmail({
+  console.log(`[verification] Email OTP requested | name=${clientName} | email=${email}`);
+
+  const emailResult = await sendTemplateEmail({
     to: email,
     templateKey: 'EMAIL_VERIFICATION_OTP',
     variables: { OTP_CODE: otp, clientName },
@@ -162,9 +213,23 @@ export async function sendEmailVerificationOtp({ fullName, emailId }) {
     recipientName: clientName,
   });
 
+  if (emailResult.skipped) {
+    logDevOtp('EMAIL', email, otp, EMAIL_OTP_MINUTES);
+    return {
+      message: isSmtpConfigured()
+        ? 'Email OTP could not be sent. Check backend console logs.'
+        : 'SMTP not configured. OTP printed in backend console for local testing.',
+      expiresInMinutes: EMAIL_OTP_MINUTES,
+      deliveryMode: 'console',
+    };
+  }
+
+  assertDeliveryResult(emailResult, 'Email');
+
   return {
     message: 'Email OTP sent successfully.',
     expiresInMinutes: EMAIL_OTP_MINUTES,
+    deliveryMode: 'email',
   };
 }
 

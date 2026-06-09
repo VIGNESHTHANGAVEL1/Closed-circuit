@@ -45,6 +45,7 @@ export async function sendTemplateEmail({
   const sentAt = new Date();
 
   if (!config.smtp.enabled) {
+    console.warn(`[email] SKIPPED ${templateKey} → ${to} | SMTP not configured in .env`);
     await logNotificationAttempt({
       inquiryId,
       recipientType,
@@ -57,11 +58,12 @@ export async function sendTemplateEmail({
       status: 'SKIPPED',
       errorMessage: 'SMTP not configured',
     });
-    return { success: false, skipped: true };
+    return { success: false, skipped: true, reason: 'SMTP not configured in .env' };
   }
 
   try {
     const { template, subject, html } = await buildEmailMessage(templateKey, variables);
+    console.log(`[email] Sending ${templateKey} → ${to} | subject="${subject.slice(0, 50)}..."`);
     const transport = getTransporter();
 
     const info = await transport.sendMail({
@@ -84,6 +86,7 @@ export async function sendTemplateEmail({
       sentAt,
     });
 
+    console.log(`[email] SENT ${templateKey} → ${to} | messageId=${info.messageId || 'ok'}`);
     return { success: true, messageId: info.messageId };
   } catch (err) {
     await logNotificationAttempt({

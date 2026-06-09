@@ -5,6 +5,7 @@ import { seedDefaultAdmin } from './scripts/seedAdmin.js';
 import { seedDefaultTemplates } from './scripts/seedTemplates.js';
 import { ensureClientFoldersExist } from './services/spaces.service.js';
 import { startCallReminderScheduler } from './schedulers/callReminderScheduler.js';
+import { logNotificationConfigStatus } from './utils/notificationConfig.js';
 
 function exitWithError(message, code = 1) {
   console.error(`❌ ${message}`);
@@ -39,6 +40,7 @@ try {
   await bootstrapDatabase();
   await seedDefaultAdmin();
   await seedDefaultTemplates();
+  logNotificationConfigStatus();
   await ensureClientFoldersExist();
 
   const app = createApp();

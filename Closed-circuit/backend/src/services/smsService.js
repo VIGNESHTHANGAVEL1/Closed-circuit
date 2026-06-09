@@ -27,6 +27,9 @@ export async function sendTemplateSms({
   const normalizedMobile = normalizeMobile(mobile);
 
   if (!config.sms.enabled) {
+    console.warn(
+      `[sms] SKIPPED ${templateKey} → ${normalizedMobile.slice(0, 2)}**** | SMS gateway not configured in .env`
+    );
     await logNotificationAttempt({
       inquiryId,
       recipientType,
@@ -38,13 +41,17 @@ export async function sendTemplateSms({
       status: 'SKIPPED',
       errorMessage: 'SMS gateway not configured',
     });
-    return { success: false, skipped: true };
+    return { success: false, skipped: true, reason: 'SMS gateway not configured in .env' };
   }
 
   try {
     const { template, message } = await buildSmsMessage(templateKey, variables);
     const senderId = template.sender_id || config.sms.senderId;
     const variablesValues = variables.map((value) => String(value ?? '')).join('|');
+
+    console.log(
+      `[sms] Sending ${templateKey} | template_id=${template.template_id} | to=${normalizedMobile.slice(0, 2)}****`
+    );
 
     const url = new URL(config.sms.gatewayUrl);
     const body = {
@@ -84,9 +91,7 @@ export async function sendTemplateSms({
       sentAt,
     });
 
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[sms] Sent ${templateKey} to ${normalizedMobile.slice(0, 2)}****`);
-    }
+    console.log(`[sms] SENT ${templateKey} → ${normalizedMobile.slice(0, 2)}****`);
 
     return { success: true, message };
   } catch (err) {

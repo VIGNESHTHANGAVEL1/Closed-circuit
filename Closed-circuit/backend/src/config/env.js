@@ -46,13 +46,23 @@ export const config = {
     pass: process.env.SMTP_PASS || '',
     fromEmail: process.env.SMTP_FROM_EMAIL || 'cc@closedcircuit.in',
     fromName: process.env.SMTP_FROM_NAME || 'Closed Circuit AI Pvt Ltd',
-    enabled: Boolean(process.env.SMTP_HOST && process.env.SMTP_USER),
+    enabled: Boolean(
+      process.env.SMTP_HOST &&
+        process.env.SMTP_USER &&
+        process.env.SMTP_PASS
+    ),
   },
   sms: {
     gatewayUrl: process.env.SMS_GATEWAY_URL || '',
     apiKey: process.env.SMS_API_KEY || '',
     senderId: process.env.SMS_SENDER_ID || '',
-    enabled: process.env.SMS_ENABLED !== 'false' && Boolean(process.env.SMS_GATEWAY_URL),
+    enabled:
+      process.env.SMS_ENABLED !== 'false' &&
+      Boolean(
+        process.env.SMS_GATEWAY_URL &&
+          process.env.SMS_API_KEY &&
+          process.env.SMS_SENDER_ID
+      ),
   },
   notifications: {
     adminEmail: process.env.ADMIN_EMAIL || '',
