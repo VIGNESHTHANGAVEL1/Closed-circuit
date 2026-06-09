@@ -37,4 +37,26 @@ export const config = {
     basePath: 'Closed Circuit',
     maxImageBytes: Number(process.env.CLIENT_IMAGE_MAX_BYTES) || 5 * 1024 * 1024,
   },
+  timezone: process.env.APP_TIMEZONE || 'Asia/Kolkata',
+  smtp: {
+    host: process.env.SMTP_HOST || '',
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === 'true',
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+    fromEmail: process.env.SMTP_FROM_EMAIL || 'cc@closedcircuit.in',
+    fromName: process.env.SMTP_FROM_NAME || 'Closed Circuit AI Pvt Ltd',
+    enabled: Boolean(process.env.SMTP_HOST && process.env.SMTP_USER),
+  },
+  sms: {
+    gatewayUrl: process.env.SMS_GATEWAY_URL || '',
+    apiKey: process.env.SMS_API_KEY || '',
+    senderId: process.env.SMS_SENDER_ID || '',
+    enabled: process.env.SMS_ENABLED !== 'false' && Boolean(process.env.SMS_GATEWAY_URL),
+  },
+  notifications: {
+    adminEmail: process.env.ADMIN_EMAIL || '',
+    adminMobile: process.env.ADMIN_MOBILE || '',
+    adminName: process.env.ADMIN_NAME || 'Admin',
+  },
 };

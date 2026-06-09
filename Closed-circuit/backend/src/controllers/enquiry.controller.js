@@ -10,14 +10,11 @@ import { buildEnquiriesExcel } from '../utils/exportExcel.js';
 import { buildEnquiriesPdf } from '../utils/exportPdf.js';
 
 export async function submitEnquiry(req, res) {
-  console.log('[contact] received req.body:', req.body);
-
   try {
     const result = await createEnquiry(req.body);
-    console.log('[contact] DB insert success insertId:', result.id);
     return sendSuccess(res, { id: result.id }, 201);
   } catch (err) {
-    console.error('[contact] DB insert error:', err);
+    console.error('[contact] submit error:', err.message);
 
     if (err.statusCode === 400) {
       return sendError(res, err.message, 400);

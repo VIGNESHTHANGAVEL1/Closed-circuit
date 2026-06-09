@@ -2,7 +2,9 @@ import { config } from './config/env.js';
 import { bootstrapDatabase } from './config/bootstrap.js';
 import { createApp } from './app.js';
 import { seedDefaultAdmin } from './scripts/seedAdmin.js';
+import { seedDefaultTemplates } from './scripts/seedTemplates.js';
 import { ensureClientFoldersExist } from './services/spaces.service.js';
+import { startCallReminderScheduler } from './schedulers/callReminderScheduler.js';
 
 function exitWithError(message, code = 1) {
   console.error(`❌ ${message}`);
@@ -36,9 +38,11 @@ function handleStartupError(err) {
 try {
   await bootstrapDatabase();
   await seedDefaultAdmin();
+  await seedDefaultTemplates();
   await ensureClientFoldersExist();
 
   const app = createApp();
+  startCallReminderScheduler();
 
   await new Promise((resolve, reject) => {
     const server = app.listen(config.port, () => resolve(server));

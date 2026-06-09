@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
 import Hero from '../components/Hero';
 import Card from '../components/Card';
 import { apiRequest, getGoogleScriptUrl, isApiEnabled } from '../lib/api';
@@ -39,6 +39,28 @@ export default function Contact() {
   const [preferredMinute, setPreferredMinute] = useState('');
   const [preferredPeriod, setPreferredPeriod] = useState('');
 
+  const [mobileOtp, setMobileOtp] = useState('');
+  const [emailOtp, setEmailOtp] = useState('');
+  const [mobileOtpSent, setMobileOtpSent] = useState(false);
+  const [emailOtpSent, setEmailOtpSent] = useState(false);
+  const [mobileVerified, setMobileVerified] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [mobileVerificationToken, setMobileVerificationToken] = useState('');
+  const [emailVerificationToken, setEmailVerificationToken] = useState('');
+  const [mobileVerifyStatus, setMobileVerifyStatus] = useState(null);
+  const [emailVerifyStatus, setEmailVerifyStatus] = useState(null);
+  const [mobileVerifyMessage, setMobileVerifyMessage] = useState('');
+  const [emailVerifyMessage, setEmailVerifyMessage] = useState('');
+
+  const useBackendApi = isApiEnabled();
+  const isValidMobile = (value) => {
+    const digits = String(value || '').replace(/\D/g, '');
+    return digits.length >= 10 && digits.length <= 15;
+  };
+  const canVerifyMobile = Boolean(formData.fullName.trim()) && !mobileVerified;
+  const canVerifyEmail = isValidMobile(formData.mobileNumber) && !emailVerified;
+  const bothVerified = !useBackendApi || (mobileVerified && emailVerified);
+
   const lookingForOptions = [
     'Gift for a Birthday',
     'Gift for a Marriage Anniversary',
@@ -70,13 +92,134 @@ export default function Contact() {
     'Best for sharing ideas, collecting documents, and resolving small doubts quickly.',
   ];
 
+  const resetMobileVerification = () => {
+    setMobileOtp('');
+    setMobileOtpSent(false);
+    setMobileVerified(false);
+    setMobileVerificationToken('');
+    setMobileVerifyStatus(null);
+    setMobileVerifyMessage('');
+  };
+
+  const resetEmailVerification = () => {
+    setEmailOtp('');
+    setEmailOtpSent(false);
+    setEmailVerified(false);
+    setEmailVerificationToken('');
+    setEmailVerifyStatus(null);
+    setEmailVerifyMessage('');
+  };
+
   const handleChange = (e) => {
-  const { name, type, value, checked } = e.target;
-  setFormData((prev) => ({
-    ...prev,
-    [name]: type === 'checkbox' ? checked : value,
-  }));
-};
+    const { name, type, value, checked } = e.target;
+    const nextValue = type === 'checkbox' ? checked : value;
+
+    setFormData((prev) => {
+      const next = { ...prev, [name]: nextValue };
+
+      if (name === 'fullName' && nextValue !== prev.fullName) {
+        resetMobileVerification();
+        resetEmailVerification();
+      }
+
+      if (name === 'mobileNumber' && nextValue !== prev.mobileNumber) {
+        resetMobileVerification();
+        resetEmailVerification();
+      }
+
+      if (name === 'emailId' && nextValue !== prev.emailId) {
+        resetEmailVerification();
+      }
+
+      return next;
+    });
+  };
+
+  const sendMobileOtp = async () => {
+    setMobileVerifyStatus('loading');
+    setMobileVerifyMessage('');
+
+    try {
+      await apiRequest('/api/verification/mobile/send', {
+        method: 'POST',
+        body: JSON.stringify({
+          fullName: formData.fullName.trim(),
+          mobileNumber: formData.mobileNumber.trim(),
+        }),
+      });
+      setMobileOtpSent(true);
+      setMobileVerifyStatus('success');
+      setMobileVerifyMessage('OTP sent to your mobile number. Valid for 2 minutes.');
+    } catch (err) {
+      setMobileVerifyStatus('error');
+      setMobileVerifyMessage(err.message || 'Unable to send mobile OTP.');
+    }
+  };
+
+  const confirmMobileOtp = async () => {
+    setMobileVerifyStatus('loading');
+    setMobileVerifyMessage('');
+
+    try {
+      const response = await apiRequest('/api/verification/mobile/verify', {
+        method: 'POST',
+        body: JSON.stringify({
+          mobileNumber: formData.mobileNumber.trim(),
+          otp: mobileOtp.trim(),
+        }),
+      });
+      setMobileVerified(true);
+      setMobileVerificationToken(response.mobileVerificationToken || '');
+      setMobileVerifyStatus('success');
+      setMobileVerifyMessage('Mobile number verified.');
+    } catch (err) {
+      setMobileVerifyStatus('error');
+      setMobileVerifyMessage(err.message || 'Invalid OTP. Please try again.');
+    }
+  };
+
+  const sendEmailOtp = async () => {
+    setEmailVerifyStatus('loading');
+    setEmailVerifyMessage('');
+
+    try {
+      await apiRequest('/api/verification/email/send', {
+        method: 'POST',
+        body: JSON.stringify({
+          fullName: formData.fullName.trim(),
+          emailId: formData.emailId.trim(),
+        }),
+      });
+      setEmailOtpSent(true);
+      setEmailVerifyStatus('success');
+      setEmailVerifyMessage('OTP sent to your email. Valid for 10 minutes.');
+    } catch (err) {
+      setEmailVerifyStatus('error');
+      setEmailVerifyMessage(err.message || 'Unable to send email OTP.');
+    }
+  };
+
+  const confirmEmailOtp = async () => {
+    setEmailVerifyStatus('loading');
+    setEmailVerifyMessage('');
+
+    try {
+      const response = await apiRequest('/api/verification/email/verify', {
+        method: 'POST',
+        body: JSON.stringify({
+          emailId: formData.emailId.trim(),
+          otp: emailOtp.trim(),
+        }),
+      });
+      setEmailVerified(true);
+      setEmailVerificationToken(response.emailVerificationToken || '');
+      setEmailVerifyStatus('success');
+      setEmailVerifyMessage('Email verified.');
+    } catch (err) {
+      setEmailVerifyStatus('error');
+      setEmailVerifyMessage(err.message || 'Invalid OTP. Please try again.');
+    }
+  };
 
   const handleTimeChange = (field, value) => {
     const nextHour = field === 'hour' ? value : preferredHour;
@@ -106,7 +249,11 @@ export default function Contact() {
 
     const response = await apiRequest('/api/contact', {
       method: 'POST',
-      body: JSON.stringify(contactFields),
+      body: JSON.stringify({
+        ...contactFields,
+        mobileVerificationToken,
+        emailVerificationToken,
+      }),
     });
 
     if (import.meta.env.DEV) {
@@ -183,6 +330,8 @@ export default function Contact() {
       setPreferredHour('');
       setPreferredMinute('');
       setPreferredPeriod('');
+      resetMobileVerification();
+      resetEmailVerification();
       setTimeout(() => setStatus(null), 5000);
     } catch {
       setStatus('error');
@@ -269,6 +418,51 @@ export default function Contact() {
                           className={inputClasses}
                           placeholder="+91 XXXXX XXXXX"
                         />
+                        {useBackendApi && (
+                          <div className="mt-3 space-y-3">
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                onClick={sendMobileOtp}
+                                disabled={!canVerifyMobile || mobileVerifyStatus === 'loading'}
+                                className="rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-200 transition hover:bg-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {mobileVerifyStatus === 'loading' && !mobileOtpSent ? 'Sending OTP...' : 'Verify Mobile'}
+                              </button>
+                              {mobileVerified && (
+                                <span className="inline-flex items-center gap-1 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm font-semibold text-green-300">
+                                  <ShieldCheck size={16} />
+                                  Verified
+                                </span>
+                              )}
+                            </div>
+                            {mobileOtpSent && !mobileVerified && (
+                              <div className="flex flex-wrap gap-2">
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={mobileOtp}
+                                  onChange={(e) => setMobileOtp(e.target.value)}
+                                  placeholder="Enter mobile OTP"
+                                  className={`${inputClasses} max-w-xs`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={confirmMobileOtp}
+                                  disabled={!mobileOtp.trim() || mobileVerifyStatus === 'loading'}
+                                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  Confirm OTP
+                                </button>
+                              </div>
+                            )}
+                            {mobileVerifyMessage && (
+                              <p className={`text-sm ${mobileVerifyStatus === 'error' ? 'text-red-300' : 'text-slate-400'}`}>
+                                {mobileVerifyMessage}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </motion.div>
 
                       <motion.div initial={{ y: 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
@@ -282,6 +476,51 @@ export default function Contact() {
                           className={inputClasses}
                           placeholder="your@email.com"
                         />
+                        {useBackendApi && (
+                          <div className="mt-3 space-y-3">
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                onClick={sendEmailOtp}
+                                disabled={!canVerifyEmail || emailVerifyStatus === 'loading'}
+                                className="rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-200 transition hover:bg-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                {emailVerifyStatus === 'loading' && !emailOtpSent ? 'Sending OTP...' : 'Verify Email'}
+                              </button>
+                              {emailVerified && (
+                                <span className="inline-flex items-center gap-1 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm font-semibold text-green-300">
+                                  <ShieldCheck size={16} />
+                                  Verified
+                                </span>
+                              )}
+                            </div>
+                            {emailOtpSent && !emailVerified && (
+                              <div className="flex flex-wrap gap-2">
+                                <input
+                                  type="text"
+                                  inputMode="numeric"
+                                  value={emailOtp}
+                                  onChange={(e) => setEmailOtp(e.target.value)}
+                                  placeholder="Enter email OTP"
+                                  className={`${inputClasses} max-w-xs`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={confirmEmailOtp}
+                                  disabled={!emailOtp.trim() || emailVerifyStatus === 'loading'}
+                                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  Confirm OTP
+                                </button>
+                              </div>
+                            )}
+                            {emailVerifyMessage && (
+                              <p className={`text-sm ${emailVerifyStatus === 'error' ? 'text-red-300' : 'text-slate-400'}`}>
+                                {emailVerifyMessage}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </motion.div>
 
                       <motion.div initial={{ y: 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.15 }}>
@@ -466,6 +705,12 @@ export default function Contact() {
   </label>
 </motion.div>
 
+                    {useBackendApi && !bothVerified && (
+                      <p className="text-sm text-amber-300/90">
+                        Please complete mobile and email verification before submitting the enquiry.
+                      </p>
+                    )}
+
                     {status === 'error' && (
                       <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
@@ -481,13 +726,12 @@ export default function Contact() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       type="submit"
-                      // disabled={status === 'loading'}
-                      disabled={status === 'loading' || !formData.consentAccepted}
+                      disabled={status === 'loading' || !formData.consentAccepted || !bothVerified}
                       className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 mt-6 border border-white/10"
                     >
                       {status === 'loading' ? (
                         <>
-                          <div className="animate-spin"><Send size={20} /></div>
+                          <Loader2 size={20} className="animate-spin" />
                           <span>Sending...</span>
                         </>
                       ) : (

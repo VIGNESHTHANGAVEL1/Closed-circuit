@@ -66,6 +66,11 @@ export const TABLE_DEFINITIONS = {
       { name: 'preferredTime', definition: 'VARCHAR(50) NOT NULL' },
       { name: 'description', definition: 'TEXT NULL' },
       { name: 'status', definition: "VARCHAR(50) NULL DEFAULT 'New'" },
+      { name: 'client_reminder_email_sent', definition: 'TINYINT(1) NOT NULL DEFAULT 0' },
+      { name: 'client_reminder_sms_sent', definition: 'TINYINT(1) NOT NULL DEFAULT 0' },
+      { name: 'admin_reminder_email_sent', definition: 'TINYINT(1) NOT NULL DEFAULT 0' },
+      { name: 'admin_reminder_sms_sent', definition: 'TINYINT(1) NOT NULL DEFAULT 0' },
+      { name: 'reminder_sent_at', definition: 'DATETIME NULL' },
       {
         name: 'created_at',
         definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
@@ -128,6 +133,187 @@ export const TABLE_DEFINITIONS = {
       {
         name: 'updated_at',
         definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+      },
+    ],
+  },
+  sms_templates: {
+    createSql: `
+      CREATE TABLE IF NOT EXISTS sms_templates (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        template_key VARCHAR(100) NOT NULL,
+        template_id VARCHAR(100) NOT NULL,
+        template_name VARCHAR(255) NOT NULL,
+        sender_id VARCHAR(50) NULL,
+        template_content TEXT NOT NULL,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uk_sms_templates_key (template_key)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `,
+    columns: [
+      { name: 'id', definition: 'INT UNSIGNED NOT NULL AUTO_INCREMENT' },
+      { name: 'template_key', definition: 'VARCHAR(100) NOT NULL' },
+      { name: 'template_id', definition: 'VARCHAR(100) NOT NULL' },
+      { name: 'template_name', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'sender_id', definition: 'VARCHAR(50) NULL' },
+      { name: 'template_content', definition: 'TEXT NOT NULL' },
+      { name: 'is_active', definition: 'TINYINT(1) NOT NULL DEFAULT 1' },
+      {
+        name: 'created_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      },
+      {
+        name: 'updated_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+      },
+    ],
+  },
+  email_templates: {
+    createSql: `
+      CREATE TABLE IF NOT EXISTS email_templates (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        template_key VARCHAR(100) NOT NULL,
+        template_name VARCHAR(255) NOT NULL,
+        subject VARCHAR(500) NOT NULL,
+        html_content MEDIUMTEXT NOT NULL,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uk_email_templates_key (template_key)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `,
+    columns: [
+      { name: 'id', definition: 'INT UNSIGNED NOT NULL AUTO_INCREMENT' },
+      { name: 'template_key', definition: 'VARCHAR(100) NOT NULL' },
+      { name: 'template_name', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'subject', definition: 'VARCHAR(500) NOT NULL' },
+      { name: 'html_content', definition: 'MEDIUMTEXT NOT NULL' },
+      { name: 'is_active', definition: 'TINYINT(1) NOT NULL DEFAULT 1' },
+      {
+        name: 'created_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      },
+      {
+        name: 'updated_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+      },
+    ],
+  },
+  notification_logs: {
+    createSql: `
+      CREATE TABLE IF NOT EXISTS notification_logs (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        tenant_id INT UNSIGNED NULL,
+        inquiry_id INT UNSIGNED NULL,
+        recipient_type ENUM('CLIENT', 'ADMIN') NOT NULL,
+        channel ENUM('EMAIL', 'SMS') NOT NULL,
+        notification_type ENUM(
+          'OTP_VERIFICATION',
+          'EMAIL_VERIFICATION_SUCCESS',
+          'INQUIRY_SUBMISSION',
+          'CALL_REMINDER'
+        ) NOT NULL,
+        recipient_name VARCHAR(255) NULL,
+        recipient_email VARCHAR(255) NULL,
+        recipient_mobile VARCHAR(50) NULL,
+        template_key VARCHAR(100) NOT NULL,
+        template_id VARCHAR(100) NULL,
+        status ENUM('SENT', 'FAILED', 'SKIPPED') NOT NULL,
+        provider_response VARCHAR(500) NULL,
+        error_message VARCHAR(500) NULL,
+        sent_at DATETIME NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        INDEX idx_notification_logs_inquiry (inquiry_id),
+        INDEX idx_notification_logs_type (notification_type),
+        INDEX idx_notification_logs_status (status)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `,
+    columns: [
+      { name: 'id', definition: 'INT UNSIGNED NOT NULL AUTO_INCREMENT' },
+      { name: 'tenant_id', definition: 'INT UNSIGNED NULL' },
+      { name: 'inquiry_id', definition: 'INT UNSIGNED NULL' },
+      { name: 'recipient_type', definition: "ENUM('CLIENT', 'ADMIN') NOT NULL" },
+      { name: 'channel', definition: "ENUM('EMAIL', 'SMS') NOT NULL" },
+      {
+        name: 'notification_type',
+        definition: "ENUM('OTP_VERIFICATION', 'EMAIL_VERIFICATION_SUCCESS', 'INQUIRY_SUBMISSION', 'CALL_REMINDER') NOT NULL",
+      },
+      { name: 'recipient_name', definition: 'VARCHAR(255) NULL' },
+      { name: 'recipient_email', definition: 'VARCHAR(255) NULL' },
+      { name: 'recipient_mobile', definition: 'VARCHAR(50) NULL' },
+      { name: 'template_key', definition: 'VARCHAR(100) NOT NULL' },
+      { name: 'template_id', definition: 'VARCHAR(100) NULL' },
+      { name: 'status', definition: "ENUM('SENT', 'FAILED', 'SKIPPED') NOT NULL" },
+      { name: 'provider_response', definition: 'VARCHAR(500) NULL' },
+      { name: 'error_message', definition: 'VARCHAR(500) NULL' },
+      { name: 'sent_at', definition: 'DATETIME NULL' },
+      {
+        name: 'created_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      },
+      {
+        name: 'updated_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+      },
+    ],
+  },
+  verification_otps: {
+    createSql: `
+      CREATE TABLE IF NOT EXISTS verification_otps (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        channel ENUM('MOBILE', 'EMAIL') NOT NULL,
+        identifier VARCHAR(255) NOT NULL,
+        client_name VARCHAR(255) NOT NULL,
+        otp_hash VARCHAR(64) NOT NULL,
+        expires_at DATETIME NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        INDEX idx_verification_otps_lookup (channel, identifier, expires_at)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `,
+    columns: [
+      { name: 'id', definition: 'INT UNSIGNED NOT NULL AUTO_INCREMENT' },
+      { name: 'channel', definition: "ENUM('MOBILE', 'EMAIL') NOT NULL" },
+      { name: 'identifier', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'client_name', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'otp_hash', definition: 'VARCHAR(64) NOT NULL' },
+      { name: 'expires_at', definition: 'DATETIME NOT NULL' },
+      {
+        name: 'created_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      },
+    ],
+  },
+  verification_sessions: {
+    createSql: `
+      CREATE TABLE IF NOT EXISTS verification_sessions (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        token VARCHAR(64) NOT NULL,
+        channel ENUM('MOBILE', 'EMAIL') NOT NULL,
+        identifier VARCHAR(255) NOT NULL,
+        client_name VARCHAR(255) NOT NULL,
+        expires_at DATETIME NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uk_verification_sessions_token (token),
+        INDEX idx_verification_sessions_lookup (channel, identifier, expires_at)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `,
+    columns: [
+      { name: 'id', definition: 'INT UNSIGNED NOT NULL AUTO_INCREMENT' },
+      { name: 'token', definition: 'VARCHAR(64) NOT NULL' },
+      { name: 'channel', definition: "ENUM('MOBILE', 'EMAIL') NOT NULL" },
+      { name: 'identifier', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'client_name', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'expires_at', definition: 'DATETIME NOT NULL' },
+      {
+        name: 'created_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
       },
     ],
   },

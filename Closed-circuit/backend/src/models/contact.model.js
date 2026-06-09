@@ -4,8 +4,15 @@ import { DEFAULT_ENQUIRY_STATUS } from '../constants/enquiryStatus.js';
 const CONTACT_COLUMNS = `
   id, fullName, mobileNumber, emailId, town, state, country,
   lookingFor, preferredContactMethod, preferredDate, preferredTime,
-  description, status, created_at
+  description, status, client_reminder_email_sent, client_reminder_sms_sent,
+  admin_reminder_email_sent, admin_reminder_sms_sent, reminder_sent_at, created_at
 `;
+
+const EXCLUDED_REMINDER_STATUSES = [
+  'Rejected temporarily',
+  'Rejected permanently',
+  'Closed',
+];
 
 function buildFilterClauses({ search, status, dateFrom, dateTo }) {
   const conditions = [];
@@ -139,4 +146,64 @@ export async function countContactsByStatus(status) {
 export async function countAllContacts() {
   const [rows] = await db.query(`SELECT COUNT(*) AS total FROM contacts`);
   return rows[0]?.total || 0;
+}
+
+export async function countTodayScheduledContacts(todayDate) {
+  const [rows] = await db.query(
+    `SELECT COUNT(*) AS total FROM contacts WHERE preferredDate = ?`,
+    [todayDate]
+  );
+  return rows[0]?.total || 0;
+}
+
+export async function findContactsDueForReminder() {
+  const placeholders = EXCLUDED_REMINDER_STATUSES.map(() => '?').join(', ');
+  const [rows] = await db.query(
+    `SELECT ${CONTACT_COLUMNS}
+     FROM contacts
+     WHERE COALESCE(status, 'New') NOT IN (${placeholders})
+       AND (
+         client_reminder_email_sent = 0 OR
+         client_reminder_sms_sent = 0 OR
+         admin_reminder_email_sent = 0 OR
+         admin_reminder_sms_sent = 0
+       )
+       AND preferredDate IS NOT NULL
+       AND preferredDate != ''
+       AND preferredTime IS NOT NULL
+       AND preferredTime != ''`,
+    EXCLUDED_REMINDER_STATUSES
+  );
+  return rows;
+}
+
+export async function updateContactReminderFlags(id, flags) {
+  const assignments = [];
+  const params = [];
+
+  const allowed = [
+    'client_reminder_email_sent',
+    'client_reminder_sms_sent',
+    'admin_reminder_email_sent',
+    'admin_reminder_sms_sent',
+    'reminder_sent_at',
+  ];
+
+  for (const key of allowed) {
+    if (flags[key] !== undefined) {
+      assignments.push(`${key} = ?`);
+      params.push(flags[key]);
+    }
+  }
+
+  if (!assignments.length) {
+    return false;
+  }
+
+  params.push(id);
+  const [result] = await db.query(
+    `UPDATE contacts SET ${assignments.join(', ')} WHERE id = ?`,
+    params
+  );
+  return result.affectedRows > 0;
 }

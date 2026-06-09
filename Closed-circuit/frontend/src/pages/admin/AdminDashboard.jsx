@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageSquare, Users, Sparkles } from 'lucide-react';
+import { MessageSquare, Users, Sparkles, CalendarClock } from 'lucide-react';
 import AdminShell from '../../components/AdminShell';
 import { apiRequest } from '../../lib/api';
 import { clearAuthSession, getStoredToken } from '../../lib/auth';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ totalEnquiries: 0, newEnquiries: 0, totalClients: 0 });
+  const [stats, setStats] = useState({
+    totalEnquiries: 0,
+    newEnquiries: 0,
+    totalClients: 0,
+    todayScheduledCalls: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -65,13 +70,40 @@ export default function AdminDashboard() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl border border-indigo-500/30 bg-indigo-500/10 p-5"
+        >
+          <div className="flex items-center gap-2 text-indigo-300 mb-2">
+            <MessageSquare size={18} />
+            <span className="text-sm font-semibold">Total Inquiries</span>
+          </div>
+          <p className="text-3xl font-bold text-white">{loading ? '…' : stats.totalEnquiries}</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
           className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5"
         >
           <div className="flex items-center gap-2 text-amber-300 mb-2">
             <Sparkles size={18} />
-            <span className="text-sm font-semibold">New enquiries</span>
+            <span className="text-sm font-semibold">New Inquiries</span>
           </div>
           <p className="text-3xl font-bold text-white">{loading ? '…' : stats.newEnquiries}</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5"
+        >
+          <div className="flex items-center gap-2 text-emerald-300 mb-2">
+            <CalendarClock size={18} />
+            <span className="text-sm font-semibold">Today&apos;s Scheduled Calls</span>
+          </div>
+          <p className="text-3xl font-bold text-white">{loading ? '…' : stats.todayScheduledCalls}</p>
+          <p className="mt-1 text-xs text-slate-400">Clients to contact today</p>
         </motion.div>
       </div>
 

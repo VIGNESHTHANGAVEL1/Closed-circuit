@@ -12,6 +12,20 @@ export function validateEnquiryBody(req, res, next) {
     });
   }
 
+  if (!req.body?.mobileVerificationToken?.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Mobile verification is required before submitting.',
+    });
+  }
+
+  if (!req.body?.emailVerificationToken?.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email verification is required before submitting.',
+    });
+  }
+
   req.contactPayload = payload;
   next();
 }

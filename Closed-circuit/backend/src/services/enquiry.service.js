@@ -6,6 +6,7 @@ import {
   updateContactStatus,
   countContactsByStatus,
   countAllContacts,
+  countTodayScheduledContacts,
 } from '../models/contact.model.js';
 import { countAllClients } from '../models/client.model.js';
 import {
@@ -13,6 +14,12 @@ import {
   normalizeEnquiryStatus,
   resolveEnquiryStatus,
 } from '../constants/enquiryStatus.js';
+import { assertVerificationTokens } from './verificationService.js';
+import { sendInquirySubmissionNotifications } from './inquiryNotificationService.js';
+import { getTodayDateString } from '../utils/timezone.js';
+import {
+  deleteVerificationSession,
+} from '../models/verificationSession.model.js';
 
 const REQUIRED_CONTACT_FIELDS = [
   'fullName',
@@ -109,7 +116,27 @@ export async function createEnquiry(payload) {
     throw error;
   }
 
+  const { mobileSession, emailSession } = await assertVerificationTokens({
+    fullName: data.fullName,
+    mobileNumber: data.mobileNumber,
+    emailId: data.emailId,
+    mobileVerificationToken: payload.mobileVerificationToken,
+    emailVerificationToken: payload.emailVerificationToken,
+  });
+
   const id = await insertContact(data);
+
+  try {
+    await sendInquirySubmissionNotifications(data, id);
+  } catch (err) {
+    console.error('[enquiry] Post-submit notifications failed:', err.message);
+  }
+
+  await Promise.allSettled([
+    deleteVerificationSession(mobileSession.token),
+    deleteVerificationSession(emailSession.token),
+  ]);
+
   return { id };
 }
 
@@ -169,11 +196,13 @@ export async function updateEnquiryStatus(id, statusValue) {
 }
 
 export async function getDashboardStats() {
-  const [totalEnquiries, newEnquiries, totalClients] = await Promise.all([
+  const todayDate = getTodayDateString();
+  const [totalEnquiries, newEnquiries, totalClients, todayScheduledCalls] = await Promise.all([
     countAllContacts(),
     countContactsByStatus(DEFAULT_ENQUIRY_STATUS),
     countAllClients(),
+    countTodayScheduledContacts(todayDate),
   ]);
 
-  return { totalEnquiries, newEnquiries, totalClients };
+  return { totalEnquiries, newEnquiries, totalClients, todayScheduledCalls };
 }
