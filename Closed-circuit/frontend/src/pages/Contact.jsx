@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { listenForWebOtp } from '../utils/webOtp';
 import { motion } from 'framer-motion';
-import { Send, CheckCircle, AlertCircle, ShieldCheck, Loader2 } from 'lucide-react';
+import { Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import Hero from '../components/Hero';
 import Card from '../components/Card';
+import OtpVerificationModal from '../components/OtpVerificationModal';
 import { apiRequest, getGoogleScriptUrl, isApiEnabled } from '../lib/api';
 
 export default function Contact() {
@@ -52,6 +53,9 @@ export default function Contact() {
   const [emailVerifyStatus, setEmailVerifyStatus] = useState(null);
   const [mobileVerifyMessage, setMobileVerifyMessage] = useState('');
   const [emailVerifyMessage, setEmailVerifyMessage] = useState('');
+  const [otpModal, setOtpModal] = useState(null);
+  const [mobileSendingOtp, setMobileSendingOtp] = useState(false);
+  const [emailSendingOtp, setEmailSendingOtp] = useState(false);
 
   const useBackendApi = isApiEnabled();
   const isValidMobile = (value) => {
@@ -102,6 +106,7 @@ export default function Contact() {
     setMobileVerificationToken('');
     setMobileVerifyStatus(null);
     setMobileVerifyMessage('');
+    setMobileSendingOtp(false);
   };
 
   const resetEmailVerification = () => {
@@ -111,6 +116,7 @@ export default function Contact() {
     setEmailVerificationToken('');
     setEmailVerifyStatus(null);
     setEmailVerifyMessage('');
+    setEmailSendingOtp(false);
   };
 
   const handleChange = (e) => {
@@ -139,19 +145,86 @@ export default function Contact() {
   };
 
   useEffect(() => {
-    if (!mobileOtpSent || mobileVerified) {
+    if (otpModal !== 'mobile' || !mobileOtpSent || mobileVerified) {
       return undefined;
     }
 
     const controller = new AbortController();
     listenForWebOtp({ signal: controller.signal }).then((code) => {
       if (code) {
-        setMobileOtp(code);
+        setMobileOtp(code.replace(/\D/g, '').slice(0, 4));
       }
     });
 
     return () => controller.abort();
-  }, [mobileOtpSent, mobileVerified]);
+  }, [otpModal, mobileOtpSent, mobileVerified]);
+
+  const formatMobileDestination = (value) => {
+    const digits = String(value || '').replace(/\D/g, '');
+    if (!digits) {
+      return '+91 XXXXX XXXXX';
+    }
+
+    if (digits.length <= 5) {
+      return `+${digits}`;
+    }
+
+    const countryCode = digits.length > 10 ? digits.slice(0, digits.length - 10) : '91';
+    const localNumber = digits.length > 10 ? digits.slice(-10) : digits;
+    const grouped = `${localNumber.slice(0, 5)} ${localNumber.slice(5)}`.trim();
+    return `+${countryCode} ${grouped}`;
+  };
+
+  const verifyButtonClasses = (verified) =>
+    verified
+      ? 'shrink-0 rounded-xl border border-green-500/40 bg-green-500/20 px-4 py-3 text-sm font-semibold text-green-300 transition disabled:cursor-not-allowed disabled:opacity-100 w-full sm:w-auto'
+      : 'shrink-0 rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-4 py-3 text-sm font-semibold text-indigo-200 transition hover:bg-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50 w-full sm:w-auto';
+
+  const openMobileVerification = async () => {
+    if (!canVerifyMobile) {
+      return;
+    }
+
+    setOtpModal('mobile');
+    setMobileOtp('');
+    setMobileVerifyMessage('');
+
+    if (!mobileOtpSent) {
+      await sendMobileOtp();
+    }
+  };
+
+  const openEmailVerification = async () => {
+    if (!canVerifyEmail) {
+      return;
+    }
+
+    setOtpModal('email');
+    setEmailOtp('');
+    setEmailVerifyMessage('');
+
+    if (!emailOtpSent) {
+      await sendEmailOtp();
+    }
+  };
+
+  const closeOtpModal = () => {
+    setOtpModal(null);
+    setMobileVerifyMessage('');
+    setEmailVerifyMessage('');
+  };
+
+  const resendMobileOtp = async () => {
+    setMobileOtp('');
+    setMobileVerifyMessage('');
+    await sendMobileOtp();
+  };
+
+  const resendEmailOtp = async () => {
+    setEmailOtp('');
+    setEmailVerifyMessage('');
+    await sendEmailOtp();
+  };
 
   const sendMobileOtp = async () => {
     if (!hasFullName) {
@@ -160,11 +233,12 @@ export default function Contact() {
       return;
     }
 
-    setMobileVerifyStatus('loading');
+    setMobileSendingOtp(true);
+    setMobileVerifyStatus(null);
     setMobileVerifyMessage('');
 
     try {
-      const response = await apiRequest('/api/verification/mobile/send', {
+      await apiRequest('/api/verification/mobile/send', {
         method: 'POST',
         body: JSON.stringify({
           fullName: formData.fullName.trim(),
@@ -173,14 +247,11 @@ export default function Contact() {
         }),
       });
       setMobileOtpSent(true);
-      setMobileVerifyStatus('success');
-      setMobileVerifyMessage(
-        response.message ||
-          'OTP sent to your mobile number. Valid for 2 minutes.'
-      );
     } catch (err) {
       setMobileVerifyStatus('error');
       setMobileVerifyMessage(err.message || 'Unable to send mobile OTP.');
+    } finally {
+      setMobileSendingOtp(false);
     }
   };
 
@@ -199,7 +270,9 @@ export default function Contact() {
       setMobileVerified(true);
       setMobileVerificationToken(response.mobileVerificationToken || '');
       setMobileVerifyStatus('success');
-      setMobileVerifyMessage('Mobile number verified.');
+      setMobileVerifyMessage('Mobile number verified successfully');
+      setOtpModal(null);
+      setMobileOtp('');
     } catch (err) {
       setMobileVerifyStatus('error');
       setMobileVerifyMessage(err.message || 'Invalid OTP. Please try again.');
@@ -207,11 +280,12 @@ export default function Contact() {
   };
 
   const sendEmailOtp = async () => {
-    setEmailVerifyStatus('loading');
+    setEmailSendingOtp(true);
+    setEmailVerifyStatus(null);
     setEmailVerifyMessage('');
 
     try {
-      const response = await apiRequest('/api/verification/email/send', {
+      await apiRequest('/api/verification/email/send', {
         method: 'POST',
         body: JSON.stringify({
           fullName: formData.fullName.trim(),
@@ -220,14 +294,11 @@ export default function Contact() {
         }),
       });
       setEmailOtpSent(true);
-      setEmailVerifyStatus('success');
-      setEmailVerifyMessage(
-        response.message ||
-          'OTP sent to your email. Valid for 10 minutes.'
-      );
     } catch (err) {
       setEmailVerifyStatus('error');
       setEmailVerifyMessage(err.message || 'Unable to send email OTP.');
+    } finally {
+      setEmailSendingOtp(false);
     }
   };
 
@@ -246,7 +317,9 @@ export default function Contact() {
       setEmailVerified(true);
       setEmailVerificationToken(response.emailVerificationToken || '');
       setEmailVerifyStatus('success');
-      setEmailVerifyMessage('Email verified successfully.');
+      setEmailVerifyMessage('Email ID verified successfully');
+      setOtpModal(null);
+      setEmailOtp('');
     } catch (err) {
       setEmailVerifyStatus('error');
       setEmailVerifyMessage(err.message || 'Invalid OTP. Please try again.');
@@ -376,6 +449,8 @@ export default function Contact() {
   const inputClasses =
     `w-full px-4 py-3 bg-[#0f172a]/50 text-white border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-semibold placeholder-slate-500 ${formFieldTextClasses}`;
   const selectOptionClasses = '[&>option]:bg-slate-900 [&>option]:text-white [&>option]:text-2xl [&>option]:md:text-0xl';
+  const verifyFieldRowClasses = 'flex flex-col gap-2 sm:flex-row sm:items-stretch';
+  const verifyInputClasses = `${inputClasses} min-w-0 flex-1`;
 
   return (
     <motion.div
@@ -441,120 +516,81 @@ export default function Contact() {
 
                       <motion.div initial={{ y: 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.05 }}>
                         <label className={labelClasses}>Mobile Number <span className="text-indigo-400">*</span></label>
-                        <input
-                          type="tel"
-                          name="mobileNumber"
-                          value={formData.mobileNumber}
-                          onChange={handleChange}
-                          required
-                          disabled={useBackendApi && !canEnterMobile}
-                          className={`${inputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
-                          placeholder="+91 XXXXX XXXXX"
-                        />
-                        {useBackendApi && (
-                          <div className="mt-3 space-y-3">
-                            <div className="flex flex-wrap gap-2">
-                              <button
-                                type="button"
-                                onClick={sendMobileOtp}
-                                disabled={!canVerifyMobile || mobileVerifyStatus === 'loading'}
-                                className="rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-200 transition hover:bg-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-                              >
-                                {mobileVerifyStatus === 'loading' && !mobileOtpSent ? 'Sending OTP...' : 'Verify Mobile'}
-                              </button>
-                              {mobileVerified && (
-                                <span className="inline-flex items-center gap-1 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm font-semibold text-green-300">
-                                  <ShieldCheck size={16} />
-                                  Verified
-                                </span>
-                              )}
-                            </div>
-                            {mobileOtpSent && !mobileVerified && (
-                              <div className="flex flex-wrap gap-2">
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  autoComplete="one-time-code"
-                                  value={mobileOtp}
-                                  onChange={(e) => setMobileOtp(e.target.value)}
-                                  placeholder="Enter mobile OTP"
-                                  className={`${inputClasses} max-w-xs`}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={confirmMobileOtp}
-                                  disabled={!mobileOtp.trim() || mobileVerifyStatus === 'loading'}
-                                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                  Confirm OTP
-                                </button>
-                              </div>
-                            )}
-                            {mobileVerifyMessage && (
-                              <p className={`text-sm ${mobileVerifyStatus === 'error' ? 'text-red-300' : 'text-slate-400'}`}>
-                                {mobileVerifyMessage}
-                              </p>
-                            )}
-                          </div>
+                        <div className={verifyFieldRowClasses}>
+                          <input
+                            type="tel"
+                            name="mobileNumber"
+                            value={formData.mobileNumber}
+                            onChange={handleChange}
+                            required
+                            disabled={useBackendApi && (!canEnterMobile || mobileVerified)}
+                            className={`${verifyInputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
+                            placeholder="+91 XXXXX XXXXX"
+                          />
+                          {useBackendApi && (
+                            <button
+                              type="button"
+                              onClick={openMobileVerification}
+                              disabled={
+                                mobileVerified ||
+                                !canVerifyMobile ||
+                                mobileSendingOtp
+                              }
+                              className={verifyButtonClasses(mobileVerified)}
+                            >
+                              {mobileSendingOtp
+                                ? 'Sending OTP...'
+                                : mobileVerified
+                                  ? '✓ Verified'
+                                  : 'Verify Mobile'}
+                            </button>
+                          )}
+                        </div>
+                        {useBackendApi && mobileVerified && (
+                          <p className="mt-2 text-sm text-green-300">Mobile number verified successfully</p>
+                        )}
+                        {useBackendApi && !mobileVerified && mobileVerifyStatus === 'error' && !otpModal && (
+                          <p className="mt-2 text-sm text-red-300">{mobileVerifyMessage}</p>
                         )}
                       </motion.div>
 
                       <motion.div initial={{ y: 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
                         <label className={labelClasses}>Email ID <span className="text-indigo-400">*</span></label>
-                        <input
-                          type="email"
-                          name="emailId"
-                          value={formData.emailId}
-                          onChange={handleChange}
-                          required
-                          disabled={useBackendApi && !mobileVerified}
-                          className={`${inputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
-                          placeholder="your@email.com"
-                        />
-                        {useBackendApi && (
-                          <div className="mt-3 space-y-3">
-                            <div className="flex flex-wrap gap-2">
-                              <button
-                                type="button"
-                                onClick={sendEmailOtp}
-                                disabled={!canVerifyEmail || emailVerifyStatus === 'loading'}
-                                className="rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-sm font-semibold text-indigo-200 transition hover:bg-indigo-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-                              >
-                                {emailVerifyStatus === 'loading' && !emailOtpSent ? 'Sending OTP...' : 'Verify Email'}
-                              </button>
-                              {emailVerified && (
-                                <span className="inline-flex items-center gap-1 rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm font-semibold text-green-300">
-                                  <ShieldCheck size={16} />
-                                  Verified
-                                </span>
-                              )}
-                            </div>
-                            {emailOtpSent && !emailVerified && (
-                              <div className="flex flex-wrap gap-2">
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  value={emailOtp}
-                                  onChange={(e) => setEmailOtp(e.target.value)}
-                                  placeholder="Enter email OTP"
-                                  className={`${inputClasses} max-w-xs`}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={confirmEmailOtp}
-                                  disabled={!emailOtp.trim() || emailVerifyStatus === 'loading'}
-                                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                  Confirm OTP
-                                </button>
-                              </div>
-                            )}
-                            {emailVerifyMessage && (
-                              <p className={`text-sm ${emailVerifyStatus === 'error' ? 'text-red-300' : 'text-slate-400'}`}>
-                                {emailVerifyMessage}
-                              </p>
-                            )}
-                          </div>
+                        <div className={verifyFieldRowClasses}>
+                          <input
+                            type="email"
+                            name="emailId"
+                            value={formData.emailId}
+                            onChange={handleChange}
+                            required
+                            disabled={useBackendApi && (!mobileVerified || emailVerified)}
+                            className={`${verifyInputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
+                            placeholder="your@email.com"
+                          />
+                          {useBackendApi && (
+                            <button
+                              type="button"
+                              onClick={openEmailVerification}
+                              disabled={
+                                emailVerified ||
+                                !canVerifyEmail ||
+                                emailSendingOtp
+                              }
+                              className={verifyButtonClasses(emailVerified)}
+                            >
+                              {emailSendingOtp
+                                ? 'Sending OTP...'
+                                : emailVerified
+                                  ? '✓ Verified'
+                                  : 'Verify Email'}
+                            </button>
+                          )}
+                        </div>
+                        {useBackendApi && emailVerified && (
+                          <p className="mt-2 text-sm text-green-300">Email ID verified successfully</p>
+                        )}
+                        {useBackendApi && !emailVerified && emailVerifyStatus === 'error' && !otpModal && (
+                          <p className="mt-2 text-sm text-red-300">{emailVerifyMessage}</p>
                         )}
                       </motion.div>
 
@@ -742,7 +778,7 @@ export default function Contact() {
 
                     {useBackendApi && !bothVerified && (
                       <p className="text-sm text-amber-300/90">
-                        Please complete mobile and email verification before submitting the enquiry.
+                        Please verify mobile number and email ID before submitting.
                       </p>
                     )}
 
@@ -841,6 +877,39 @@ export default function Contact() {
           </div>
         </div>
       </section>
+
+      {useBackendApi && (
+        <>
+          <OtpVerificationModal
+            isOpen={otpModal === 'mobile'}
+            channel="mobile"
+            destination={formatMobileDestination(formData.mobileNumber)}
+            value={mobileOtp}
+            onChange={setMobileOtp}
+            onVerify={confirmMobileOtp}
+            onResend={resendMobileOtp}
+            onClose={closeOtpModal}
+            verifyStatus={mobileVerifyStatus}
+            verifyMessage={mobileVerifyMessage}
+            sendingOtp={mobileSendingOtp}
+            otpSent={mobileOtpSent}
+          />
+          <OtpVerificationModal
+            isOpen={otpModal === 'email'}
+            channel="email"
+            destination={formData.emailId.trim() || 'your@email.com'}
+            value={emailOtp}
+            onChange={setEmailOtp}
+            onVerify={confirmEmailOtp}
+            onResend={resendEmailOtp}
+            onClose={closeOtpModal}
+            verifyStatus={emailVerifyStatus}
+            verifyMessage={emailVerifyMessage}
+            sendingOtp={emailSendingOtp}
+            otpSent={emailOtpSent}
+          />
+        </>
+      )}
     </motion.div>
   );
 }
