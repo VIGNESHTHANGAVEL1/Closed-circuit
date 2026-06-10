@@ -256,6 +256,12 @@ export default function Contact() {
   };
 
   const confirmMobileOtp = async () => {
+    if (!/^\d{4}$/.test(mobileOtp.trim())) {
+      setMobileVerifyStatus('error');
+      setMobileVerifyMessage('Please enter the 4-digit OTP.');
+      return;
+    }
+
     setMobileVerifyStatus('loading');
     setMobileVerifyMessage('');
 
@@ -270,7 +276,7 @@ export default function Contact() {
       setMobileVerified(true);
       setMobileVerificationToken(response.mobileVerificationToken || '');
       setMobileVerifyStatus('success');
-      setMobileVerifyMessage('Mobile number verified successfully');
+      setMobileVerifyMessage('Mobile verified successfully.');
       setOtpModal(null);
       setMobileOtp('');
     } catch (err) {
@@ -303,6 +309,12 @@ export default function Contact() {
   };
 
   const confirmEmailOtp = async () => {
+    if (!/^\d{6}$/.test(emailOtp.trim())) {
+      setEmailVerifyStatus('error');
+      setEmailVerifyMessage('Please enter the 6-digit OTP.');
+      return;
+    }
+
     setEmailVerifyStatus('loading');
     setEmailVerifyMessage('');
 
@@ -317,7 +329,7 @@ export default function Contact() {
       setEmailVerified(true);
       setEmailVerificationToken(response.emailVerificationToken || '');
       setEmailVerifyStatus('success');
-      setEmailVerifyMessage('Email ID verified successfully');
+      setEmailVerifyMessage('Email verified successfully.');
       setOtpModal(null);
       setEmailOtp('');
     } catch (err) {
@@ -547,7 +559,7 @@ export default function Contact() {
                           )}
                         </div>
                         {useBackendApi && mobileVerified && (
-                          <p className="mt-2 text-sm text-green-300">Mobile number verified successfully</p>
+                          <p className="mt-2 text-sm text-green-300">Mobile verified successfully.</p>
                         )}
                         {useBackendApi && !mobileVerified && mobileVerifyStatus === 'error' && !otpModal && (
                           <p className="mt-2 text-sm text-red-300">{mobileVerifyMessage}</p>
@@ -587,7 +599,7 @@ export default function Contact() {
                           )}
                         </div>
                         {useBackendApi && emailVerified && (
-                          <p className="mt-2 text-sm text-green-300">Email ID verified successfully</p>
+                          <p className="mt-2 text-sm text-green-300">Email verified successfully.</p>
                         )}
                         {useBackendApi && !emailVerified && emailVerifyStatus === 'error' && !otpModal && (
                           <p className="mt-2 text-sm text-red-300">{emailVerifyMessage}</p>
@@ -885,7 +897,7 @@ export default function Contact() {
             channel="mobile"
             destination={formatMobileDestination(formData.mobileNumber)}
             value={mobileOtp}
-            onChange={setMobileOtp}
+            onChange={(value) => setMobileOtp(value.replace(/\D/g, '').slice(0, 4))}
             onVerify={confirmMobileOtp}
             onResend={resendMobileOtp}
             onClose={closeOtpModal}
@@ -899,7 +911,7 @@ export default function Contact() {
             channel="email"
             destination={formData.emailId.trim() || 'your@email.com'}
             value={emailOtp}
-            onChange={setEmailOtp}
+            onChange={(value) => setEmailOtp(value.replace(/\D/g, '').slice(0, 6))}
             onVerify={confirmEmailOtp}
             onResend={resendEmailOtp}
             onClose={closeOtpModal}

@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2 } from 'lucide-react';
 
-const OTP_LENGTH = 4;
+const OTP_LENGTHS = {
+  mobile: 4,
+  email: 6,
+};
 const RESEND_SECONDS = 30;
 
 export default function OtpVerificationModal({
@@ -23,9 +26,10 @@ export default function OtpVerificationModal({
   const [countdown, setCountdown] = useState(RESEND_SECONDS);
   const [resendGeneration, setResendGeneration] = useState(0);
 
-  const title = channel === 'mobile' ? 'Verify Mobile Number' : 'Verify Email ID';
+  const otpLength = OTP_LENGTHS[channel] || 4;
+  const title = channel === 'mobile' ? 'Verify Mobile Number' : 'Verify Email Address';
   const isLoading = verifyStatus === 'loading';
-  const isComplete = value.length === OTP_LENGTH;
+  const isComplete = value.length === otpLength;
 
   useEffect(() => {
     if (!isOpen || !otpSent) {
@@ -81,16 +85,16 @@ export default function OtpVerificationModal({
   }, [isOpen, isLoading, onClose]);
 
   const updateOtpAt = (index, digit) => {
-    const chars = value.padEnd(OTP_LENGTH, ' ').split('');
+    const chars = value.padEnd(otpLength, ' ').split('');
     chars[index] = digit;
-    onChange(chars.join('').replace(/\s/g, '').slice(0, OTP_LENGTH));
+    onChange(chars.join('').replace(/\s/g, '').slice(0, otpLength));
   };
 
   const handleInputChange = (index, raw) => {
     const digit = raw.replace(/\D/g, '').slice(-1);
     updateOtpAt(index, digit);
 
-    if (digit && index < OTP_LENGTH - 1) {
+    if (digit && index < otpLength - 1) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -112,20 +116,20 @@ export default function OtpVerificationModal({
       inputRefs.current[index - 1]?.focus();
     }
 
-    if (event.key === 'ArrowRight' && index < OTP_LENGTH - 1) {
+    if (event.key === 'ArrowRight' && index < otpLength - 1) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   const handlePaste = (event) => {
     event.preventDefault();
-    const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH);
+    const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, otpLength);
     if (!pasted) {
       return;
     }
 
     onChange(pasted);
-    const nextIndex = Math.min(pasted.length, OTP_LENGTH - 1);
+    const nextIndex = Math.min(pasted.length, otpLength - 1);
     inputRefs.current[nextIndex]?.focus();
   };
 
@@ -196,8 +200,12 @@ export default function OtpVerificationModal({
                 </div>
               ) : (
                 <>
-                  <div className="mb-6 flex justify-center gap-3">
-                    {Array.from({ length: OTP_LENGTH }).map((_, index) => (
+                  <div
+                    className={`mb-6 flex justify-center ${
+                      otpLength === 6 ? 'gap-2 sm:gap-3' : 'gap-3'
+                    }`}
+                  >
+                    {Array.from({ length: otpLength }).map((_, index) => (
                       <input
                         key={index}
                         ref={(element) => {
@@ -212,7 +220,11 @@ export default function OtpVerificationModal({
                         onKeyDown={(event) => handleKeyDown(index, event)}
                         onPaste={handlePaste}
                         disabled={isLoading}
-                        className="h-14 w-12 rounded-xl border border-white/10 bg-[#0f172a]/80 text-center text-xl font-bold text-white transition focus:border-purple-500/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40 disabled:cursor-not-allowed disabled:opacity-50 md:h-16 md:w-14 md:text-2xl"
+                        className={`rounded-xl border border-white/10 bg-[#0f172a]/80 text-center font-bold text-white transition focus:border-purple-500/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40 disabled:cursor-not-allowed disabled:opacity-50 ${
+                          otpLength === 6
+                            ? 'h-12 w-10 text-lg sm:h-14 sm:w-12 sm:text-xl md:h-16 md:w-14 md:text-2xl'
+                            : 'h-14 w-12 text-xl md:h-16 md:w-14 md:text-2xl'
+                        }`}
                         aria-label={`OTP digit ${index + 1}`}
                       />
                     ))}
