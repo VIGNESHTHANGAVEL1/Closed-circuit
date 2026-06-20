@@ -527,10 +527,16 @@ export default function Contact() {
       className="bg-[#030712] text-slate-300"
     >
       <Hero
-        title="Talk to Our Team"
-        subtitle="Have questions? We'd be happy to help you explore Closed Circuit."
-        contentClassName="mx-auto max-w-5xl px-6 py-4 md:py-5 text-center"
-      />
+  title="Talk to Our Team"
+  subtitle={
+    <>
+      <div>Have questions? We'd be happy to help you explore Closed Circuit.</div>
+      <div>Email: cc@closedcircuit.in &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mobile: +91 82175 43446</div>
+      <div>Kindly fill out the form below so we can connect with you at your convenience.</div>
+    </>
+  }
+  contentClassName="mx-auto max-w-5xl px-6 py-4 md:py-5 text-center"
+/>
 
       <section className="relative py-8 md:py-10 border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
