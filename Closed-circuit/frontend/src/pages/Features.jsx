@@ -82,8 +82,8 @@ export default function Features() {
         'Membership is approval-based to maintain a trusted and verified community of family members or organizations.',
       icon: Users,
       items: [
-        'Simple OTP-based member registration.',
-        'Admin approval required for every signup request.',
+        'Members are added exclusively through admin invitations.',
+        'Invited members access their account instantly using OTP-based login.',
         'Member blocking and removal to maintain safety.',
         'Structured member roles with clear responsibilities.',
       ],
