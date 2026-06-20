@@ -120,22 +120,20 @@ export default function Taglines() {
         contentClassName="mx-auto max-w-6xl px-6 py-20 md:py-24 text-center"
       />
 
-      <section className="relative overflow-hidden border-b border-white/5 bg-[#020617] py-5 md:py-6">
-        <motion.div
-          animate={{ x: ['0%', '-50%'] }}
-          transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
-          className="flex w-max gap-4"
+      <section className="relative border-b border-white/5 bg-[#020617] py-8">
+  <div className="mx-auto max-w-7xl px-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {marqueeItems.map((item, idx) => (
+        <div
+          key={idx}
+          className="flex h-[72px] items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-6 text-center text-[13px] font-bold uppercase tracking-[0.3em] text-slate-300"
         >
-          {[...marqueeItems, ...marqueeItems, ...marqueeItems].map((item, idx) => (
-            <div
-              key={`${item}-${idx}`}
-              className="flex min-h-[64px] min-w-[280px] items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-8 py-4 text-center text-[13px] font-bold uppercase tracking-[0.3em] text-slate-300 sm:min-h-[72px] sm:min-w-[340px]"
-            >
-              {item}
-            </div>
-          ))}
-        </motion.div>
-      </section>
+          {item}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
       <section className="relative overflow-hidden border-b border-white/5 bg-[#030712] py-24">
         <motion.div
