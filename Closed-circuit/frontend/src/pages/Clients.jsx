@@ -5,9 +5,9 @@ import Hero from '../components/Hero';
 import { apiRequest } from '../lib/api';
 import { openDomainPreview } from '../lib/domain';
 
-const CARD_GAP = 16;
-const LOGO_MAX_W = 180;
-const LOGO_MAX_H = 90;
+const CARD_GAP = 12;
+const LOGO_FRAME_SIZE = 88;
+const PROFILE_SIZE = 100;
 
 function formatOnboardDate(value) {
   if (!value) return '';
@@ -44,53 +44,16 @@ function useCardsPerView() {
 }
 
 function ClientLogo({ logoUrl, clientType, name }) {
-  const [size, setSize] = useState({ w: LOGO_MAX_W, h: LOGO_MAX_H });
-  const [imgScale, setImgScale] = useState(1);
-
-  const handleLoad = (e) => {
-    const { naturalWidth, naturalHeight } = e.target;
-    if (!naturalWidth || !naturalHeight) return;
-
-    const imageRatio = naturalWidth / naturalHeight;
-    const boxRatio = LOGO_MAX_W / LOGO_MAX_H;
-
-    let fitW;
-    let fitH;
-    if (imageRatio >= boxRatio) {
-      fitW = LOGO_MAX_W;
-      fitH = LOGO_MAX_W / imageRatio;
-    } else {
-      fitH = LOGO_MAX_H;
-      fitW = LOGO_MAX_H * imageRatio;
-    }
-
-    const fillRatio = (fitW * fitH) / (LOGO_MAX_W * LOGO_MAX_H);
-
-    if (fillRatio < 0.5) {
-      const shrink = Math.max(0.72, Math.sqrt(fillRatio / 0.5));
-      setSize({
-        w: Math.round(LOGO_MAX_W * shrink),
-        h: Math.round(LOGO_MAX_H * shrink),
-      });
-      setImgScale(Math.min(1.3, 1 / shrink));
-    } else {
-      setSize({ w: LOGO_MAX_W, h: LOGO_MAX_H });
-      setImgScale(1);
-    }
-  };
-
   return (
     <div
       className="flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-[0_2px_12px_rgba(0,0,0,0.15)]"
-      style={{ width: size.w, height: size.h }}
+      style={{ width: LOGO_FRAME_SIZE, height: LOGO_FRAME_SIZE }}
     >
       {logoUrl ? (
         <img
           src={logoUrl}
           alt={`${name} logo`}
-          onLoad={handleLoad}
-          className="h-full w-full object-contain px-3 py-1.5 transition-transform duration-200"
-          style={{ transform: `scale(${imgScale})` }}
+          className="h-full w-full object-contain p-0.5"
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-indigo-600">
@@ -103,14 +66,15 @@ function ClientLogo({ logoUrl, clientType, name }) {
 
 function ClientCardHeader({ logoUrl, profileUrl, clientType, name }) {
   return (
-    <div className="flex items-center justify-center gap-2.5">
+    <div className="flex items-center justify-center gap-2">
       <ClientLogo logoUrl={logoUrl} clientType={clientType} name={name} />
 
       {profileUrl ? (
         <img
           src={profileUrl}
           alt=""
-          className="h-[90px] w-[90px] shrink-0 rounded-full border-2 border-indigo-500/25 object-cover shadow-[0_4px_16px_rgba(99,102,241,0.2)]"
+          className="shrink-0 rounded-full border-2 border-indigo-500/25 object-cover shadow-[0_4px_16px_rgba(99,102,241,0.2)]"
+          style={{ width: PROFILE_SIZE, height: PROFILE_SIZE }}
         />
       ) : null}
     </div>
@@ -139,7 +103,7 @@ function ClientCard({ client, index }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.05, duration: 0.35 }}
-      className="group relative flex h-full flex-col overflow-hidden rounded-[20px] border border-indigo-500/30 bg-gradient-to-b from-[#0f172a]/95 via-[#0c1425]/90 to-[#060d1f]/95 p-5 text-center shadow-[0_8px_32px_rgba(99,102,241,0.15),0_0_0_1px_rgba(139,92,246,0.12)] backdrop-blur-md transition duration-300 hover:border-indigo-400/45 hover:shadow-[0_12px_40px_rgba(99,102,241,0.22)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-[20px] border border-indigo-500/30 bg-gradient-to-b from-[#0f172a]/95 via-[#0c1425]/90 to-[#060d1f]/95 p-4 text-center shadow-[0_8px_32px_rgba(99,102,241,0.15),0_0_0_1px_rgba(139,92,246,0.12)] backdrop-blur-md transition duration-300 hover:border-indigo-400/45 hover:shadow-[0_12px_40px_rgba(99,102,241,0.22)]"
     >
       <ClientCardHeader
         logoUrl={client.logo_url}
@@ -148,12 +112,12 @@ function ClientCard({ client, index }) {
         name={client.name}
       />
 
-      <div className="mt-2.5 flex flex-col items-center gap-2">
+      <div className="mt-2 flex flex-col items-center gap-1.5">
         <h3 className="text-xl font-bold leading-tight text-white transition-colors group-hover:text-indigo-100">
           {client.name}
         </h3>
 
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/35 bg-[#0f172a]/80 px-3.5 py-1 text-sm font-bold uppercase tracking-wider text-indigo-300">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-400/35 bg-[#0f172a]/80 px-3 py-0.5 text-sm font-bold uppercase tracking-wider text-indigo-300">
           <Sparkles size={13} />
           {formatClientType(client.client_type)}
         </span>
@@ -310,10 +274,10 @@ export default function Clients() {
         subtitle="Trusted partners who chose Closed Circuit for private, secure community experiences"
         eyebrow="Partners"
         compact
-        contentClassName="mx-auto max-w-6xl px-6 py-5 md:py-7 text-center"
+        contentClassName="mx-auto max-w-6xl px-6 py-3 md:py-4 text-center"
       />
 
-      <section className="relative mx-auto max-w-7xl px-4 pt-3 pb-12 sm:px-6 sm:pt-4 sm:pb-16">
+      <section className="relative mx-auto max-w-7xl px-4 pt-2 pb-8 sm:px-6 sm:pt-3 sm:pb-10">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-1/4 h-48 w-48 rounded-full bg-indigo-500/10 blur-[80px]" />
           <div className="absolute bottom-0 right-1/4 h-48 w-48 rounded-full bg-purple-500/10 blur-[80px]" />

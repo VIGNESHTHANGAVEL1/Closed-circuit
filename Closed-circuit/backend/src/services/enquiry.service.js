@@ -20,6 +20,7 @@ import { getTodayDateString } from '../utils/timezone.js';
 import {
   deleteVerificationSession,
 } from '../models/verificationSession.model.js';
+import { normalizePreferredContactMethod } from '../constants/preferredContactMethod.js';
 
 const REQUIRED_CONTACT_FIELDS = [
   'fullName',
@@ -60,6 +61,15 @@ export function validateContactPayload(payload) {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(payload.emailId)) {
     return 'Please provide a valid email address.';
+  }
+
+  const mobileDigits = String(payload.mobileNumber || '').replace(/\D/g, '');
+  if (mobileDigits.length !== 10) {
+    return 'Please provide a valid 10-digit mobile number.';
+  }
+
+  if (!normalizePreferredContactMethod(payload.preferredContactMethod)) {
+    return 'Please select a valid preferred contact method.';
   }
 
   return null;

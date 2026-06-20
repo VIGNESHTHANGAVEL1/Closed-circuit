@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2 } from 'lucide-react';
 
@@ -23,6 +23,7 @@ export default function OtpVerificationModal({
   otpSent,
 }) {
   const inputRefs = useRef([]);
+  const autoVerifyTriggeredRef = useRef(false);
   const [countdown, setCountdown] = useState(RESEND_SECONDS);
   const [resendGeneration, setResendGeneration] = useState(0);
 
@@ -30,6 +31,35 @@ export default function OtpVerificationModal({
   const title = channel === 'mobile' ? 'Verify Mobile Number' : 'Verify Email Address';
   const isLoading = verifyStatus === 'loading';
   const isComplete = value.length === otpLength;
+
+  useEffect(() => {
+    if (!isOpen) {
+      autoVerifyTriggeredRef.current = false;
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (resendGeneration > 0) {
+      autoVerifyTriggeredRef.current = false;
+    }
+  }, [resendGeneration]);
+
+  useEffect(() => {
+    if (
+      isOpen &&
+      otpSent &&
+      isComplete &&
+      !isLoading &&
+      !autoVerifyTriggeredRef.current
+    ) {
+      autoVerifyTriggeredRef.current = true;
+      onVerify();
+    }
+
+    if (value.length < otpLength) {
+      autoVerifyTriggeredRef.current = false;
+    }
+  }, [isOpen, otpSent, isComplete, isLoading, value.length, otpLength, onVerify]);
 
   useEffect(() => {
     if (!isOpen || !otpSent) {
@@ -161,11 +191,11 @@ export default function OtpVerificationModal({
             transition={{ duration: 0.25 }}
             className="relative z-10 w-full max-w-md rounded-2xl bg-gradient-to-br from-purple-500/80 via-indigo-500/70 to-purple-600/80 p-[1px] shadow-[0_0_50px_rgba(139,92,246,0.45)]"
           >
-            <div className="rounded-2xl bg-[#0a0f1a] p-6 md:p-8">
-              <div className="mb-6 flex items-start justify-between gap-4">
+            <div className="rounded-2xl bg-[#0a0f1a] p-4 md:p-5">
+              <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
                   <h2 className="text-xl font-bold text-white md:text-2xl">{title}</h2>
-                  <p className="mt-2 text-sm text-slate-400 md:text-base">
+                  <p className="mt-1 text-sm text-slate-400 md:text-base">
                     {sendingOtp ? 'Sending OTP...' : `OTP sent to ${destination}`}
                   </p>
                 </div>
@@ -201,8 +231,8 @@ export default function OtpVerificationModal({
               ) : (
                 <>
                   <div
-                    className={`mb-6 flex justify-center ${
-                      otpLength === 6 ? 'gap-2 sm:gap-3' : 'gap-3'
+                    className={`mb-3 flex justify-center ${
+                      otpLength === 6 ? 'gap-2 sm:gap-2.5' : 'gap-2.5'
                     }`}
                   >
                     {Array.from({ length: otpLength }).map((_, index) => (
@@ -232,7 +262,7 @@ export default function OtpVerificationModal({
 
                   {verifyMessage && (
                     <p
-                      className={`mb-4 text-center text-sm ${
+                      className={`mb-2 text-center text-sm ${
                         verifyStatus === 'error' ? 'text-red-300' : 'text-slate-400'
                       }`}
                     >
@@ -240,7 +270,7 @@ export default function OtpVerificationModal({
                     </p>
                   )}
 
-                  <div className="mb-6 text-center text-sm">
+                  <div className="mb-3 text-center text-sm">
                     {countdown > 0 ? (
                       <span className="text-slate-400">Resend OTP in {countdown}s</span>
                     ) : (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { listenForWebOtp } from '../utils/webOtp';
 import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
@@ -56,17 +56,42 @@ export default function Contact() {
   const [otpModal, setOtpModal] = useState(null);
   const [mobileSendingOtp, setMobileSendingOtp] = useState(false);
   const [emailSendingOtp, setEmailSendingOtp] = useState(false);
+  const [showMobileSuccessBanner, setShowMobileSuccessBanner] = useState(false);
+  const [showEmailSuccessBanner, setShowEmailSuccessBanner] = useState(false);
+  const mobileVerifyInProgress = useRef(false);
+  const emailVerifyInProgress = useRef(false);
 
   const useBackendApi = isApiEnabled();
   const isValidMobile = (value) => {
     const digits = String(value || '').replace(/\D/g, '');
-    return digits.length >= 10 && digits.length <= 15;
+    return digits.length === 10;
   };
+  const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
   const hasFullName = Boolean(formData.fullName.trim());
   const canEnterMobile = hasFullName;
   const canVerifyMobile = hasFullName && isValidMobile(formData.mobileNumber) && !mobileVerified;
-  const canVerifyEmail = mobileVerified && !emailVerified;
+  const canEnterEmail = useBackendApi ? mobileVerified : canEnterMobile && isValidMobile(formData.mobileNumber);
+  const canVerifyEmail = mobileVerified && isValidEmail(formData.emailId) && !emailVerified;
+  const canEnterTown = useBackendApi ? emailVerified : canEnterEmail && isValidEmail(formData.emailId);
+  const canEnterState = Boolean(formData.town.trim());
+  const canEnterCountry = Boolean(formData.state.trim());
+  const canEnterLookingFor = Boolean(formData.country.trim());
+  const canEnterPreferredContact = Boolean(formData.lookingFor);
+  const canEnterPreferredDate = Boolean(formData.preferredContactMethod);
+  const canEnterPreferredTime = Boolean(formData.preferredDate);
   const bothVerified = !useBackendApi || (mobileVerified && emailVerified);
+  const allRequiredComplete =
+    hasFullName &&
+    isValidMobile(formData.mobileNumber) &&
+    isValidEmail(formData.emailId) &&
+    Boolean(formData.town.trim()) &&
+    Boolean(formData.state.trim()) &&
+    Boolean(formData.country.trim()) &&
+    Boolean(formData.lookingFor) &&
+    Boolean(formData.preferredContactMethod) &&
+    Boolean(formData.preferredDate) &&
+    Boolean(formData.preferredTime);
+  const canSubmit = formData.consentAccepted && allRequiredComplete && bothVerified;
 
   const lookingForOptions = [
     'Gift for a Birthday',
@@ -82,7 +107,7 @@ export default function Contact() {
     'Private Platform for My Realtor Company',
   ];
 
-  const preferredContactMethods = ['Call', 'Chat'];
+  const preferredContactMethods = ['Call', 'Chat', 'Google Meeting / Live Meeting'];
   const hourOptions = Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, '0'));
   const minuteOptions = Array.from({ length: 60 }, (_, index) => String(index).padStart(2, '0'));
   const periodOptions = ['AM', 'PM'];
@@ -107,6 +132,7 @@ export default function Contact() {
     setMobileVerifyStatus(null);
     setMobileVerifyMessage('');
     setMobileSendingOtp(false);
+    setShowMobileSuccessBanner(false);
   };
 
   const resetEmailVerification = () => {
@@ -117,11 +143,16 @@ export default function Contact() {
     setEmailVerifyStatus(null);
     setEmailVerifyMessage('');
     setEmailSendingOtp(false);
+    setShowEmailSuccessBanner(false);
   };
 
   const handleChange = (e) => {
     const { name, type, value, checked } = e.target;
-    const nextValue = type === 'checkbox' ? checked : value;
+    let nextValue = type === 'checkbox' ? checked : value;
+
+    if (name === 'mobileNumber') {
+      nextValue = String(value).replace(/\D/g, '').slice(0, 10);
+    }
 
     setFormData((prev) => {
       const next = { ...prev, [name]: nextValue };
@@ -255,13 +286,18 @@ export default function Contact() {
     }
   };
 
-  const confirmMobileOtp = async () => {
+  const confirmMobileOtp = useCallback(async () => {
+    if (mobileVerifyInProgress.current || mobileVerifyStatus === 'loading') {
+      return;
+    }
+
     if (!/^\d{4}$/.test(mobileOtp.trim())) {
       setMobileVerifyStatus('error');
       setMobileVerifyMessage('Please enter the 4-digit OTP.');
       return;
     }
 
+    mobileVerifyInProgress.current = true;
     setMobileVerifyStatus('loading');
     setMobileVerifyMessage('');
 
@@ -276,14 +312,18 @@ export default function Contact() {
       setMobileVerified(true);
       setMobileVerificationToken(response.mobileVerificationToken || '');
       setMobileVerifyStatus('success');
-      setMobileVerifyMessage('Mobile verified successfully.');
+      setMobileVerifyMessage('Mobile verified successfully');
+      setShowMobileSuccessBanner(true);
+      setTimeout(() => setShowMobileSuccessBanner(false), 2500);
       setOtpModal(null);
       setMobileOtp('');
     } catch (err) {
       setMobileVerifyStatus('error');
       setMobileVerifyMessage(err.message || 'Invalid OTP. Please try again.');
+    } finally {
+      mobileVerifyInProgress.current = false;
     }
-  };
+  }, [formData.mobileNumber, mobileOtp, mobileVerifyStatus]);
 
   const sendEmailOtp = async () => {
     setEmailSendingOtp(true);
@@ -308,13 +348,18 @@ export default function Contact() {
     }
   };
 
-  const confirmEmailOtp = async () => {
+  const confirmEmailOtp = useCallback(async () => {
+    if (emailVerifyInProgress.current || emailVerifyStatus === 'loading') {
+      return;
+    }
+
     if (!/^\d{6}$/.test(emailOtp.trim())) {
       setEmailVerifyStatus('error');
       setEmailVerifyMessage('Please enter the 6-digit OTP.');
       return;
     }
 
+    emailVerifyInProgress.current = true;
     setEmailVerifyStatus('loading');
     setEmailVerifyMessage('');
 
@@ -329,14 +374,18 @@ export default function Contact() {
       setEmailVerified(true);
       setEmailVerificationToken(response.emailVerificationToken || '');
       setEmailVerifyStatus('success');
-      setEmailVerifyMessage('Email verified successfully.');
+      setEmailVerifyMessage('Email verified successfully');
+      setShowEmailSuccessBanner(true);
+      setTimeout(() => setShowEmailSuccessBanner(false), 2500);
       setOtpModal(null);
       setEmailOtp('');
     } catch (err) {
       setEmailVerifyStatus('error');
       setEmailVerifyMessage(err.message || 'Invalid OTP. Please try again.');
+    } finally {
+      emailVerifyInProgress.current = false;
     }
-  };
+  }, [emailOtp, emailVerifyStatus, formData.emailId]);
 
   const handleTimeChange = (field, value) => {
     const nextHour = field === 'hour' ? value : preferredHour;
@@ -387,15 +436,20 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Preferred Date Validation
-  const today = new Date().toISOString().split("T")[0];
+    if (useBackendApi && !bothVerified) {
+      setStatus('error');
+      setMessage('Please complete mobile and email verification before submitting the enquiry.');
+      return;
+    }
 
-  if (formData.preferredDate < today) {
-    setStatus('error');
-    setMessage('Preferred Date cannot be in the past.');
-    return;
-  }
-  
+    const today = new Date().toISOString().split('T')[0];
+
+    if (formData.preferredDate < today) {
+      setStatus('error');
+      setMessage('Preferred Date cannot be in the past.');
+      return;
+    }
+
     setStatus('loading');
 
     try {
@@ -457,11 +511,11 @@ export default function Contact() {
   };
 
   const formFieldTextClasses = 'text-2xl md:text-0xl leading-relaxed';
-  const labelClasses = `block font-semibold text-white mb-3 ${formFieldTextClasses}`;
+  const labelClasses = `block font-semibold text-white mb-1.5 ${formFieldTextClasses}`;
   const inputClasses =
-    `w-full px-4 py-3 bg-[#0f172a]/50 text-white border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-semibold placeholder-slate-500 ${formFieldTextClasses}`;
+    `w-full px-4 py-3 bg-[#0f172a]/50 text-white border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-semibold placeholder-slate-500 disabled:cursor-not-allowed disabled:opacity-50 ${formFieldTextClasses}`;
   const selectOptionClasses = '[&>option]:bg-slate-900 [&>option]:text-white [&>option]:text-2xl [&>option]:md:text-0xl';
-  const verifyFieldRowClasses = 'flex flex-col gap-2 sm:flex-row sm:items-stretch';
+  const verifyFieldRowClasses = 'flex flex-col gap-1 sm:flex-row sm:items-stretch';
   const verifyInputClasses = `${inputClasses} min-w-0 flex-1`;
 
   return (
@@ -473,20 +527,12 @@ export default function Contact() {
       className="bg-[#030712] text-slate-300"
     >
       <Hero
-        title="Get In Touch"
-        subtitle={
-          <>
-            We’d love to hear from you. Share your details and let’s connect!
-            <br />
-            Email: cc@closedcircuit.in &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mobile: +91 82175 43446
-            <br />
-            Kindly fill out the form below so we can connect with you at your convenience.
-          </>
-        }
-        contentClassName="mx-auto max-w-5xl px-6 py-8 md:py-10 text-center"
+        title="Talk to Our Team"
+        subtitle="Have questions? We'd be happy to help you explore Closed Circuit."
+        contentClassName="mx-auto max-w-5xl px-6 py-4 md:py-5 text-center"
       />
 
-      <section className="relative py-16 md:py-20 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="relative py-8 md:py-10 border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
         <div className="relative mx-auto max-w-6xl px-6 z-10">
           <motion.div
@@ -496,7 +542,7 @@ export default function Contact() {
           >
             <div className="mx-auto max-w-4xl">
               {/* Form */}
-              <Card className="p-8 md:p-10 border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.01]">
+              <Card className="p-4 md:p-5 border border-white/10 bg-gradient-to-br from-white/[0.03] to-white/[0.01]">
                 {status === 'success' ? (
                   <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
@@ -511,8 +557,8 @@ export default function Contact() {
                     <p className="text-lg text-slate-400 leading-relaxed">{message}</p>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <motion.div initial={{ y: 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0 }}>
                         <label className={labelClasses}>Full Name <span className="text-indigo-400">*</span></label>
                         <input
@@ -534,10 +580,13 @@ export default function Contact() {
                             name="mobileNumber"
                             value={formData.mobileNumber}
                             onChange={handleChange}
+                            inputMode="numeric"
+                            pattern="\d{10}"
+                            maxLength={10}
                             required
-                            disabled={useBackendApi && (!canEnterMobile || mobileVerified)}
+                            disabled={!canEnterMobile || (useBackendApi && mobileVerified)}
                             className={`${verifyInputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
-                            placeholder="+91 XXXXX XXXXX"
+                            placeholder="10-digit mobile number"
                           />
                           {useBackendApi && (
                             <button
@@ -558,8 +607,8 @@ export default function Contact() {
                             </button>
                           )}
                         </div>
-                        {useBackendApi && mobileVerified && (
-                          <p className="mt-2 text-sm text-green-300">Mobile verified successfully.</p>
+                        {useBackendApi && showMobileSuccessBanner && (
+                          <p className="mt-1 text-sm text-green-300">Mobile verified successfully</p>
                         )}
                         {useBackendApi && !mobileVerified && mobileVerifyStatus === 'error' && !otpModal && (
                           <p className="mt-2 text-sm text-red-300">{mobileVerifyMessage}</p>
@@ -575,7 +624,7 @@ export default function Contact() {
                             value={formData.emailId}
                             onChange={handleChange}
                             required
-                            disabled={useBackendApi && (!mobileVerified || emailVerified)}
+                            disabled={!canEnterEmail || (useBackendApi && emailVerified)}
                             className={`${verifyInputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
                             placeholder="your@email.com"
                           />
@@ -598,8 +647,8 @@ export default function Contact() {
                             </button>
                           )}
                         </div>
-                        {useBackendApi && emailVerified && (
-                          <p className="mt-2 text-sm text-green-300">Email verified successfully.</p>
+                        {useBackendApi && showEmailSuccessBanner && (
+                          <p className="mt-1 text-sm text-green-300">Email verified successfully</p>
                         )}
                         {useBackendApi && !emailVerified && emailVerifyStatus === 'error' && !otpModal && (
                           <p className="mt-2 text-sm text-red-300">{emailVerifyMessage}</p>
@@ -614,6 +663,7 @@ export default function Contact() {
                           value={formData.town}
                           onChange={handleChange}
                           required
+                          disabled={!canEnterTown}
                           className={inputClasses}
                           placeholder="Your town"
                         />
@@ -627,6 +677,7 @@ export default function Contact() {
                           value={formData.state}
                           onChange={handleChange}
                           required
+                          disabled={!canEnterState}
                           className={inputClasses}
                           placeholder="Your state"
                         />
@@ -640,6 +691,7 @@ export default function Contact() {
                           value={formData.country}
                           onChange={handleChange}
                           required
+                          disabled={!canEnterCountry}
                           className={inputClasses}
                           placeholder="Your country"
                         />
@@ -652,6 +704,7 @@ export default function Contact() {
                           value={formData.lookingFor}
                           onChange={handleChange}
                           required
+                          disabled={!canEnterLookingFor}
                           className={`${inputClasses} ${selectOptionClasses}`}
                         >
                           <option value="">Select an option</option>
@@ -663,11 +716,11 @@ export default function Contact() {
 
                       <motion.div initial={{ y: 10, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} transition={{ delay: 0.35 }} className="md:col-span-2">
                         <label className={labelClasses}>Preferred Contact Method <span className="text-indigo-400">*</span></label>
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div className={`grid grid-cols-1 gap-2 sm:grid-cols-3 ${!canEnterPreferredContact ? 'pointer-events-none opacity-50' : ''}`}>
                           {preferredContactMethods.map((method) => (
                             <label
                               key={method}
-                              className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-all ${
+                              className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 transition-all ${
                                 formData.preferredContactMethod === method
                                   ? 'border-indigo-500/50 bg-indigo-500/10 text-white shadow-[0_0_18px_rgba(99,102,241,0.15)]'
                                   : 'border-white/10 bg-[#0f172a]/50 text-slate-300 hover:border-white/20 hover:bg-white/[0.04]'
@@ -680,6 +733,7 @@ export default function Contact() {
                                 checked={formData.preferredContactMethod === method}
                                 onChange={handleChange}
                                 required
+                                disabled={!canEnterPreferredContact}
                                 className="h-4 w-4 border-white/20 bg-transparent text-indigo-500 focus:ring-indigo-500/40"
                               />
                               <span className={`font-semibold ${formFieldTextClasses}`}>{method}</span>
@@ -702,8 +756,9 @@ export default function Contact() {
     name="preferredDate"
     value={formData.preferredDate}
     onChange={handleChange}
-    min={new Date().toISOString().split("T")[0]} // Disable past dates
+    min={new Date().toISOString().split('T')[0]}
     required
+    disabled={!canEnterPreferredDate}
     className={`${inputClasses} [color-scheme:dark]`}
   />
 </motion.div>
@@ -715,6 +770,7 @@ export default function Contact() {
                             value={preferredHour}
                             onChange={(e) => handleTimeChange('hour', e.target.value)}
                             required
+                            disabled={!canEnterPreferredTime}
                             className={`${inputClasses} ${selectOptionClasses}`}
                           >
                             <option value="">Hour</option>
@@ -726,6 +782,7 @@ export default function Contact() {
                             value={preferredMinute}
                             onChange={(e) => handleTimeChange('minute', e.target.value)}
                             required
+                            disabled={!canEnterPreferredTime}
                             className={`${inputClasses} ${selectOptionClasses}`}
                           >
                             <option value="">Minute</option>
@@ -737,6 +794,7 @@ export default function Contact() {
                             value={preferredPeriod}
                             onChange={(e) => handleTimeChange('period', e.target.value)}
                             required
+                            disabled={!canEnterPreferredTime}
                             className={`${inputClasses} ${selectOptionClasses}`}
                           >
                             <option value="">AM/PM</option>
@@ -790,7 +848,7 @@ export default function Contact() {
 
                     {useBackendApi && !bothVerified && (
                       <p className="text-sm text-amber-300/90">
-                        Please verify mobile number and email ID before submitting.
+                        Please complete mobile and email verification before submitting the enquiry.
                       </p>
                     )}
 
@@ -809,8 +867,8 @@ export default function Contact() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       type="submit"
-                      disabled={status === 'loading' || !formData.consentAccepted || !bothVerified}
-                      className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 mt-6 border border-white/10"
+                      disabled={status === 'loading' || !canSubmit}
+                      className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 mt-3 border border-white/10"
                     >
                       {status === 'loading' ? (
                         <>
@@ -830,27 +888,27 @@ export default function Contact() {
             </div>
           </motion.div>
 
-          <div className="mt-8 grid w-full gap-6 items-stretch lg:grid-cols-2">
+          <div className="mt-4 grid w-full gap-3 items-stretch lg:grid-cols-2">
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.15, duration: 0.6 }}
               className="w-full"
             >
-              <Card className="h-full w-full p-8 md:p-9 border border-white/10 bg-gradient-to-br from-indigo-500/12 via-indigo-500/5 to-white/[0.02]">
+              <Card className="h-full w-full p-4 md:p-5 border border-white/10 bg-gradient-to-br from-indigo-500/12 via-indigo-500/5 to-white/[0.02]">
                 <p className="text-sm font-bold uppercase tracking-[0.28em] text-indigo-400">When To Call</p>
-                <h3 className="mt-4 font-display text-3xl font-bold text-white tracking-tight">
+                <h3 className="mt-2 font-display text-3xl font-bold text-white tracking-tight">
                   Best for detailed conversations and faster decisions.
                 </h3>
-                <p className="mt-4 text-base text-slate-400 leading-relaxed">
+                <p className="mt-2 text-base text-slate-400 leading-relaxed">
                   Pick a call when you want to discuss setup, launch planning, pricing flow, or your exact project
                   requirements in one focused conversation.
                 </p>
-                <div className="mt-8 grid gap-4">
+                <div className="mt-4 grid gap-2">
                   {callWindows.map((item) => (
                     <div
                       key={item}
-                      className="rounded-2xl border border-white/5 bg-white/[0.04] px-5 py-5 text-sm font-medium leading-relaxed text-slate-300"
+                      className="rounded-2xl border border-white/5 bg-white/[0.04] px-4 py-3 text-sm font-medium leading-relaxed text-slate-300"
                     >
                       {item}
                     </div>
@@ -865,20 +923,20 @@ export default function Contact() {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="w-full"
             >
-              <Card className="h-full w-full p-8 md:p-9 border border-white/10 bg-gradient-to-br from-purple-500/12 via-purple-500/5 to-white/[0.02]">
+              <Card className="h-full w-full p-4 md:p-5 border border-white/10 bg-gradient-to-br from-purple-500/12 via-purple-500/5 to-white/[0.02]">
                 <p className="text-sm font-bold uppercase tracking-[0.28em] text-purple-400">When To Chat</p>
-                <h3 className="mt-4 font-display text-3xl font-bold text-white tracking-tight">
+                <h3 className="mt-2 font-display text-3xl font-bold text-white tracking-tight">
                   Best for quick questions, updates, and simple follow-ups.
                 </h3>
-                <p className="mt-4 text-base text-slate-400 leading-relaxed">
+                <p className="mt-2 text-base text-slate-400 leading-relaxed">
                   Use chat when you want lightweight back-and-forth, document sharing, quick clarifications, or
                   a fast first response without booking a call.
                 </p>
-                <div className="mt-8 grid gap-4">
+                <div className="mt-4 grid gap-2">
                   {chatWindows.map((item) => (
                     <div
                       key={item}
-                      className="rounded-2xl border border-white/5 bg-white/[0.04] px-5 py-5 text-sm font-medium leading-relaxed text-slate-300"
+                      className="rounded-2xl border border-white/5 bg-white/[0.04] px-4 py-3 text-sm font-medium leading-relaxed text-slate-300"
                     >
                       {item}
                     </div>
