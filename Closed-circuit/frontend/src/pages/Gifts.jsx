@@ -34,9 +34,9 @@ export default function Gifts() {
       />
 
       {/* Video section */}
-      <section className="relative py-24 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="relative py-12 border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
-        <div className="relative z-10 mx-auto max-w-7xl px-6">
+        <div className="relative z-10 page-container">
           <div className="flex justify-center">
             <video
               src="https://lara.blr1.cdn.digitaloceanspaces.com/Closed%20Circuit/gifts_in_voice.mp4"
@@ -55,11 +55,11 @@ export default function Gifts() {
       </section>
 
       {/* Section 1: Hero image + Occasion chips + Unique gift card */}
-      <section className="relative py-32 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="section-y relative border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-purple-500/10 blur-[200px] pointer-events-none" />
         <div className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full bg-indigo-500/5 blur-[150px] pointer-events-none" />
         
-        <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-2 items-center relative z-10">
+        <div className="page-container grid gap-8 lg:grid-cols-2 items-center relative z-10">
           {/* Left: Image with overlay */}
           <motion.div initial={{ x: -40, opacity: 0 }} whileInView={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }} className="relative group">
             <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-pink-500/20 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -122,9 +122,9 @@ export default function Gifts() {
       </section>
 
       {/* Section 2: Features as icon-tile grid | Image right */}
-      <section className="relative py-32 bg-[#0f172a]/40 overflow-hidden">
+      <section className="section-y relative bg-[#0f172a]/40 overflow-hidden">
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-indigo-500/5 blur-[180px] pointer-events-none" />
-        <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-[1.2fr_0.8fr] relative z-10">
+        <div className="page-container grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr] relative z-10">
           <div>
             <div className="flex items-center gap-4 mb-12">
               <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl text-indigo-400">
@@ -154,7 +154,7 @@ export default function Gifts() {
               })}
             </div>
 
-            <p className="mt-10 pt-8 border-t border-white/10 text-lg text-slate-400 leading-relaxed">
+            <p className="mt-5 pt-8 border-t border-white/10 text-lg text-slate-400 leading-relaxed">
               Your memories will never disappear. Your family moments stay safe forever across web, Android, and iPhone access.
             </p>
           </div>

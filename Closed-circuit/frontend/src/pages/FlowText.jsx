@@ -126,11 +126,11 @@ export default function FlowText() {
         subtitle="A step-by-step interactive journey through the Closed Circuit system and how members seamlessly interact."
       />
 
-      <section className="relative py-32 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="section-y relative border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/4 left-0 w-[800px] h-[800px] bg-indigo-500/5 blur-[200px] rounded-full pointer-events-none" />
         <div className="absolute bottom-1/4 right-0 w-[600px] h-[600px] bg-purple-500/5 blur-[150px] rounded-full pointer-events-none" />
         
-        <div className="mx-auto max-w-7xl px-6 relative z-10">
+        <div className="page-container relative z-10">
           
           <div className="mb-20 text-center max-w-3xl mx-auto">
              <h2 className="font-display text-4xl font-bold text-white tracking-tight mb-6">The Complete Experience</h2>
@@ -184,8 +184,8 @@ export default function FlowText() {
         </div>
       </section>
 
-      <section className="relative py-32 bg-[#0f172a]/40">
-        <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr] items-center">
+      <section className="section-y relative bg-[#0f172a]/40">
+        <div className="page-container grid gap-6 lg:grid-cols-[1.1fr_0.9fr] items-center">
           <Card className="p-10 border border-white/10 bg-white/[0.02]">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-indigo-500/20 rounded-xl text-indigo-400 border border-indigo-500/30">
@@ -223,8 +223,8 @@ export default function FlowText() {
         </div>
       </section>
 
-      <section className="relative py-32 border-b border-white/5 bg-[#030712]">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <section className="section-y relative border-b border-white/5 bg-[#030712]">
+        <div className="page-container grid items-center gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <Card className="overflow-hidden p-0 border border-white/10 group h-full">
             <img src={visuals.familyHero} alt="Family members sharing memories" className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           </Card>
@@ -238,8 +238,8 @@ export default function FlowText() {
         </div>
       </section>
 
-      <section className="relative py-32 bg-[#0f172a]/40">
-        <div className="mx-auto max-w-6xl px-6">
+      <section className="section-y relative bg-[#0f172a]/40">
+        <div className="page-container">
           <div className="grid gap-8 lg:grid-cols-3">
             <Card className="overflow-hidden p-0 border border-white/10 group">
               <img src={visuals.community} alt="Community collaboration" className="h-64 w-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="lazy" />
@@ -251,7 +251,7 @@ export default function FlowText() {
               <img src={visuals.secure} alt="Secure platform" className="h-64 w-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="lazy" />
             </Card>
           </div>
-          <Card className="mt-12 p-10 border border-white/10 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-center">
+          <Card className="mt-6 p-10 border border-white/10 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-center">
             <h3 className="font-display text-3xl font-bold text-white tracking-tight">A Visual Memory Timeline</h3>
             <p className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
               The Closed Circuit flow keeps every update, event, and memory visually organized - so nothing gets lost.

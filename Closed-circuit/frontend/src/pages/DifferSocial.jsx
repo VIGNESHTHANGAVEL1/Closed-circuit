@@ -54,11 +54,11 @@ export default function DifferSocial() {
       />
 
       {/* Section 1: Split visual limitation panels */}
-      <section className="relative py-32 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="section-y relative border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-rose-500/10 blur-[200px] rounded-full pointer-events-none" />
         <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-orange-500/5 blur-[200px] rounded-full pointer-events-none" />
         
-        <div className="mx-auto max-w-7xl px-6 relative z-10">
+        <div className="page-container relative z-10">
           <div className="mb-16 text-center max-w-3xl mx-auto">
             <h2 className="font-display text-4xl font-bold text-white tracking-tight mb-6">The Problem with Existing Platforms</h2>
             <p className="text-lg text-slate-400 leading-relaxed">Neither messaging apps nor social networks were built with your family's privacy in mind.</p>
@@ -119,9 +119,9 @@ export default function DifferSocial() {
       </section>
 
       {/* Section 2: Why Private banner with image collage */}
-      <section className="relative py-32 bg-[#0f172a]/40 overflow-hidden">
+      <section className="section-y relative bg-[#0f172a]/40 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 pointer-events-none" />
-        <div className="mx-auto max-w-7xl px-6 grid gap-16 lg:grid-cols-2 items-center relative z-10">
+        <div className="page-container grid gap-8 lg:grid-cols-2 items-center relative z-10">
           {/* Left: visual image panel */}
           <div className="grid grid-cols-2 gap-4">
             <Card className="overflow-hidden p-0 border border-white/10 group col-span-2">
@@ -143,7 +143,7 @@ export default function DifferSocial() {
               </div>
               <h2 className="font-display text-4xl font-bold text-white tracking-tight">Why Families Need a Private Digital Space</h2>
             </div>
-            <p className="text-lg text-slate-400 leading-relaxed mb-10">
+            <p className="text-lg text-slate-400 leading-relaxed mb-5">
               Birthdays, weddings, festivals, reunions, and milestones are meant to be shared with loved ones — not with strangers or public audiences.
             </p>
             <div className="space-y-4">
@@ -165,13 +165,13 @@ export default function DifferSocial() {
       </section>
 
       {/* Section 3: How it Works (numbered steps) + Use Cases mosaic */}
-      <section className="relative py-32 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="section-y relative border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-500/5 blur-[200px] rounded-full pointer-events-none" />
-        <div className="mx-auto max-w-7xl px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16">
+        <div className="page-container relative z-10">
+          <div className="grid lg:grid-cols-2 gap-8">
             {/* How it works */}
             <div>
-              <h3 className="font-display text-3xl font-bold text-white tracking-tight mb-10">How a Private Family Platform Works</h3>
+              <h3 className="font-display text-3xl font-bold text-white tracking-tight mb-5">How a Private Family Platform Works</h3>
               <ol className="space-y-5">
                 {steps.map((item, index) => (
                   <motion.li
@@ -192,7 +192,7 @@ export default function DifferSocial() {
 
             {/* Use Cases as visual mosaic */}
             <div>
-              <h3 className="font-display text-3xl font-bold text-white tracking-tight mb-10">Family Use Cases</h3>
+              <h3 className="font-display text-3xl font-bold text-white tracking-tight mb-5">Family Use Cases</h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 {useCases.map((item, idx) => (
                   <motion.div
@@ -218,8 +218,8 @@ export default function DifferSocial() {
       </section>
 
       {/* Section 4: Immersive story section */}
-      <section className="relative py-32 bg-gradient-to-b from-[#0f172a]/40 to-[#030712]">
-        <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-2 items-center">
+      <section className="section-y relative bg-gradient-to-b from-[#0f172a]/40 to-[#030712]">
+        <div className="page-container grid gap-6 lg:grid-cols-2 items-center">
           <Card className="overflow-hidden p-0 border border-white/10 group h-full shadow-2xl">
             <img src={visuals.familyHero} alt="Family stories" className="h-full min-h-[450px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           </Card>

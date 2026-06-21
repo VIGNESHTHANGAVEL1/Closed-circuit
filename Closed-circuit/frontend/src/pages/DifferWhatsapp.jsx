@@ -37,11 +37,11 @@ export default function DifferWhatsapp() {
       />
 
       {/* Section 1: Comparison Cards instead of Table */}
-      <section className="relative py-32 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="section-y relative border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-purple-500/10 blur-[200px] rounded-full pointer-events-none" />
         <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-pink-500/5 blur-[150px] rounded-full pointer-events-none" />
         
-        <div className="mx-auto max-w-7xl px-6 relative z-10">
+        <div className="page-container relative z-10">
           <div className="mb-16 text-center max-w-3xl mx-auto">
              <h2 className="font-display text-4xl font-bold text-white tracking-tight mb-6">Messaging vs Memories</h2>
              <p className="text-lg text-slate-400 leading-relaxed">
@@ -94,8 +94,8 @@ export default function DifferWhatsapp() {
       </section>
 
       {/* Section 2: Why Private left | Image right */}
-      <section className="relative py-32 bg-[#0f172a]/40">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
+      <section className="section-y relative bg-[#0f172a]/40">
+        <div className="page-container grid items-center gap-6 lg:grid-cols-2">
           <Card className="p-10 border border-white/10 bg-gradient-to-br from-purple-500/10 to-transparent">
             <h3 className="font-display text-3xl font-bold text-white tracking-tight leading-tight">
               Why a Private Family Platform Is Better

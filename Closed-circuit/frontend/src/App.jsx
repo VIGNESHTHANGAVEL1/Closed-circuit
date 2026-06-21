@@ -25,6 +25,7 @@ import EnquiryDashboard from './pages/admin/EnquiryDashboard';
 import ClientManagement from './pages/admin/ClientManagement';
 import ChangePassword from './pages/admin/ChangePassword';
 import Clients from './pages/Clients';
+import FeatureDemos from './pages/FeatureDemos';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -145,6 +146,7 @@ function AppShell() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/features" element={<Features />} />
+            <Route path="/feature-demos" element={<FeatureDemos />} />
             <Route path="/flow-text" element={<FlowText />} />
             <Route path="/flow-diagram" element={<FlowDiagram />} />
             <Route path="/flow-voice" element={<FlowVoice />} />

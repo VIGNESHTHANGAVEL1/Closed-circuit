@@ -88,9 +88,9 @@ export default function FlowDiagram() {
         subtitle="A vibrant, visual sequence of how the Closed Circuit platform operates from signup to community engagement."
       />
 
-      <section className="relative py-32 border-b border-white/5 bg-[#030712]">
+      <section className="section-y relative border-b border-white/5 bg-[#030712]">
         <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 blur-[200px] rounded-full pointer-events-none" />
-        <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[1.2fr_0.8fr] relative z-10">
+        <div className="page-container grid gap-6 lg:grid-cols-[1.2fr_0.8fr] relative z-10">
           
           <Card className="p-10 border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl relative overflow-hidden">
              {/* Gradient glow behind the timeline */}
@@ -160,14 +160,14 @@ export default function FlowDiagram() {
         </div>
       </section>
 
-      <section className="relative py-32 bg-[#0f172a]/40 bg-gradient-to-b from-transparent to-[#030712]">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-[0.95fr_1.05fr]">
+      <section className="section-y relative bg-[#0f172a]/40 bg-gradient-to-b from-transparent to-[#030712]">
+        <div className="page-container grid items-center gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <Card className="overflow-hidden p-0 border border-white/10 group h-full">
             <img src={visuals.secure} alt="Secure community workflow" className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           </Card>
           <Card className="p-10 border border-white/10 bg-gradient-to-br from-indigo-500/10 to-transparent h-full flex flex-col justify-center">
             <h3 className="font-display text-4xl font-bold text-white tracking-tight">The Journey in Five Steps</h3>
-            <ol className="mt-10 space-y-6 text-base font-medium text-slate-300">
+            <ol className="mt-5 space-y-6 text-base font-medium text-slate-300">
               {steps.map((item, index) => (
                 <motion.li 
                   key={item} 

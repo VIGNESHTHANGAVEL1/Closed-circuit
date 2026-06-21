@@ -123,7 +123,7 @@ function ClientCard({ client, index }) {
         </span>
 
         {client.business_type && (
-          <p className="text-sm leading-snug text-white">{client.business_type}</p>
+          <p className="text-sm leading-snug text-white">Using for {client.business_type}</p>
         )}
 
         {client.onboard_date && (
@@ -274,10 +274,10 @@ export default function Clients() {
         subtitle="Trusted partners who chose Closed Circuit for private, secure community experiences"
         eyebrow="Partners"
         compact
-        contentClassName="mx-auto max-w-6xl px-6 py-3 md:py-4 text-center"
+        contentClassName="page-container py-2 md:py-3 text-center"
       />
 
-      <section className="relative mx-auto max-w-7xl px-4 pt-2 pb-8 sm:px-6 sm:pt-3 sm:pb-10">
+      <section className="page-container relative pb-5 pt-1 sm:pb-6 sm:pt-2">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute top-0 left-1/4 h-48 w-48 rounded-full bg-indigo-500/10 blur-[80px]" />
           <div className="absolute bottom-0 right-1/4 h-48 w-48 rounded-full bg-purple-500/10 blur-[80px]" />

@@ -86,3 +86,13 @@ p {
 ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+@layer components {
+  .page-container {
+    @apply mx-auto w-full max-w-7xl px-6;
+  }
+
+  .section-y {
+    @apply py-16;
+  }
+}

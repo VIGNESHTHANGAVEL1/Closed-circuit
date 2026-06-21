@@ -117,7 +117,7 @@ export default function Taglines() {
         title="Luxurious redefined with Closed Circuit."
         subtitle="Many families begin with messaging groups to stay connected, but as communities grow, they discover that chat apps are not designed to preserve memories, manage large family networks, or create a lasting digital home."
         gradient="from-[#020617] via-[#0f172a] to-[#030712]"
-        contentClassName="mx-auto max-w-6xl px-6 py-20 md:py-24 text-center"
+        contentClassName="page-container py-10 md:py-12 text-center"
       />
 
       <section className="relative overflow-hidden border-b border-white/5 bg-[#020617] py-5 md:py-6">
@@ -137,7 +137,7 @@ export default function Taglines() {
         </motion.div>
       </section>
 
-      <section className="relative overflow-hidden border-b border-white/5 bg-[#030712] py-24">
+      <section className="relative overflow-hidden border-b border-white/5 bg-[#030712] py-12">
         <motion.div
           animate={{ scale: [1, 1.08, 1], opacity: [0.2, 0.32, 0.2] }}
           transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
@@ -149,7 +149,7 @@ export default function Taglines() {
           className="pointer-events-none absolute -right-24 bottom-0 h-[480px] w-[480px] rounded-full bg-purple-500/12 blur-[170px]"
         />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6">
+        <div className="relative z-10 page-container">
           <motion.div
             variants={fadeUp}
             initial="hidden"
@@ -200,7 +200,7 @@ export default function Taglines() {
             </Card>
           </motion.div>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {reasons.map((item, idx) => {
               const Icon = item.icon;
               return (
@@ -238,9 +238,9 @@ export default function Taglines() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-[#0f172a]/60 py-28">
+      <section className="relative overflow-hidden bg-[#0f172a]/60 py-14">
         <div className="absolute inset-0 section-grid opacity-25" />
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="relative z-10 page-container grid gap-5 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <motion.div
             variants={fadeUp}
             initial="hidden"

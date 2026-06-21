@@ -529,12 +529,12 @@ export default function Contact() {
       <Hero
         title="Talk to Our Team"
         subtitle="Have questions? We'd be happy to help you explore Closed Circuit."
-        contentClassName="mx-auto max-w-5xl px-6 py-4 md:py-5 text-center"
+        contentClassName="page-container py-2 md:py-3 text-center"
       />
 
       <section className="relative py-8 md:py-10 border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
-        <div className="relative mx-auto max-w-6xl px-6 z-10">
+        <div className="relative page-container z-10">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}

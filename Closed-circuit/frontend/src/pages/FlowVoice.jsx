@@ -15,9 +15,9 @@ export default function FlowVoice() {
       />
 
       {/* Video section */}
-      <section className="relative py-24 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="relative py-12 border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
-        <div className="relative z-10 mx-auto max-w-7xl px-6">
+        <div className="relative z-10 page-container">
           <div className="flex justify-center">
             <video
               src="https://lara.blr1.cdn.digitaloceanspaces.com/Closed%20Circuit/flow_in_voice.mp4"
@@ -36,8 +36,8 @@ export default function FlowVoice() {
       </section>
 
       {/* 2-col: text left | image right */}
-      <section className="relative py-32 bg-[#0f172a]/40">
-        <div className="mx-auto max-w-6xl px-6 grid gap-12 lg:grid-cols-2 items-center">
+      <section className="section-y relative bg-[#0f172a]/40">
+        <div className="page-container grid gap-6 lg:grid-cols-2 items-center">
           <motion.div
             initial={{ x: -30, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
@@ -83,8 +83,8 @@ export default function FlowVoice() {
       </section>
 
       {/* 2-col: image left | text right */}
-      <section className="relative py-32 border-b border-white/5 bg-[#030712]">
-        <div className="mx-auto max-w-6xl items-center gap-12 px-6 grid lg:grid-cols-2">
+      <section className="section-y relative border-b border-white/5 bg-[#030712]">
+        <div className="page-container grid items-center gap-6 lg:grid-cols-2">
           <Card className="overflow-hidden p-0 border border-white/10 group h-full">
             <img
               src={visuals.secure}

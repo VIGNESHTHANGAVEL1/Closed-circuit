@@ -14,7 +14,7 @@ import Card from '../components/Card';
 import { visuals } from '../data/visuals';
 
 const SectionRow = ({ title, description, icon: Icon, items, image, imageAlt, reverse = false }) => (
-  <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-center ${reverse ? 'md:[&>*:first-child]:order-2' : ''}`}>
+  <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-8 items-center ${reverse ? 'md:[&>*:first-child]:order-2' : ''}`}>
     <motion.div
       initial={{ x: reverse ? 30 : -30, opacity: 0 }}
       whileInView={{ x: 0, opacity: 1 }}
@@ -188,10 +188,10 @@ export default function Features() {
       />
 
       {/* Highlight Summary Strip */}
-      <section className="relative py-20 border-b border-white/5">
+      <section className="relative py-10 border-b border-white/5">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0f172a] to-[#030712] opacity-50 pointer-events-none" />
-        <div className="relative z-10 mx-auto max-w-6xl px-6">
-          <div className="flex items-center justify-center gap-3 mb-10">
+        <div className="relative z-10 page-container">
+          <div className="flex items-center justify-center gap-3 mb-5">
             <Sparkles className="h-7 w-7 text-indigo-400 drop-shadow-[0_0_10px_rgba(129,140,248,0.8)]" />
             <h2 className="font-display text-4xl font-bold text-white text-center">
               Premium Experience, End to End
@@ -220,12 +220,12 @@ export default function Features() {
         {sections.map((section, index) => (
           <section
             key={section.title}
-            className={`relative ${index % 2 === 0 ? 'bg-[#030712]' : 'bg-[#0f172a]/40'} py-28 md:py-36 overflow-hidden`}
+            className={`relative ${index % 2 === 0 ? 'bg-[#030712]' : 'bg-[#0f172a]/40'} py-14 md:py-16 overflow-hidden`}
           >
             {/* Ambient gradients */}
             <div className={`absolute top-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px] opacity-20 pointer-events-none ${index % 2 === 0 ? '-left-64 bg-indigo-500' : '-right-64 bg-purple-500'}`} />
             
-            <div className="relative z-10 mx-auto max-w-7xl px-6">
+            <div className="relative z-10 page-container">
               <SectionRow
                 title={section.title}
                 description={section.description}

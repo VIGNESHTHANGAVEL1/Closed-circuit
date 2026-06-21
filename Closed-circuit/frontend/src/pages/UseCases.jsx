@@ -70,9 +70,9 @@ export default function UseCases() {
         subtitle="Closed Circuit creates secure, invitation-based digital spaces for organizations and groups that value privacy and control."
       />
 
-      <section className="relative py-32 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="section-y relative border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-indigo-500/10 blur-[150px] pointer-events-none" />
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-16 px-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="relative z-10 page-container grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -88,7 +88,7 @@ export default function UseCases() {
               Whether you manage a family, a school, or a professional organization, the platform adapts to your
               structure while keeping everything secure and organized.
             </p>
-            <div className="mt-10 grid gap-6 sm:grid-cols-3">
+            <div className="mt-5 grid gap-6 sm:grid-cols-3">
               {spotlight.map((item) => (
                 <Card key={item} className="p-6 text-center border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all group">
                   <span className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-400">Benefit</span>
@@ -115,10 +115,10 @@ export default function UseCases() {
         </div>
       </section>
 
-      <section className="relative py-32 bg-[#0f172a]/40">
+      <section className="section-y relative bg-[#0f172a]/40">
         <div className="absolute inset-0 section-grid opacity-30" />
-        <div className="relative mx-auto max-w-6xl px-6 z-10">
-          <div className="grid gap-12 lg:grid-cols-2 items-center mb-16">
+        <div className="relative page-container z-10">
+          <div className="grid gap-6 lg:grid-cols-2 items-center mb-16">
             <Card className="p-10 border border-white/10 bg-gradient-to-br from-indigo-500/5 to-transparent">
               <p className="text-sm font-bold uppercase tracking-[0.3em] text-purple-400">Key Advantage</p>
               <h2 className="font-display mt-5 text-3xl font-bold text-white leading-tight">
@@ -151,7 +151,7 @@ export default function UseCases() {
             </Card>
           </div>
           
-          <div className="grid gap-6 md:grid-cols-2 mt-10">
+          <div className="grid gap-6 md:grid-cols-2 mt-5">
             {useCases.map((item) => {
               const Icon = item.icon;
               return (
@@ -166,7 +166,7 @@ export default function UseCases() {
             })}
           </div>
 
-          <div className="mt-16 grid gap-8 lg:grid-cols-2 lg:items-center">
+          <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:items-center">
             <Card className="p-10 border border-white/10 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 h-full flex flex-col justify-center relative overflow-hidden">
                <div className="absolute right-0 top-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px]" />
               <div className="relative z-10">

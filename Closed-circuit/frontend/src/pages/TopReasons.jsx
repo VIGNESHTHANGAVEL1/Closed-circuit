@@ -67,11 +67,11 @@ export default function TopReasons() {
       />
 
       {/* Section 1: Reasons editorial list left | Image column right */}
-      <section className="relative py-32 border-b border-white/5 bg-[#030712] overflow-hidden">
+      <section className="section-y relative border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] rounded-full bg-indigo-500/10 blur-[150px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] rounded-full bg-purple-500/5 blur-[200px] pointer-events-none" />
         
-        <div className="relative z-10 mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-[1.3fr_0.7fr] items-start">
+        <div className="relative z-10 page-container grid gap-8 lg:grid-cols-[1.3fr_0.7fr] items-start">
           
           <div className="grid gap-6 sm:grid-cols-2">
             {reasons.map((reason, index) => (
@@ -127,8 +127,8 @@ export default function TopReasons() {
       </section>
 
       {/* Section 2: Call-to-action text left | Image right */}
-      <section className="relative py-32 bg-[#0f172a]/40 bg-gradient-to-b from-transparent to-[#030712]">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="section-y relative bg-[#0f172a]/40 bg-gradient-to-b from-transparent to-[#030712]">
+        <div className="page-container grid items-center gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <Card className="p-10 border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent shadow-xl relative overflow-hidden">
              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px]" />
             <div className="position relative z-10">

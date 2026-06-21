@@ -5,7 +5,7 @@ export default function Hero({
   subtitle,
   eyebrow,
   gradient = 'from-[#030712] via-[#0f172a] to-[#030712]',
-  contentClassName = 'mx-auto max-w-6xl px-6 py-16 md:py-24 text-center',
+  contentClassName = 'page-container py-8 md:py-12 text-center',
   compact = false,
 }) {
   return (
@@ -40,8 +40,8 @@ export default function Hero({
           transition={{ delay: 0.2, duration: 0.8 }}
           className={`font-display font-bold leading-[1.1] tracking-tight ${
             compact
-              ? 'mt-4 text-3xl sm:text-4xl md:text-5xl'
-              : 'mt-8 text-5xl sm:text-6xl md:text-7xl'
+              ? 'mt-2 text-3xl sm:text-4xl md:text-5xl'
+              : 'mt-4 text-5xl sm:text-6xl md:text-7xl'
           }`}
         >
           {title}
@@ -53,8 +53,8 @@ export default function Hero({
             transition={{ delay: 0.35, duration: 0.8 }}
             className={`mx-auto max-w-3xl text-slate-400 font-normal ${
               compact
-                ? 'mt-3 text-base md:text-lg leading-snug'
-                : 'mt-8 text-xl md:text-2xl leading-relaxed'
+                ? 'mt-2 text-base md:text-lg leading-snug'
+                : 'mt-4 text-xl md:text-2xl leading-relaxed'
             }`}
           >
             {subtitle}

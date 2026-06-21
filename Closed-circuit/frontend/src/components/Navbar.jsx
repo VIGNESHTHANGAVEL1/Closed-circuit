@@ -5,7 +5,13 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 
 const navItems = [
   { label: 'Home', path: '/' },
-  { label: 'Features', path: '/features' },
+  {
+    label: 'Features',
+    submenu: [
+      { label: 'Explore Features', path: '/features' },
+      { label: 'Watch Feature Demos', path: '/feature-demos' },
+    ],
+  },
   {
     label: 'Flow',
     submenu: [
@@ -23,8 +29,8 @@ const navItems = [
     ],
   },
   { label: 'Top 10 Reasons', path: '/top-reasons' },
-  { label: 'Gifts', path: '/gifts' },
-  { label: 'Use Cases', path: '/use-cases' },
+  { label: 'Families', path: '/gifts' },
+  { label: 'Businesses', path: '/use-cases' },
   { label: 'Taglines', path: '/taglines' },
   { label: 'Contact Us', path: '/contact' },
   { label: 'Our Clients', path: '/clients' },
@@ -188,7 +194,11 @@ export default function Navbar() {
                         <button
                           type="button"
                           onClick={() => handleDropdownToggle(item.label)}
-                          className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-300 hover:bg-white/5"
+                          className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium ${
+                            item.submenu?.some((sub) => isActive(sub.path))
+                              ? 'bg-indigo-500/10 text-indigo-400'
+                              : 'text-slate-300 hover:bg-white/5'
+                          }`}
                         >
                           {item.label}
                           <ChevronDown
