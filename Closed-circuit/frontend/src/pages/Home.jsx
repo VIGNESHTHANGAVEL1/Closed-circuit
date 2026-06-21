@@ -8,13 +8,25 @@ import albumVisual from '../assets/generated_3.png';
 
 export default function Home() {
   const businessTaglines = [
-    'Private Communication',
-    'Customer Engagement',
-    'Trusted Networks',
+    'Customer Community',
     'Secure Media Sharing',
-    'Relationship Building',
-    'Business Communities',
+    'No Public Exposure',
+    'Strengthen Relationships',
+    'Private Business Network',
+    'Complete Ownership & Control',
   ];
+
+  const familyOccasions = [
+    'Sibling Birthday',
+    'Children Birthday',
+    'Friend or Relative Birthday',
+    "Friend's Kid Birthday",
+    'Marriage Gift',
+    'Wedding Anniversary Gift',
+  ];
+
+  const pillClass =
+    'cursor-default rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 backdrop-blur-md';
 
   const keyFeatures = [
     {
@@ -85,61 +97,106 @@ export default function Home() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-[#030712] text-slate-300">
       <section className="relative overflow-hidden bg-aurora">
         <div className="absolute inset-0 section-grid opacity-80" />
-        <div className="page-container relative grid items-center gap-8 pb-10 pt-14 lg:grid-cols-2 lg:gap-12">
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col justify-center"
-          >
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-indigo-400">
-              Closed Circuit for Families
-            </p>
-            <h1 className="font-display mt-4 text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-              Your Memories.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-                Your People.
-              </span><br />
-              Your Control.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
-                Your Privacy.
+        <div className="page-container relative pb-5 pt-5 lg:pr-0 lg:pl-0">
+          <div className="grid gap-1 lg:grid-cols-2 ">
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6 }}
+              className="relative flex h-full flex-col overflow-hidden rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]">
+
+              <div className="inline-flex w-fit rounded-full border border-indigo-500/40 bg-[#0b1235] px-6 py-2 shadow-[0_0_20px_rgba(99,102,241,0.25)]">
+  <span className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">
+                Closed Circuit for Families
               </span>
-            </h1>
-          </motion.div>
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex flex-col justify-center"
-          >
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-purple-400">
-              Closed Circuit for Businesses
-            </p>
-            <h1 className="font-display mt-4 text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-              Your Clients.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                Your Strategy.
-              </span><br />
-              Your Business.<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                Your Plans.
-              </span>
-            </h1>
-            <p className="mt-4 max-w-xl text-lg leading-relaxed text-slate-400">
-              A private communication and engagement platform that helps businesses securely connect
-              with customers, members, and communities.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              {businessTaglines.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm text-slate-300 backdrop-blur-md shadow-lg"
-                >
-                  {item}
+              </div>
+              <h1 className="font-display mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+                Your Memories.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                  Your People.
+                </span><br />
+                Your Control.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+                  Your Privacy.
                 </span>
-              ))}
-            </div>
-          </motion.div>
+              </h1>
+              <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
+                A unique digital gift for every special occasion. Give a modern digital gift for 2026 - a
+                private platform that keeps memories safe forever.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {familyOccasions.map((item) => (
+                  <span key={item} className={pillClass}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-auto flex flex-wrap gap-3 pt-5">
+                <Link
+                  to="/contact"
+                  className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(255,255,255,0.5)]"
+                >
+                  Create Your Private Memory Platform
+                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  to="/features"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-bold text-white backdrop-blur-lg transition hover:-translate-y-0.5 hover:bg-white/10"
+                >
+                  Explore Features
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="relative flex h-full flex-col overflow-hidden rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
+            >
+              <div className="inline-flex w-fit rounded-full border border-purple-500/40 bg-[#0b1235] px-6 py-2 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
+  <span className="text-xs font-semibold uppercase tracking-[0.4em] text-purple-200">
+    Closed Circuit for Businesses
+  </span>
+</div>
+              <h1 className="font-display mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+                Your Clients.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                  Your Strategy.
+                </span><br />
+                Your Business.<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                  Your Plans.
+                </span>
+              </h1>
+              <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
+                A unique digital platform for every business. Keep customers connected, encourage repeat visits, 
+and build lasting relationships through your own private network.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {businessTaglines.map((item) => (
+                  <span key={item} className={pillClass}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-auto flex flex-wrap gap-3 pt-5">
+                <Link
+                  to="/contact"
+                  className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(255,255,255,0.5)]"
+                >
+                  Create Your Private Memory Platform
+                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  to="/features"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-bold text-white backdrop-blur-lg transition hover:-translate-y-0.5 hover:bg-white/10"
+                >
+                  Explore Features
+                </Link>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
