@@ -6,17 +6,17 @@ import { visuals } from '../data/visuals';
 
 const flowNodes = [
   {
-    title: 'Share Community Link',
-    subtitle: '(Digital Home Page)',
+    title: 'Invitation',
+    subtitle: '(Invite all your contacts)',
   },
   {
-    title: 'User Signup',
-    subtitle: 'Mobile + OTP Only\n(No Email / Password)',
+    title: 'Share community link',
+    subtitle: ' (digital home page)',
   },
-  {
-    title: 'Admin Approval',
-    subtitle: 'Verify & Approve User',
-  },
+  // {
+  //   title: 'Admin Approval',
+  //   subtitle: 'Verify & Approve User',
+  // },
   {
     title: 'Secure Login',
     subtitle: 'Mobile + OTP',

@@ -528,7 +528,13 @@ export default function Contact() {
     >
       <Hero
         title="Talk to Our Team"
-        subtitle="Have questions? We'd be happy to help you explore Closed Circuit."
+        subtitle={
+          <>
+            <div>Have questions? We'd be happy to help you explore Closed Circuit.</div>
+            <div>Email: cc@closedcircuit.in &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mobile: +91 82175 43446</div>
+            <div>Kindly fill out the form below so we can connect with you at your convenience.</div>
+          </>
+        }
         contentClassName="page-container py-2 md:py-3 text-center"
       />
 

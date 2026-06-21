@@ -8,19 +8,19 @@ import { visuals } from '../data/visuals';
 export default function FlowText() {
   const steps = [
     {
-      title: 'Share Your Digital Community Address',
+      title: 'Exclusive Member Invitations',
       description:
-        'Every community receives a unique digital homepage. Share this link with family members, friends, or community members so they can request access.',
+        'Administrators personally invite family members, friends, customers, employees, or community members to join the private network.',
     },
     {
-      title: 'Simple OTP-Based Signup',
+      title: 'Secure Invitation Link',
       description:
-        'New users sign up using a mobile number and OTP verification. No passwords, email IDs, or complex forms.',
+        'The administrator shares a unique community URL with invited members, providing a simple and secure way to access the community.',
     },
     {
-      title: 'Admin Approval for Membership',
+      title: 'Invitation-Only Membership',
       description:
-        'After signup, the administrator reviews and approves the request to keep the community trusted.',
+        'Membership is available exclusively through administrator invitations, ensuring a trusted, private, and controlled community environment.',
     },
     {
       title: 'Secure OTP-Based Login',
@@ -91,22 +91,22 @@ export default function FlowText() {
       description: 'The homepage hero image can be updated anytime through the admin dashboard.',
     },
     {
-      title: 'Custom Signup Page Image',
-      description: 'The signup page visuals can be personalized by the administrator.',
+      title: 'Wikipedia Page',
+      description: 'Provide public information about your family, business, organization, or community through a dedicated page that can be viewed by everyone.',
     },
-    {
-      title: 'Custom Login Page Image',
-      description: 'Login page visuals can be updated to match the community identity.',
-    },
+    // {
+    //   title: 'Custom Login Page Image',
+    //   description: 'Login page visuals can be updated to match the community identity.',
+    // },
     {
       title: 'Member Control',
       description:
         'Administrators maintain full control and can block any member to ensure community safety.',
     },
     {
-      title: 'Dedicated Private Infrastructure',
+      title: 'Deployment Choices',
       description:
-        'Each deployment runs on its own dedicated VPS server, keeping data isolated, private, and fully controlled.',
+        'Deploy your community on a shared multi-tenant platform or on a dedicated VPS server exclusively reserved for your organization.',
     },
   ];
 
