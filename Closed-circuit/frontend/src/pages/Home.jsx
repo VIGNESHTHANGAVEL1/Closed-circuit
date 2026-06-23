@@ -8,12 +8,12 @@ import albumVisual from '../assets/generated_3.png';
 
 export default function Home() {
   const businessTaglines = [
-    'Private Communication',
-    'Customer Engagement',
-    'Trusted Networks',
+    'Customer Community',
     'Secure Media Sharing',
-    'Relationship Building',
-    'Business Communities',
+    'No Public Exposure',
+    'Strengthen Relationships',
+    'Private Business Network',
+    'Complete Ownership & Control',
   ];
 
   const familyOccasions = [
@@ -97,17 +97,19 @@ export default function Home() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-[#030712] text-slate-300">
       <section className="relative overflow-hidden bg-aurora">
         <div className="absolute inset-0 section-grid opacity-80" />
-        <div className="page-container relative pb-10 pt-14">
-          <div className="grid overflow-hidden rounded-3xl border border-indigo-500/20 shadow-[0_0_50px_rgba(99,102,241,0.15)] lg:grid-cols-2">
+        <div className="page-container relative pb-5 pt-5 lg:pr-0 lg:pl-0">
+          <div className="grid gap-1 lg:grid-cols-2 ">
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6 }}
-              className="glass-panel flex h-full flex-col border-b border-white/10 p-6 md:p-8 lg:border-b-0 lg:border-r lg:border-r-white/10"
-            >
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-indigo-400">
+              className="relative flex h-full flex-col overflow-hidden rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]">
+
+              <div className="inline-flex w-fit rounded-full border border-indigo-500/40 bg-[#0b1235] px-6 py-2 shadow-[0_0_20px_rgba(99,102,241,0.25)]">
+  <span className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">
                 Closed Circuit for Families
-              </p>
+              </span>
+              </div>
               <h1 className="font-display mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
                 Your Memories.<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
@@ -150,11 +152,13 @@ export default function Home() {
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="glass-panel flex h-full flex-col p-6 md:p-8"
+              className="relative flex h-full flex-col overflow-hidden rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
             >
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-purple-400">
-                Closed Circuit for Businesses
-              </p>
+              <div className="inline-flex w-fit rounded-full border border-purple-500/40 bg-[#0b1235] px-6 py-2 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
+  <span className="text-xs font-semibold uppercase tracking-[0.4em] text-purple-200">
+    Closed Circuit for Businesses
+  </span>
+</div>
               <h1 className="font-display mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
                 Your Clients.<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
@@ -166,8 +170,8 @@ export default function Home() {
                 </span>
               </h1>
               <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
-                A private communication and engagement platform that helps businesses securely connect
-                with customers, members, and communities.
+                A unique digital platform for every business. Keep customers connected, encourage repeat visits, 
+and build lasting relationships through your own private network.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {businessTaglines.map((item) => (
