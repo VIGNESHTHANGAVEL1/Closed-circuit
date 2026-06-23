@@ -2,8 +2,9 @@ import { motion } from 'framer-motion';
 import { Mic, ShieldCheck, Users } from 'lucide-react';
 import Hero from '../components/Hero';
 import Card from '../components/Card';
+import MediaPlayer from '../components/MediaPlayer';
 import { visuals } from '../data/visuals';
-// import voiceFlowVideo from '../assets/flow_in_voice.mp4';
+import { getFlowVoiceVideoUrl } from '../lib/spaces';
 
 export default function FlowVoice() {
   return (
@@ -19,18 +20,7 @@ export default function FlowVoice() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
         <div className="relative z-10 page-container">
           <div className="flex justify-center">
-            <video
-              src="https://lara.blr1.cdn.digitaloceanspaces.com/Closed%20Circuit/flow_in_voice.mp4"
-              controls
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              className="h-[320px] w-full max-w-[1100px] rounded-2xl object-cover shadow-2xl md:h-[380px]"
-            >
-              Your browser does not support the video tag.
-            </video>
+            <MediaPlayer src={getFlowVoiceVideoUrl()} title="Flow in Voice" />
           </div>
         </div>
       </section>

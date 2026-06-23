@@ -23,6 +23,7 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import EnquiryDashboard from './pages/admin/EnquiryDashboard';
 import ClientManagement from './pages/admin/ClientManagement';
+import DemoVideoManagement from './pages/admin/DemoVideoManagement';
 import ChangePassword from './pages/admin/ChangePassword';
 import Clients from './pages/Clients';
 import FeatureDemos from './pages/FeatureDemos';
@@ -182,6 +183,14 @@ function AppShell() {
               element={
                 <AdminRoute>
                   <ClientManagement />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/demo-videos"
+              element={
+                <AdminRoute>
+                  <DemoVideoManagement />
                 </AdminRoute>
               }
             />

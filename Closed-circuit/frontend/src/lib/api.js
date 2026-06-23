@@ -148,3 +148,48 @@ export function triggerBlobDownload(blob, filename) {
   link.remove();
   URL.revokeObjectURL(url);
 }
+
+/** Upload multipart form data with upload progress reporting via XMLHttpRequest. */
+export function apiUploadWithProgress(path, { token, method = 'POST', formData, onProgress } = {}) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, `${API_BASE_URL}${path}`);
+
+    if (token) {
+      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    }
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && typeof onProgress === 'function') {
+        onProgress(Math.round((event.loaded / event.total) * 100));
+      }
+    };
+
+    xhr.onload = () => {
+      let data = {};
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch {
+        data = {};
+      }
+
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(data);
+        return;
+      }
+
+      const error = new Error(data.message || 'Upload failed');
+      error.status = xhr.status;
+      error.data = data;
+      reject(error);
+    };
+
+    xhr.onerror = () => {
+      const error = new Error('Upload failed');
+      error.status = 0;
+      reject(error);
+    };
+
+    xhr.send(formData);
+  });
+}

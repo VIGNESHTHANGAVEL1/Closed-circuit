@@ -13,3 +13,11 @@ export const clientImageUpload = multer({
   { name: 'client_logo', maxCount: 1 },
   { name: 'client_profile_pic', maxCount: 1 },
 ]);
+
+export const demoVideoUpload = multer({
+  storage,
+  limits: {
+    fileSize: config.spaces.maxVideoBytes,
+    files: 1,
+  },
+}).single('video_file');

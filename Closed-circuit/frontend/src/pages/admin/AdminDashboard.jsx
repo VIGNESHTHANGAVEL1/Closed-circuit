@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageSquare, Users, Sparkles, CalendarClock } from 'lucide-react';
+import { MessageSquare, Users, Sparkles, CalendarClock, Video } from 'lucide-react';
 import AdminShell from '../../components/AdminShell';
 import { apiRequest } from '../../lib/api';
 import { clearAuthSession, getStoredToken } from '../../lib/auth';
@@ -55,6 +55,15 @@ export default function AdminDashboard() {
       stat: loading ? '…' : stats.totalClients,
       statLabel: 'Total clients',
       accent: 'from-emerald-500/20 to-teal-600/10 border-emerald-500/30',
+    },
+    {
+      title: 'Manage Demo Videos',
+      description: 'Upload and manage feature demonstration videos',
+      path: '/admin/demo-videos',
+      icon: Video,
+      stat: '→',
+      statLabel: 'Video library',
+      accent: 'from-violet-500/20 to-purple-600/10 border-violet-500/30',
     },
   ];
 

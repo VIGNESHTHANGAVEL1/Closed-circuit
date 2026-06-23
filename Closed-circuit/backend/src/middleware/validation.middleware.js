@@ -108,3 +108,21 @@ export function validateChangePasswordBody(req, res, next) {
 
   next();
 }
+
+export function validateDemoVideoBody(req, res, next) {
+  if (!req.body?.title?.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Video title is required.',
+    });
+  }
+
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: 'Video file is required.',
+    });
+  }
+
+  next();
+}

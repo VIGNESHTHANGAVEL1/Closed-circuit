@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Users, KeyRound, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Users, KeyRound, LogOut, Menu, X, Video } from 'lucide-react';
 import { clearAuthSession, getStoredUser } from '../lib/auth';
 
 const navLinks = [
   { label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Enquiries', path: '/admin/enquiries', icon: MessageSquare },
   { label: 'Clients', path: '/admin/clients', icon: Users },
+  { label: 'Manage Demo Videos', path: '/admin/demo-videos', icon: Video },
   { label: 'Change Password', path: '/admin/change-password', icon: KeyRound },
 ];
 
