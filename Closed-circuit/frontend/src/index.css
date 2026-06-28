@@ -93,6 +93,14 @@ p {
   }
 
   .section-y {
-    @apply py-16;
+    @apply py-10;
+  }
+
+  .section-y-sm {
+    @apply py-6;
+  }
+
+  .section-gap {
+    @apply gap-5;
   }
 }

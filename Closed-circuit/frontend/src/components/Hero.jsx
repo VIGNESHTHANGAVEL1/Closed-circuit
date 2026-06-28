@@ -5,7 +5,7 @@ export default function Hero({
   subtitle,
   eyebrow,
   gradient = 'from-[#030712] via-[#0f172a] to-[#030712]',
-  contentClassName = 'page-container py-8 md:py-12 text-center',
+  contentClassName = 'page-container py-6 md:py-8 text-center',
   compact = false,
 }) {
   return (
