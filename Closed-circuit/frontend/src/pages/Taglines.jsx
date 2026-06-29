@@ -70,19 +70,19 @@ export default function Taglines() {
 
       {/* Core values chips */}
       <section className="section-y-sm relative border-b border-white/5 bg-[#030712]">
-        <div className="page-container">
-          <div className="mt-4 grid grid-rows-2 grid-flow-col gap-3 justify-center">
-  {coreValues.map((value) => (
-    <span
-      key={value}
-      className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-2 text-lx font-bold uppercase tracking-wider text-indigo-300 whitespace-nowrap"
-    >
-      {value}
-    </span>
-  ))}
-</div>
-        </div>
-      </section>
+  <div className="page-container">
+    <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      {coreValues.map((value) => (
+        <span
+          key={value}
+          className="flex items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 px-4 py-2 text-sm font-bold uppercase tracking-wider text-indigo-300 whitespace-nowrap"
+        >
+          {value}
+        </span>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* Platform taglines strip */}
       {/* <section className="section-y-sm relative border-b border-white/5 bg-[#0f172a]/40">

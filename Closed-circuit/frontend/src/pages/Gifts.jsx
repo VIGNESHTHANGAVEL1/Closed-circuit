@@ -277,29 +277,32 @@ export default function Gifts() {
       </section>
 
       {/* Imagine Your Family Connected */}
-      <section className="section-y-sm relative overflow-hidden border-b border-white/5">
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-purple-500/5" />
-        <div className="page-container relative">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="font-display text-3xl font-bold text-white md:text-5xl">
-              {familyConnected.title}
-            </h2>
-            <p className="mt-3 text-slate-400">
-              {familyConnected.tagline}
-            </p>
-            <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {familyConnected.items.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-indigo-500/20 bg-white/5 px-5 py-3 text-lg font-medium text-blue-300 backdrop-blur transition hover:border-indigo-500/40 hover:bg-indigo-500/10 hover:text-blue-200"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+     <section className="section-y-sm relative overflow-hidden border-b border-white/5">
+  <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-purple-500/5" />
+
+  <div className="page-container relative">
+    <div className="mx-auto max-w-6xl text-center">
+      <h2 className="font-display text-3xl font-bold text-white md:text-5xl">
+        {familyConnected.title}
+      </h2>
+
+      <p className="mt-3 text-slate-400">
+        {familyConnected.tagline}
+      </p>
+
+      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  {familyConnected.items.map((item) => (
+    <span
+      key={item}
+      className="flex min-h-[72px] items-center justify-center rounded-full border border-indigo-500/20 bg-white/5 px-5 py-3 text-center text-base md:text-lg font-medium text-blue-300 backdrop-blur transition hover:border-indigo-500/40 hover:bg-indigo-500/10 hover:text-blue-200"
+    >
+      {item}
+    </span>
+  ))}
+</div>
+    </div>
+  </div>
+</section>
 
       {/* Join Thousands of Families */}
       <section className="section-y-sm relative bg-[#0f172a]/40 border-b border-white/5">

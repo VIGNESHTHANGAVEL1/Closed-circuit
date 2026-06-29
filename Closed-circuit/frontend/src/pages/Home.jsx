@@ -133,13 +133,16 @@ export default function Home() {
               <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
                 Because family deserves a private space. Communicate, celebrate, organize, and preserve memories — without ads, without unwanted audiences, and without compromising privacy.
               </p>
-               <div className="mt-4 grid grid-cols-3 gap-3">
-                {familyOccasions.map((item) => (
-                  <span key={item} className={`${pillClass} flex items-center justify-center text-center`}>
-                    {item}
-                  </span>
-                ))}
-              </div>
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3">
+  {familyOccasions.map((item) => (
+    <span
+      key={item}
+      className={`${pillClass} flex min-h-[72px] items-center justify-center text-center px-4`}
+    >
+      {item}
+    </span>
+  ))}
+</div>
               <div className="mt-auto flex flex-wrap gap-3 pt-5">
                 <Link
                   to="/contact"
@@ -181,13 +184,16 @@ export default function Home() {
               <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
                 Connect employees, teams, customers, and stakeholders within one private digital network — with complete control over access and information sharing.
               </p>
-               <div className="mt-4 grid grid-cols-3 gap-3">
-                {businessTaglines.map((item) => (
-                  <span key={item} className={`${pillClass} flex items-center justify-center text-center`}>
-                    {item}
-                  </span>
-                ))}
-              </div>
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3">
+  {businessTaglines.map((item) => (
+    <span
+      key={item}
+      className={`${pillClass} flex min-h-[72px] items-center justify-center text-center px-4`}
+    >
+      {item}
+    </span>
+  ))}
+</div>
               <div className="mt-auto flex flex-wrap gap-3 pt-5">
                 <Link
                   to="/contact"
@@ -350,14 +356,11 @@ export default function Home() {
             className="grid gap-6"
           >
             <Card className="relative overflow-hidden border border-white/10 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 p-10">
-              <div className="absolute right-0 top-0 p-6 opacity-10">
-                <Lock className="h-32 w-32" />
-              </div>
-              <div className="relative z-10">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-xl bg-indigo-500/20 p-3 text-indigo-400">
-                    <Lock className="h-6 w-6" />
-                  </div>
+  <div className="relative z-10">
+    <div className="flex items-center gap-4">
+      <div className="rounded-xl bg-indigo-500/20 p-3 text-indigo-400">
+        <Lock className="h-6 w-6" />
+      </div>
                   <h3 className="text-2xl font-bold text-white">Your Data Is Truly Yours</h3>
                 </div>
                 <ul className="mt-4 space-y-4 text-base font-medium text-slate-300">

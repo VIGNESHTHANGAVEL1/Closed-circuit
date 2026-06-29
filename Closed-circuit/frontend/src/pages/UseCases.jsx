@@ -46,11 +46,11 @@ const roleIcons = { 'Super Admin': Crown, Admin: ShieldCheck, Users: UserCheck }
 
 function ChipGrid({ items }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-0 lg:grid-cols-0">
+    <div className="grid grid-cols-2 gap-3">
       {items.map((item) => (
         <span
           key={item}
-          className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-lg font-semibold text-slate-300 backdrop-blur-sm transition hover:border-indigo-500/40 hover:bg-indigo-500/10"
+          className="flex min-h-[56px] items-center rounded-full border border-white/10 bg-white/[0.04] px-4 py-3 text-base md:text-lg font-semibold text-slate-300 backdrop-blur-sm transition hover:border-indigo-500/40 hover:bg-indigo-500/10"
         >
           {item}
         </span>
