@@ -87,17 +87,18 @@ export const whyFamilies = {
 };
 
 export const familyConnected = {
-  title: 'Imagine Your Family Connected',
-  nodes: [
-    { label: 'Your Parents', angle: 0 },
-    { label: 'Your Grandparents', angle: 60 },
-    { label: 'Your Children', angle: 120 },
-    { label: 'Your Cousins', angle: 180 },
-    { label: 'Your Memories', angle: 240 },
-    { label: 'All Secure', angle: 300 },
+  title: "Imagine Your Family Connected",
+  // tagline: "All together. All secure. All in one place.",
+  items: [
+    "Your parents.",
+    "Your grandparents.",
+    "Your children.",
+    "Your cousins.",
+    "Your memories.",
+    "All together.",
+    "All secure.",
+    "All in one place.",
   ],
-  center: 'Your Family',
-  tagline: 'All together. All secure. All in one place.',
 };
 
 export const familyChips = [

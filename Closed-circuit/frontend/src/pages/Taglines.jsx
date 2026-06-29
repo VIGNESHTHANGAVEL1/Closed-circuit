@@ -47,8 +47,8 @@ export default function Taglines() {
       {/* Top hero taglines */}
       <section className="section-y-sm relative border-b border-white/5 bg-[#020617]">
         <div className="page-container text-center">
-          <p className="text-sm font-bold uppercase tracking-[0.3em] text-indigo-400 mb-5">
-            Closed Circuit — The Private, Secure, and Fully Controlled Digital Platform
+          <p className="text-lg font-bold uppercase tracking-[0.3em] text-indigo-400 mb-5">
+            Closed Circuit — The Private, Secure, and Fully Controlled Digital Platform for Modern Communities.
           </p>
           <div className="grid gap-3 md:grid-cols-2">
             {heroTaglines.map((line, idx) => (
@@ -71,21 +71,21 @@ export default function Taglines() {
       {/* Core values chips */}
       <section className="section-y-sm relative border-b border-white/5 bg-[#030712]">
         <div className="page-container">
-          <div className="flex flex-wrap justify-center gap-2">
-            {coreValues.map((value) => (
-              <span
-                key={value}
-                className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-4 py-2 text-xs font-bold uppercase tracking-wider text-indigo-300 transition hover:border-indigo-500/40 hover:bg-indigo-500/20"
-              >
-                {value}
-              </span>
-            ))}
-          </div>
+          <div className="mt-4 grid grid-rows-2 grid-flow-col gap-3 justify-center">
+  {coreValues.map((value) => (
+    <span
+      key={value}
+      className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-2 text-lx font-bold uppercase tracking-wider text-indigo-300 whitespace-nowrap"
+    >
+      {value}
+    </span>
+  ))}
+</div>
         </div>
       </section>
 
       {/* Platform taglines strip */}
-      <section className="section-y-sm relative border-b border-white/5 bg-[#0f172a]/40">
+      {/* <section className="section-y-sm relative border-b border-white/5 bg-[#0f172a]/40">
         <div className="page-container">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {platformTaglines.map((line, idx) => (
@@ -103,7 +103,7 @@ export default function Taglines() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Category glass cards */}
       <section className="section-y-sm relative bg-[#030712]">
@@ -134,7 +134,7 @@ export default function Taglines() {
                       </div>
                       <ul className="space-y-2.5 flex-1">
                         {category.taglines.map((tagline) => (
-                          <li key={tagline} className="flex items-start gap-2 text-sm text-slate-400 leading-snug group-hover:text-slate-300 transition">
+                          <li key={tagline} className="flex items-start gap-2 text-sm text-white leading-snug group-hover:text-slate-300 transition">
                             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400 shadow-[0_0_6px_rgba(129,140,248,0.8)]" />
                             {tagline}
                           </li>

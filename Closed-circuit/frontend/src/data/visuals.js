@@ -30,8 +30,12 @@ export const visuals = {
     'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80',
   familyCelebration:
     'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80',
-  familyMultiGen:
-    'https://images.unsplash.com/photo-1609220136736-443aae890221?auto=format&fit=crop&w=1200&q=80',
+  // familyMultiGen:
+  //   'https://images.unsplash.com/photo-1609220136736-443aae890221?auto=format&fit=crop&w=1200&q=80',
+  // familyMemories:
+  //   'https://images.unsplash.com/photo-1472396961693-142e6e269bf3?auto=format&fit=crop&w=1200&q=80',
   familyMemories:
-    'https://images.unsplash.com/photo-1472396961693-142e6e269bf3?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80',
+  familyMultiGen:
+  "https://images.pexels.com/photos/2253879/pexels-photo-2253879.jpeg?auto=compress&cs=tinysrgb&w=1200"
 };
