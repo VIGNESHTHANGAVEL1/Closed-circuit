@@ -259,14 +259,20 @@ export default function Gifts() {
       <section className="section-y-sm relative border-b border-white/5">
         <div className="page-container">
           <h2 className="font-display text-3xl font-bold text-white md:text-4xl mb-5">{whyFamilies.title}</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {whyFamilies.items.map((item) => (
-              <Card key={item.text} className="border border-white/10 bg-white/[0.02] p-5 hover:border-indigo-500/30 transition">
-                <span className="text-2xl">{item.emoji}</span>
-                <p className="mt-3 text-lg font-semibold text-slate-300">{item.text}</p>
-              </Card>
-            ))}
-          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+  {whyFamilies.items.map((item) => (
+    <Card
+      key={item.text}
+      className="flex min-h-[88px] items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.02] px-6 py-5 transition-all duration-300 hover:border-indigo-500/30 hover:bg-white/[0.04]"
+    >
+      <span className="text-2xl shrink-0">{item.emoji}</span>
+
+      <h3 className="text-xl font-medium leading-snug text-slate-100">
+        {item.text}
+      </h3>
+    </Card>
+  ))}
+</div>
         </div>
       </section>
 
