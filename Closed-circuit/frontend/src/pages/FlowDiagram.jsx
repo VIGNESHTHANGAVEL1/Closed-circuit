@@ -92,19 +92,19 @@ export default function FlowDiagram() {
         <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/10 blur-[200px] rounded-full pointer-events-none" />
         <div className="page-container grid gap-6 lg:grid-cols-[1.2fr_0.8fr] relative z-10">
           
-          <Card className="p-10 border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl relative overflow-hidden">
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl relative overflow-hidden">
              {/* Gradient glow behind the timeline */}
             <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-indigo-500/10 to-transparent pointer-events-none" />
             
-            <div className="flex items-center gap-4 mb-12 relative z-10">
+              <div className="flex items-center gap-4 mb-6 sm:mb-12 relative z-10">
               <div className="p-3 bg-indigo-500/20 rounded-xl text-indigo-400 border border-indigo-500/30">
                 <Map className="h-6 w-6" />
               </div>
-              <h2 className="font-display text-3xl font-bold text-white tracking-tight">Interactive Flow Diagram</h2>
+              <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">Interactive Flow Diagram</h2>
             </div>
             
             {/* Visually stunning timeline */}
-            <div className="relative border-l-2 border-indigo-500/20 ml-6 pl-10 space-y-12 pb-10">
+            <div className="relative border-l-2 border-indigo-500/20 ml-3 sm:ml-6 pl-6 sm:pl-10 space-y-6 sm:space-y-12 pb-10">
               {flowNodes.map((node, i) => (
                 <motion.div 
                   key={node.title} 
@@ -143,9 +143,9 @@ export default function FlowDiagram() {
           <div className="grid gap-8 lg:sticky lg:top-32 h-fit">
             <Card className="overflow-hidden p-0 border border-white/10 group">
                <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent z-10 pointer-events-none opacity-60" />
-              <img src={visuals.message} alt="Flow overview" className="h-[350px] w-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="lazy" />
+              <img src={visuals.message} alt="Flow overview" className="h-[180px] sm:h-[260px] md:h-[350px] w-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="lazy" />
             </Card>
-            <Card className="p-8 border border-white/10 bg-white/[0.02] hover:border-indigo-500/30 transition-colors duration-500">
+            <Card className="p-5 sm:p-8 border border-white/10 bg-white/[0.02] hover:border-indigo-500/30 transition-colors duration-500">
               <h3 className="text-2xl font-display font-bold text-white tracking-tight mb-6">Key Highlights</h3>
               <ul className="space-y-4 text-base font-medium text-slate-300">
                 {highlights.map((item) => (
@@ -163,10 +163,10 @@ export default function FlowDiagram() {
       <section className="section-y relative bg-[#0f172a]/40 bg-gradient-to-b from-transparent to-[#030712]">
         <div className="page-container grid items-center gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <Card className="overflow-hidden p-0 border border-white/10 group h-full">
-            <img src={visuals.secure} alt="Secure community workflow" className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
+            <img src={visuals.secure} alt="Secure community workflow" className="h-full min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           </Card>
-          <Card className="p-10 border border-white/10 bg-gradient-to-br from-indigo-500/10 to-transparent h-full flex flex-col justify-center">
-            <h3 className="font-display text-4xl font-bold text-white tracking-tight">The Journey in Five Steps</h3>
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-gradient-to-br from-indigo-500/10 to-transparent h-full flex flex-col justify-center">
+            <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">The Journey in Five Steps</h3>
             <ol className="mt-5 space-y-6 text-base font-medium text-slate-300">
               {steps.map((item, index) => (
                 <motion.li 

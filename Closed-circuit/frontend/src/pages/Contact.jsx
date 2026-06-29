@@ -510,11 +510,11 @@ export default function Contact() {
     }
   };
 
-  const formFieldTextClasses = 'text-2xl md:text-0xl leading-relaxed';
+  const formFieldTextClasses = 'text-sm sm:text-base leading-relaxed';
   const labelClasses = `block font-semibold text-white mb-1.5 ${formFieldTextClasses}`;
   const inputClasses =
     `w-full px-4 py-3 bg-[#0f172a]/50 text-white border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-semibold placeholder-slate-500 disabled:cursor-not-allowed disabled:opacity-50 ${formFieldTextClasses}`;
-  const selectOptionClasses = '[&>option]:bg-slate-900 [&>option]:text-white [&>option]:text-2xl [&>option]:md:text-0xl';
+  const selectOptionClasses = '[&>option]:bg-slate-900 [&>option]:text-white [&>option]:text-sm [&>option]:sm:text-base';
   const verifyFieldRowClasses = 'flex flex-col gap-1 sm:flex-row sm:items-stretch';
   const verifyInputClasses = `${inputClasses} min-w-0 flex-1`;
 

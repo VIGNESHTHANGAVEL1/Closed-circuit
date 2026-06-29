@@ -25,7 +25,7 @@ const SectionRow = ({ title, description, icon: Icon, items, image, imageAlt, re
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
           <Icon className="h-7 w-7 text-indigo-400" />
         </div>
-        <h2 className="font-display text-3xl font-bold text-white tracking-tight">{title}</h2>
+        <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">{title}</h2>
       </div>
       <p className="text-lg text-slate-400 leading-relaxed">{description}</p>
       <ul className="grid gap-4 text-base text-slate-300 sm:grid-cols-2 mt-2">
@@ -51,7 +51,7 @@ const SectionRow = ({ title, description, icon: Icon, items, image, imageAlt, re
         <img
           src={image}
           alt={imageAlt}
-          className="h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          className="h-[200px] sm:h-[280px] md:h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-110"
           loading="lazy"
         />
       </Card>
@@ -193,7 +193,7 @@ export default function Features() {
         <div className="relative z-10 page-container">
           <div className="flex items-center justify-center gap-3 mb-5">
             <Sparkles className="h-7 w-7 text-indigo-400 drop-shadow-[0_0_10px_rgba(129,140,248,0.8)]" />
-            <h2 className="font-display text-4xl font-bold text-white text-center">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white text-center">
               Premium Experience, End to End
             </h2>
           </div>
@@ -220,7 +220,7 @@ export default function Features() {
         {sections.map((section, index) => (
           <section
             key={section.title}
-            className={`relative ${index % 2 === 0 ? 'bg-[#030712]' : 'bg-[#0f172a]/40'} py-14 md:py-16 overflow-hidden`}
+            className={`relative ${index % 2 === 0 ? 'bg-[#030712]' : 'bg-[#0f172a]/40'} py-8 sm:py-12 md:py-16 overflow-hidden`}
           >
             {/* Ambient gradients */}
             <div className={`absolute top-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px] opacity-20 pointer-events-none ${index % 2 === 0 ? '-left-64 bg-indigo-500' : '-right-64 bg-purple-500'}`} />

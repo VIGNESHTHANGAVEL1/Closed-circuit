@@ -232,7 +232,7 @@ export default function OtpVerificationModal({
                 <>
                   <div
                     className={`mb-3 flex justify-center ${
-                      otpLength === 6 ? 'gap-2 sm:gap-2.5' : 'gap-2.5'
+                      otpLength === 6 ? 'gap-1 sm:gap-2 md:gap-2.5' : 'gap-2.5'
                     }`}
                   >
                     {Array.from({ length: otpLength }).map((_, index) => (
@@ -252,8 +252,8 @@ export default function OtpVerificationModal({
                         disabled={isLoading}
                         className={`rounded-xl border border-white/10 bg-[#0f172a]/80 text-center font-bold text-white transition focus:border-purple-500/60 focus:outline-none focus:ring-2 focus:ring-purple-500/40 disabled:cursor-not-allowed disabled:opacity-50 ${
                           otpLength === 6
-                            ? 'h-12 w-10 text-lg sm:h-14 sm:w-12 sm:text-xl md:h-16 md:w-14 md:text-2xl'
-                            : 'h-14 w-12 text-xl md:h-16 md:w-14 md:text-2xl'
+                            ? 'h-10 w-9 text-base sm:h-12 sm:w-11 sm:text-lg md:h-14 md:w-12 md:text-xl'
+                            : 'h-12 w-11 text-lg sm:h-14 sm:w-12 sm:text-xl md:h-16 md:w-14 md:text-2xl'
                         }`}
                         aria-label={`OTP digit ${index + 1}`}
                       />

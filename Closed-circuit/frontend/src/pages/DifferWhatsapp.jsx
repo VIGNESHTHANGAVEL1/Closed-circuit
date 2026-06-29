@@ -42,8 +42,8 @@ export default function DifferWhatsapp() {
         <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-pink-500/5 blur-[150px] rounded-full pointer-events-none" />
         
         <div className="page-container relative z-10">
-          <div className="mb-16 text-center max-w-3xl mx-auto">
-             <h2 className="font-display text-4xl font-bold text-white tracking-tight mb-6">Messaging vs Memories</h2>
+          <div className="mb-8 sm:mb-16 text-center max-w-3xl mx-auto">
+             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-3 sm:mb-6">Messaging vs Memories</h2>
              <p className="text-lg text-slate-400 leading-relaxed">
                Chats move fast, but memories deserve structure, visibility control, and long-term organization. See the difference in how we handle your legacy.
              </p>
@@ -96,7 +96,7 @@ export default function DifferWhatsapp() {
       {/* Section 2: Why Private left | Image right */}
       <section className="section-y relative bg-[#0f172a]/40">
         <div className="page-container grid items-center gap-6 lg:grid-cols-2">
-          <Card className="p-10 border border-white/10 bg-gradient-to-br from-purple-500/10 to-transparent">
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-gradient-to-br from-purple-500/10 to-transparent">
             <h3 className="font-display text-3xl font-bold text-white tracking-tight leading-tight">
               Why a Private Family Platform Is Better
             </h3>
@@ -117,7 +117,7 @@ export default function DifferWhatsapp() {
             <img
               src={visuals.celebration}
               alt="Shared family moments"
-              className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              className="h-full min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
               loading="lazy"
             />
           </Card>

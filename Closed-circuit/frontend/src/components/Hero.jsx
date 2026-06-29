@@ -40,8 +40,8 @@ export default function Hero({
           transition={{ delay: 0.2, duration: 0.8 }}
           className={`font-display font-bold leading-[1.1] tracking-tight ${
             compact
-              ? 'mt-2 text-3xl sm:text-4xl md:text-5xl'
-              : 'mt-4 text-5xl sm:text-6xl md:text-7xl'
+              ? 'mt-2 text-2xl sm:text-3xl md:text-4xl lg:text-5xl'
+              : 'mt-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl'
           }`}
         >
           {title}
@@ -53,8 +53,8 @@ export default function Hero({
             transition={{ delay: 0.35, duration: 0.8 }}
             className={`mx-auto max-w-3xl text-slate-400 font-normal ${
               compact
-                ? 'mt-2 text-base md:text-lg leading-snug'
-                : 'mt-4 text-xl md:text-2xl leading-relaxed'
+                ? 'mt-2 text-sm sm:text-base md:text-lg leading-snug'
+                : 'mt-3 text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed'
             }`}
           >
             {subtitle}

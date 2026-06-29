@@ -30,7 +30,7 @@ export default function MediaPlayer({
       loop={loop}
       playsInline={playsInline}
       preload={preload}
-      className={`h-[416px] w-full max-w-[1100px] rounded-2xl object-cover shadow-2xl md:h-[494px] ${className}`.trim()}
+      className={`h-[220px] sm:h-[320px] md:h-[416px] lg:h-[494px] w-full max-w-[1100px] rounded-2xl object-cover shadow-2xl ${className}`.trim()}
     >
       Your browser does not support the video tag.
     </video>

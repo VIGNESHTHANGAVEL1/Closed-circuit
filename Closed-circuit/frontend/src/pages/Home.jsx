@@ -86,19 +86,19 @@ export default function Home() {
       <section className="relative overflow-hidden bg-aurora">
         <div className="absolute inset-0 section-grid opacity-80" />
         <div className="page-container relative pb-5 pt-5 lg:pr-0 lg:pl-0">
-          <div className="grid gap-1 lg:grid-cols-2 lg:items-stretch">
+          <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6 }}
-              className="relative flex h-full min-h-[520px] flex-col overflow-hidden rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
+              className="relative flex h-full min-h-[400px] sm:min-h-[480px] md:min-h-[520px] flex-col overflow-hidden rounded-[28px] sm:rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
             >
-              <div className="inline-flex w-fit rounded-full border border-indigo-500/40 bg-[#0b1235] px-6 py-2 shadow-[0_0_20px_rgba(99,102,241,0.25)]">
+              <div className="inline-flex w-fit rounded-full border border-indigo-500/40 bg-[#0b1235] px-4 sm:px-6 py-2 shadow-[0_0_20px_rgba(99,102,241,0.25)]">
                 <span className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">
                   Closed Circuit for Families
                 </span>
               </div>
-              <h1 className="font-display mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+              <h1 className="font-display mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
                 Your Memories.<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
                   Your People.
@@ -139,14 +139,14 @@ export default function Home() {
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="relative flex h-full min-h-[520px] flex-col overflow-hidden rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
+              className="relative flex h-full min-h-[400px] sm:min-h-[480px] md:min-h-[520px] flex-col overflow-hidden rounded-[28px] sm:rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
             >
-              <div className="inline-flex w-fit rounded-full border border-purple-500/40 bg-[#0b1235] px-6 py-2 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
+              <div className="inline-flex w-fit rounded-full border border-purple-500/40 bg-[#0b1235] px-4 sm:px-6 py-2 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
                 <span className="text-xs font-semibold uppercase tracking-[0.4em] text-purple-200">
                   Closed Circuit for Businesses
                 </span>
               </div>
-              <h1 className="font-display mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+              <h1 className="font-display mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
                 Private Communication.<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                   Organized
@@ -206,7 +206,7 @@ export default function Home() {
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-purple-400">
               Your Own Private Social Media
             </p>
-            <h2 className="font-display mt-2 text-4xl font-bold leading-tight text-white md:text-5xl">
+            <h2 className="font-display mt-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
               Create your own <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">private platform.</span>
             </h2>
@@ -243,7 +243,7 @@ export default function Home() {
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-cyan-400">
               Why Our Product Is For You
             </p>
-            <h2 className="font-display mt-2 text-4xl font-bold leading-tight text-white md:text-5xl">
+            <h2 className="font-display mt-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
               A Secure, Private, Fully Controlled <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">Digital Environment</span>
             </h2>
             <p className="mt-3 text-xl leading-relaxed text-slate-400">
@@ -273,7 +273,7 @@ export default function Home() {
               <img
                 src={shieldVisual}
                 alt="Security and privacy"
-                className="h-[400px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="h-[200px] sm:h-[280px] md:h-[400px] w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
             </Card>
             <Card className="border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-8">
@@ -301,7 +301,7 @@ export default function Home() {
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="font-display text-4xl font-bold leading-tight text-white md:text-5xl">
+            <h2 className="font-display text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
               Key Features,<br /> Clearly Controlled
             </h2>
             <p className="mt-3 text-xl leading-relaxed text-slate-400">
@@ -361,7 +361,7 @@ export default function Home() {
             className="relative"
           >
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-pink-500/20 to-orange-500/20 blur-2xl" />
-            <img src={albumVisual} alt="Albums for memories" className="relative h-[500px] w-full rounded-3xl border border-white/10 object-cover shadow-2xl" />
+            <img src={albumVisual} alt="Albums for memories" className="relative h-[240px] sm:h-[360px] md:h-[500px] w-full rounded-3xl border border-white/10 object-cover shadow-2xl" />
           </motion.div>
           <motion.div
             initial={{ x: 30, opacity: 0 }}
@@ -371,7 +371,7 @@ export default function Home() {
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-pink-400">
               Personal Prestige Platform
             </p>
-            <h2 className="font-display mt-2 text-4xl font-bold leading-tight text-white md:text-5xl">
+            <h2 className="font-display mt-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
               A private platform with <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-orange-400">your name.</span>
             </h2>
             <p className="mt-3 text-xl leading-relaxed text-slate-400">
@@ -403,7 +403,7 @@ export default function Home() {
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
-            className="font-display text-5xl font-bold text-white md:text-7xl"
+            className="font-display text-3xl font-bold text-white sm:text-4xl md:text-5xl lg:text-7xl"
           >
             Give the Gift of <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Memories</span>
           </motion.h2>
@@ -428,7 +428,7 @@ export default function Home() {
           <div className="mt-8 flex flex-wrap justify-center gap-6">
             <Link
               to="/contact"
-              className="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.2)] transition hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(255,255,255,0.4)]"
+              className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.2)] transition hover:-translate-y-1 hover:shadow-[0_0_50px_rgba(255,255,255,0.4)]"
             >
               Create Your Private Memory Platform Today
               <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />

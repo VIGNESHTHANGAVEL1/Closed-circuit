@@ -59,16 +59,16 @@ export default function DifferSocial() {
         <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-orange-500/5 blur-[200px] rounded-full pointer-events-none" />
         
         <div className="page-container relative z-10">
-          <div className="mb-16 text-center max-w-3xl mx-auto">
-            <h2 className="font-display text-4xl font-bold text-white tracking-tight mb-6">The Problem with Existing Platforms</h2>
+          <div className="mb-8 sm:mb-16 text-center max-w-3xl mx-auto">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-4 sm:mb-6">The Problem with Existing Platforms</h2>
             <p className="text-lg text-slate-400 leading-relaxed">Neither messaging apps nor social networks were built with your family's privacy in mind.</p>
           </div>
           
           <div className="grid lg:grid-cols-2 gap-8">
             {/* WhatsApp Limitations */}
-            <Card className="p-8 border border-rose-500/20 bg-gradient-to-br from-rose-500/5 to-transparent relative overflow-hidden group hover:border-rose-500/40 transition-all shadow-xl">
+            <Card className="p-5 sm:p-8 border border-rose-500/20 bg-gradient-to-br from-rose-500/5 to-transparent relative overflow-hidden group hover:border-rose-500/40 transition-all shadow-xl">
               <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-rose-500/5 rounded-full blur-2xl pointer-events-none" />
-              <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-4 mb-4 sm:mb-8">
                 <div className="p-3 bg-rose-500/20 rounded-2xl text-rose-400 border border-rose-500/30">
                   <AlertTriangle className="h-7 w-7" />
                 </div>
@@ -91,9 +91,9 @@ export default function DifferSocial() {
             </Card>
 
             {/* Social Media Limitations */}
-            <Card className="p-8 border border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent relative overflow-hidden group hover:border-orange-500/40 transition-all shadow-xl">
+            <Card className="p-5 sm:p-8 border border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent relative overflow-hidden group hover:border-orange-500/40 transition-all shadow-xl">
               <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-orange-500/5 rounded-full blur-2xl pointer-events-none" />
-              <div className="flex items-center gap-4 mb-8">
+              <div className="flex items-center gap-4 mb-4 sm:mb-8">
                 <div className="p-3 bg-orange-500/20 rounded-2xl text-orange-400 border border-orange-500/30">
                   <AlertTriangle className="h-7 w-7" />
                 </div>
@@ -137,11 +137,11 @@ export default function DifferSocial() {
 
           {/* Right: Why Private benefits */}
           <div>
-            <div className="flex items-center gap-4 mb-8">
-              <div className="p-3 bg-indigo-500/20 rounded-2xl text-indigo-400 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
+            <div className="flex items-start gap-4 mb-5 sm:mb-8">
+              <div className="p-3 shrink-0 bg-indigo-500/20 rounded-2xl text-indigo-400 border border-indigo-500/30 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
                 <ShieldCheck className="h-7 w-7" />
               </div>
-              <h2 className="font-display text-4xl font-bold text-white tracking-tight">Why Families Need a Private Digital Space</h2>
+              <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight">Why Families Need a Private Digital Space</h2>
             </div>
             <p className="text-lg text-slate-400 leading-relaxed mb-5">
               Birthdays, weddings, festivals, reunions, and milestones are meant to be shared with loved ones — not with strangers or public audiences.
@@ -221,9 +221,9 @@ export default function DifferSocial() {
       <section className="section-y relative bg-gradient-to-b from-[#0f172a]/40 to-[#030712]">
         <div className="page-container grid gap-6 lg:grid-cols-2 items-center">
           <Card className="overflow-hidden p-0 border border-white/10 group h-full shadow-2xl">
-            <img src={visuals.familyHero} alt="Family stories" className="h-full min-h-[450px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
+            <img src={visuals.familyHero} alt="Family stories" className="h-full min-h-[200px] sm:min-h-[320px] md:min-h-[450px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           </Card>
-          <Card className="p-10 border border-white/10 bg-white/[0.02] h-full flex flex-col justify-center">
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-white/[0.02] h-full flex flex-col justify-center">
             <h3 className="font-display text-4xl font-bold text-white tracking-tight">A Story Every Family Understands</h3>
             <p className="mt-6 text-lg text-slate-400 leading-relaxed">
               Every family has thousands of memories — old photographs stored in albums, stories told by grandparents, and moments captured during weddings, festivals, and celebrations. In the past, these memories lived in photo albums and family gatherings. Today, they get scattered across chats, social media feeds, and multiple apps. Over time, many of those memories are lost.

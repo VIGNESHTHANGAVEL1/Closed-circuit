@@ -8,7 +8,7 @@ export default function Card({ children, className = '', delay = 0, onClick = nu
       transition={{ delay, duration: 0.6 }}
       whileHover={{ y: -6, scale: 1.01 }}
       onClick={onClick}
-      className={`glass-panel rounded-2xl transition-all ${
+      className={`glass-panel rounded-[20px] sm:rounded-[24px] md:rounded-[28px] transition-all ${
         onClick ? 'cursor-pointer' : ''
       } ${className}`}
     >

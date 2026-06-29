@@ -39,8 +39,8 @@ export default function DifferFacebook() {
         <div className="absolute bottom-1/4 left-0 w-[500px] h-[500px] bg-rose-500/5 blur-[150px] rounded-full pointer-events-none" />
         
         <div className="page-container relative z-10">
-          <div className="mb-16 text-center max-w-3xl mx-auto">
-             <h2 className="font-display text-4xl font-bold text-white tracking-tight mb-6">A Clear Contrast in Values</h2>
+          <div className="mb-8 sm:mb-16 text-center max-w-3xl mx-auto">
+             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-3 sm:mb-6">A Clear Contrast in Values</h2>
              <p className="text-lg text-slate-400 leading-relaxed">
                 Public networks prioritize reach and advertising. Closed Circuit prioritizes trust, privacy, and
                 member approval. See how we protect what matters most.
@@ -94,7 +94,7 @@ export default function DifferFacebook() {
       {/* Section 2: Advantage text left | Image right */}
       <section className="section-y relative bg-[#0f172a]/40">
         <div className="page-container grid items-center gap-6 lg:grid-cols-2">
-          <Card className="p-10 border border-white/10 bg-gradient-to-br from-indigo-500/10 to-transparent">
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-gradient-to-br from-indigo-500/10 to-transparent">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-indigo-500/20 rounded-xl text-indigo-400 border border-indigo-500/30">
                 <ShieldCheck className="h-6 w-6" />
@@ -120,7 +120,7 @@ export default function DifferFacebook() {
             <img
               src={visuals.secure}
               alt="Private platform security"
-              className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              className="h-full min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
               loading="lazy"
             />
           </Card>

@@ -132,8 +132,8 @@ export default function FlowText() {
         
         <div className="page-container relative z-10">
           
-          <div className="mb-20 text-center max-w-3xl mx-auto">
-             <h2 className="font-display text-4xl font-bold text-white tracking-tight mb-6">The Complete Experience</h2>
+          <div className="mb-10 sm:mb-20 text-center max-w-3xl mx-auto">
+             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-4 sm:mb-6">The Complete Experience</h2>
              <p className="text-lg text-slate-400 leading-relaxed">
                Trace the lifecycle of a community member from their very first invitation to sharing a lifetime of memories.
              </p>
@@ -146,7 +146,7 @@ export default function FlowText() {
             {steps.map((step, idx) => {
               const isEven = idx % 2 === 0;
               return (
-                <div key={step.title} className={`relative flex items-center md:justify-between mb-16 flex-col md:flex-row ${isEven ? 'md:flex-row-reverse' : ''}`}>
+                  <div key={step.title} className={`relative flex items-center md:justify-between mb-8 sm:mb-12 md:mb-16 flex-col md:flex-row ${isEven ? 'md:flex-row-reverse' : ''}`}>
                   
                   {/* Glowing Node Dot on the timeline */}
                   <div className="absolute left-[16px] md:left-1/2 -translate-x-[50%] md:-translate-x-1/2 w-4 h-4 bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(99,102,241,1)] z-10">
@@ -161,9 +161,9 @@ export default function FlowText() {
                     initial={{ opacity: 0, x: isEven ? -50 : 50 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 }}
-                    className="w-full pl-16 md:pl-0 md:w-[45%] relative group"
+                    className="w-full pl-10 sm:pl-14 md:pl-0 md:w-[45%] relative group"
                   >
-                    <Card className="p-8 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all hover:border-indigo-500/30 overflow-hidden shadow-xl">
+                    <Card className="p-4 sm:p-6 md:p-8 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-all hover:border-indigo-500/30 overflow-hidden shadow-xl">
                       <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-indigo-500 to-purple-500 opacity-50 group-hover:opacity-100 transition-opacity" />
                       <div className="flex items-start gap-5">
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-500/10 text-xl font-black text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-purple-400 border border-indigo-500/20 shadow-inner">
@@ -186,7 +186,7 @@ export default function FlowText() {
 
       <section className="section-y relative bg-[#0f172a]/40">
         <div className="page-container grid gap-6 lg:grid-cols-[1.1fr_0.9fr] items-center">
-          <Card className="p-10 border border-white/10 bg-white/[0.02]">
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-white/[0.02]">
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-indigo-500/20 rounded-xl text-indigo-400 border border-indigo-500/30">
                 <ShieldCheck className="h-6 w-6" />
@@ -226,9 +226,9 @@ export default function FlowText() {
       <section className="section-y relative border-b border-white/5 bg-[#030712]">
         <div className="page-container grid items-center gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <Card className="overflow-hidden p-0 border border-white/10 group h-full">
-            <img src={visuals.familyHero} alt="Family members sharing memories" className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
+            <img src={visuals.familyHero} alt="Family members sharing memories" className="h-full min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           </Card>
-          <Card className="p-10 border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent h-full flex flex-col justify-center">
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent h-full flex flex-col justify-center">
             <h3 className="font-display text-4xl font-bold text-white tracking-tight">Every Step Supports Trust</h3>
             <p className="mt-6 text-lg text-slate-400 leading-relaxed">
               From signup to sharing, the flow ensures members see only what they should - preserving privacy and
@@ -251,7 +251,7 @@ export default function FlowText() {
               <img src={visuals.secure} alt="Secure platform" className="h-64 w-full object-cover transition-transform duration-1000 group-hover:scale-110" loading="lazy" />
             </Card>
           </div>
-          <Card className="mt-6 p-10 border border-white/10 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-center">
+          <Card className="mt-6 p-5 sm:p-8 md:p-10 border border-white/10 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 text-center">
             <h3 className="font-display text-3xl font-bold text-white tracking-tight">A Visual Memory Timeline</h3>
             <p className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
               The Closed Circuit flow keeps every update, event, and memory visually organized - so nothing gets lost.

@@ -130,7 +130,7 @@ export default function Gifts() {
           </motion.div>
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0.1}>
             <Card className="overflow-hidden border border-white/10 p-0">
-              <img src={visuals.familyTogether} alt="Family staying connected" className="h-[320px] w-full object-cover" loading="lazy" />
+              <img src={visuals.familyTogether} alt="Family staying connected" className="h-[200px] sm:h-[260px] md:h-[320px] w-full object-cover" loading="lazy" />
             </Card>
           </motion.div>
         </div>
@@ -161,7 +161,7 @@ export default function Gifts() {
             <p className="mt-2 text-sm text-slate-400">{shareLife.text}</p>
           </Card>
           <Card className="overflow-hidden border border-white/10 p-0">
-            <img src={visuals.familyMultiGen} alt="Multi-generational family" className="h-[260px] w-full object-cover" loading="lazy" />
+              <img src={visuals.familyMultiGen} alt="Multi-generational family" className="h-[180px] sm:h-[220px] md:h-[260px] w-full object-cover" loading="lazy" />
           </Card>
         </div>
       </section>
@@ -215,7 +215,7 @@ export default function Gifts() {
             <ChipGrid items={preserveMemories.items} />
           </Card>
           <Card className="overflow-hidden border border-white/10 p-0">
-            <img src={visuals.familyCelebration} alt="Family memories preserved" className="h-[280px] w-full object-cover" loading="lazy" />
+              <img src={visuals.familyCelebration} alt="Family memories preserved" className="h-[180px] sm:h-[240px] md:h-[280px] w-full object-cover" loading="lazy" />
           </Card>
         </div>
       </section>
@@ -263,7 +263,7 @@ export default function Gifts() {
             <p className="mt-2 text-sm text-slate-400">{familyConnected.tagline}</p>
           </div>
 
-          <div className="relative mx-auto max-w-2xl aspect-square flex items-center justify-center">
+          <div className="relative mx-auto w-full max-w-[340px] sm:max-w-[420px] md:max-w-2xl aspect-square flex items-center justify-center overflow-hidden">
             <div className="absolute z-20 flex h-28 w-28 items-center justify-center rounded-full border-2 border-indigo-500/50 bg-gradient-to-br from-indigo-500/30 to-purple-600/20 shadow-[0_0_40px_rgba(99,102,241,0.4)] backdrop-blur-xl">
               <div className="text-center">
                 <Heart className="h-8 w-8 text-indigo-300 mx-auto" />
@@ -356,7 +356,7 @@ export default function Gifts() {
             <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 via-indigo-500/20 to-pink-500/20 rounded-[40px] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             <Card className="overflow-hidden p-0 border border-white/10 relative z-10 shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-t from-[#030712] via-[#030712]/20 to-transparent z-10 pointer-events-none" />
-              <img src={visuals.gift} alt="Thoughtful gift" className="h-[480px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
+              <img src={visuals.gift} alt="Thoughtful gift" className="h-[240px] sm:h-[360px] md:h-[480px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
               <div className="absolute bottom-0 left-0 right-0 z-20 p-10">
                 <p className="text-2xl font-display font-bold text-white tracking-tight">A Gift That Lasts Forever</p>
                 <p className="mt-3 text-slate-400 leading-relaxed text-base max-w-xs">A lasting digital home for memories, messages, and shared moments.</p>
@@ -372,7 +372,7 @@ export default function Gifts() {
                 </div>
                 <h2 className="font-display text-4xl font-bold text-white tracking-tight">Perfect For</h2>
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 {giftOccasions.map((item, idx) => {
                   const Icon = item.icon;
                   return (
@@ -384,7 +384,7 @@ export default function Gifts() {
                       className="flex items-center gap-3 px-5 py-3 rounded-full bg-white/[0.04] border border-white/10 hover:bg-indigo-500/10 hover:border-indigo-500/40 transition-all duration-300 group cursor-default shadow-lg"
                     >
                       <Icon className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
-                      <span className="text-sm font-semibold text-slate-300 group-hover:text-white transition-colors whitespace-nowrap">{item.label}</span>
+                      <span className="text-sm font-semibold text-slate-300 group-hover:text-white transition-colors">{item.label}</span>
                     </motion.div>
                   );
                 })}
@@ -441,7 +441,7 @@ export default function Gifts() {
             </p>
           </div>
           <Card className="overflow-hidden p-0 border border-white/10 group h-full shadow-2xl">
-            <img src={visuals.celebration} alt="Family celebration" className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
+              <img src={visuals.celebration} alt="Family celebration" className="h-full min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           </Card>
         </div>
       </section>

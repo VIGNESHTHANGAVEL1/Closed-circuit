@@ -80,7 +80,7 @@ export default function TopReasons() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}
-                className="relative group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-indigo-500/30 overflow-hidden shadow-2xl transition-all duration-300"
+                className="relative group p-4 sm:p-6 md:p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-indigo-500/30 overflow-hidden shadow-2xl transition-all duration-300"
               >
                 {/* Glowing edge on hover */}
                 <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
@@ -112,7 +112,7 @@ export default function TopReasons() {
               <img
                 src={visuals.familyHero}
                 alt="Family connection"
-                className="h-[450px] w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                className="h-[240px] sm:h-[340px] md:h-[450px] w-full object-cover transition-transform duration-1000 group-hover:scale-110"
                 loading="lazy"
               />
             </Card>
@@ -129,13 +129,13 @@ export default function TopReasons() {
       {/* Section 2: Call-to-action text left | Image right */}
       <section className="section-y relative bg-[#0f172a]/40 bg-gradient-to-b from-transparent to-[#030712]">
         <div className="page-container grid items-center gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <Card className="p-10 border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent shadow-xl relative overflow-hidden">
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent shadow-xl relative overflow-hidden">
              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px]" />
             <div className="position relative z-10">
                <div className="inline-flex p-5 rounded-3xl bg-indigo-500/10 text-indigo-400 mb-8 border border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
                  <ListChecks className="h-10 w-10" />
                </div>
-               <h2 className="font-display text-4xl font-bold text-white leading-tight">
+               <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
                  Your Family Deserves Its Own <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Digital Home</span>
                </h2>
                <p className="mt-6 text-lg text-slate-400 leading-relaxed">
@@ -148,7 +148,7 @@ export default function TopReasons() {
             <img
               src={visuals.secure}
               alt="Protected family memories"
-              className="h-[500px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              className="h-[220px] sm:h-[360px] md:h-[500px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
               loading="lazy"
             />
           </Card>

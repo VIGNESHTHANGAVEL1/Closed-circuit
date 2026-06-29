@@ -33,8 +33,8 @@ export default function FlowVoice() {
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8 }}
           >
-            <Card className="p-10 border border-white/10 bg-gradient-to-br from-indigo-500/5 to-transparent">
-              <h3 className="font-display text-4xl font-bold text-white tracking-tight leading-tight">Voices Feel More Personal</h3>
+            <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-gradient-to-br from-indigo-500/5 to-transparent">
+              <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight leading-tight">Voices Feel More Personal</h3>
               <p className="mt-6 text-lg text-slate-400 leading-relaxed">
                 Let grandparents share stories, parents send blessings, and communities broadcast updates in a warm,
                 human format.
@@ -64,7 +64,7 @@ export default function FlowVoice() {
               <img
                 src={visuals.voice}
                 alt="Voice note capture"
-                className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                className="h-full min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 loading="lazy"
               />
             </Card>
@@ -79,12 +79,12 @@ export default function FlowVoice() {
             <img
               src={visuals.secure}
               alt="Secure audio sharing"
-              className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+              className="h-full min-h-[200px] sm:min-h-[300px] md:min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105"
               loading="lazy"
             />
           </Card>
-          <Card className="p-10 border border-white/10 bg-white/[0.02] h-full flex flex-col justify-center">
-            <h3 className="font-display text-4xl font-bold text-white tracking-tight">Secure by Default</h3>
+          <Card className="p-5 sm:p-8 md:p-10 border border-white/10 bg-white/[0.02] h-full flex flex-col justify-center">
+            <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">Secure by Default</h3>
             <p className="mt-6 text-lg text-slate-400 leading-relaxed">
               Every voice memory stays inside the closed circuit. Only approved members can listen, respond, and keep
               the story alive.

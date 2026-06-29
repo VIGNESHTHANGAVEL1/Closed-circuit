@@ -82,7 +82,7 @@ export default function FeatureDemos() {
                   <h2 className="text-sm font-bold uppercase tracking-wider text-indigo-300">Video Topics</h2>
                   <p className="text-xs text-slate-500 mt-1">{videos.length} demo{videos.length !== 1 ? 's' : ''}</p>
                 </div>
-                <nav className="max-h-[520px] overflow-y-auto p-3 space-y-1" aria-label="Demo video topics">
+                <nav className="max-h-[200px] sm:max-h-[360px] md:max-h-[520px] overflow-y-auto p-3 space-y-1" aria-label="Demo video topics">
                   {videos.map((video, index) => {
                     const isActive = selectedVideo?.id === video.id;
                     return (

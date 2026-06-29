@@ -102,10 +102,10 @@ function Footer() {
     <>
       {legalPortal}
 
-      <footer className="bg-[#030712] text-slate-400 text-center py-6 border-t border-white/5">
+      <footer className="bg-[#030712] text-slate-400 text-center py-4 sm:py-6 border-t border-white/5">
         <div className="flex flex-col items-center gap-2 text-sm">
 
-          <div className="flex gap-24 mt-2">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-12 mt-1">
             <button
               onClick={() => setLegalModal('privacy')}
               className="text-blue-400 hover:underline"
@@ -113,8 +113,7 @@ function Footer() {
               Privacy Policy
             </button>
 
-<p>© 2026 Closed Circuit AI Pvt Ltd</p>
-
+            <p>© 2026 Closed Circuit AI Pvt Ltd</p>
 
             <button
               onClick={() => setLegalModal('terms')}

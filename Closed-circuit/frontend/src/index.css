@@ -37,6 +37,18 @@ body {
   font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
 }
 
+/* Global image safety */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Global text overflow safety */
+p, span, li, a, label {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 .glass-panel {
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(148, 163, 184, 0.1);
@@ -88,19 +100,39 @@ p {
 }
 
 @layer components {
+  /* Responsive container — 16px on mobile, 20px on sm, 24px on lg+ */
   .page-container {
-    @apply mx-auto w-full max-w-7xl px-6;
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-5 lg:px-6;
   }
 
+  /* Section vertical spacing — compact on mobile */
   .section-y {
-    @apply py-10;
+    @apply py-10 md:py-14;
   }
 
   .section-y-sm {
-    @apply py-6;
+    @apply py-6 md:py-10;
   }
 
   .section-gap {
-    @apply gap-5;
+    @apply gap-4 md:gap-5;
+  }
+}
+
+/* ===== MOBILE RESPONSIVE OVERRIDES ===== */
+
+/* Ensure all grids collapse to single column on small screens unless explicitly set */
+@media (max-width: 480px) {
+  /* Prevent any fixed-width element from overflowing */
+  .page-container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .page-container {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
