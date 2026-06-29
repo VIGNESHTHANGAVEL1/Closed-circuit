@@ -4,6 +4,7 @@ import {
   Gift,
   Lock,
   Sparkles,
+  Heart,
   Users,
   GraduationCap,
   Home,
