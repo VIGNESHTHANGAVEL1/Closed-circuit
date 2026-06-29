@@ -44,11 +44,11 @@ const fadeUp = {
 
 function ChipGrid({ items }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
         <span
           key={item}
-          className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-indigo-500/40 hover:bg-indigo-500/10"
+          className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-lg font-semibold text-slate-300 transition hover:border-indigo-500/40 hover:bg-indigo-500/10"
         >
           {item}
         </span>
@@ -62,7 +62,7 @@ function SectionDivider({ label }) {
     <div className="relative border-y border-white/10 bg-[#0a0f1a]/80 py-6">
       <div className="page-container flex items-center gap-4">
         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
-        <span className="text-xs font-bold uppercase tracking-[0.35em] text-indigo-400">{label}</span>
+        <span className="text-lg font-bold uppercase tracking-[0.35em] text-indigo-400">{label}</span>
         <div className="h-px flex-1 bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
       </div>
     </div>
@@ -108,22 +108,38 @@ export default function Gifts() {
         <div className="page-container text-center max-w-3xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <h2 className="font-display text-3xl font-bold text-white md:text-4xl">{familyIntro.title}</h2>
-            <p className="mt-4 text-base leading-relaxed text-slate-400">{familyIntro.text}</p>
+            <p className="mt-4 text-lg leading-relaxed text-slate-400">{familyIntro.text}</p>
+          </motion.div>
+        </div>
+        {/* First CTA — after all Families.docx content */}
+      <section className="section-y-sm relative border-b border-white/5 overflow-hidden text-center">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-indigo-950/30" />
+        <div className="page-container relative max-w-2xl mx-auto">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <Link
+              to="/contact"
+              className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.25)] transition hover:-translate-y-0.5"
+            >
+              Create Your Family Circle
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+            </Link>
           </motion.div>
         </div>
       </section>
+      </section>
+      
 
       {/* Stay Connected, No Matter the Distance */}
       <section className="section-y-sm relative border-b border-white/5">
         <div className="page-container grid gap-5 lg:grid-cols-2 items-center">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <h2 className="font-display text-2xl font-bold text-white md:text-3xl">{stayConnected.title}</h2>
-            <p className="mt-3 text-sm text-slate-400">{stayConnected.text}</p>
+            <p className="mt-3 text-lg text-slate-400">{stayConnected.text}</p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {stayConnected.items.map((item) => (
                 <div key={item.text} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
                   <span className="text-lg">{item.emoji}</span>
-                  <span className="text-sm font-medium text-slate-300">{item.text}</span>
+                  <span className="text-lg font-medium text-slate-300">{item.text}</span>
                 </div>
               ))}
             </div>
@@ -140,7 +156,7 @@ export default function Gifts() {
       <section className="section-y-sm relative bg-[#0f172a]/40 border-b border-white/5">
         <div className="page-container">
           <h2 className="font-display text-2xl font-bold text-white md:text-3xl">{generations.title}</h2>
-          <p className="mt-2 text-sm text-slate-400">Closed Circuit is designed for everyone in the family. {generations.text}</p>
+          <p className="mt-2 text-lg text-slate-400">Closed Circuit is designed for everyone in the family. {generations.text}</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {generations.members.map((member) => (
               <Card key={member} className="border border-white/10 bg-white/[0.02] p-5 text-center hover:border-indigo-500/30 transition">
@@ -157,8 +173,8 @@ export default function Gifts() {
         <div className="page-container grid gap-5 lg:grid-cols-2 items-center">
           <Card className="border border-white/10 p-6">
             <EyeOff className="h-6 w-6 text-purple-400 mb-3" />
-            <h3 className="font-display text-xl font-bold text-white">{shareLife.title}</h3>
-            <p className="mt-2 text-sm text-slate-400">{shareLife.text}</p>
+            <h3 className="font-display text-3xl font-bold text-white">{shareLife.title}</h3>
+            <p className="mt-2 text-lg text-slate-400">{shareLife.text}</p>
           </Card>
           <Card className="overflow-hidden border border-white/10 p-0">
             <img src={visuals.familyMultiGen} alt="Multi-generational family" className="h-[260px] w-full object-cover" loading="lazy" />
@@ -171,8 +187,8 @@ export default function Gifts() {
         <div className="page-container">
           <Card className="border border-white/10 p-6 md:p-8">
             <Gift className="h-6 w-6 text-pink-400 mb-3" />
-            <h3 className="font-display text-2xl font-bold text-white">{familyEvents.title}</h3>
-            <p className="mt-2 text-sm text-slate-400 mb-4">{familyEvents.text}</p>
+            <h3 className="font-display text-3xl font-bold text-white">{familyEvents.title}</h3>
+            <p className="mt-2 text-lg text-slate-400 mb-4">{familyEvents.text}</p>
             <ChipGrid items={familyEvents.items} />
           </Card>
         </div>
@@ -183,8 +199,8 @@ export default function Gifts() {
         <div className="page-container grid gap-5 lg:grid-cols-2">
           <Card className="border border-white/10 p-6">
             <TreePine className="h-6 w-6 text-emerald-400 mb-3" />
-            <h3 className="font-display text-xl font-bold text-white">{familyTree.title}</h3>
-            <p className="mt-2 text-sm text-slate-400 mb-3">{familyTree.text}</p>
+            <h3 className="font-display text-3xl font-bold text-white">{familyTree.title}</h3>
+            <p className="mt-2 text-lg text-slate-400 mb-3">{familyTree.text}</p>
             <ChipGrid items={familyTree.items} />
           </Card>
           <Card className="overflow-hidden border border-white/10 p-0">
@@ -198,8 +214,8 @@ export default function Gifts() {
         <div className="page-container">
           <Card className="border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent p-6 md:p-8">
             <AlertTriangle className="h-6 w-6 text-amber-400 mb-3" />
-            <h3 className="font-display text-2xl font-bold text-white">{emergency.title}</h3>
-            <p className="mt-2 text-sm text-slate-400 mb-4">{emergency.text}</p>
+            <h3 className="font-display text-3xl font-bold text-white">{emergency.title}</h3>
+            <p className="mt-2 text-lg text-slate-400 mb-4">{emergency.text}</p>
             <ChipGrid items={emergency.items} />
           </Card>
         </div>
@@ -210,8 +226,8 @@ export default function Gifts() {
         <div className="page-container grid gap-5 lg:grid-cols-2 items-center">
           <Card className="border border-white/10 p-6">
             <Album className="h-6 w-6 text-indigo-400 mb-3" />
-            <h3 className="font-display text-xl font-bold text-white">{preserveMemories.title}</h3>
-            <p className="mt-2 text-sm text-slate-400 mb-3">{preserveMemories.text}</p>
+            <h3 className="font-display text-3xl font-bold text-white">{preserveMemories.title}</h3>
+            <p className="mt-2 text-lg text-slate-400 mb-3">{preserveMemories.text}</p>
             <ChipGrid items={preserveMemories.items} />
           </Card>
           <Card className="overflow-hidden border border-white/10 p-0">
@@ -225,11 +241,11 @@ export default function Gifts() {
         <div className="page-container">
           <Card className="border border-white/10 p-6 md:p-8">
             <Shield className="h-6 w-6 text-cyan-400 mb-3" />
-            <h3 className="font-display text-2xl font-bold text-white">{privacyFirst.title}</h3>
-            <p className="mt-2 text-sm text-slate-400 mb-4">{privacyFirst.text}</p>
+            <h3 className="font-display text-3xl font-bold text-white">{privacyFirst.title}</h3>
+            <p className="mt-2 text-lg text-slate-400 mb-4">{privacyFirst.text}</p>
             <ul className="grid gap-2 sm:grid-cols-2">
               {privacyFirst.items.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-slate-400">
+                <li key={item} className="flex items-start gap-2 text-lg text-slate-400">
                   <span className="text-emerald-400 mt-0.5">✅</span>
                   {item}
                 </li>
@@ -242,12 +258,12 @@ export default function Gifts() {
       {/* Why Families Choose Closed Circuit */}
       <section className="section-y-sm relative border-b border-white/5">
         <div className="page-container">
-          <h2 className="font-display text-2xl font-bold text-white md:text-3xl mb-5">{whyFamilies.title}</h2>
+          <h2 className="font-display text-3xl font-bold text-white md:text-4xl mb-5">{whyFamilies.title}</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {whyFamilies.items.map((item) => (
               <Card key={item.text} className="border border-white/10 bg-white/[0.02] p-5 hover:border-indigo-500/30 transition">
                 <span className="text-2xl">{item.emoji}</span>
-                <p className="mt-3 text-sm font-semibold text-slate-300">{item.text}</p>
+                <p className="mt-3 text-lg font-semibold text-slate-300">{item.text}</p>
               </Card>
             ))}
           </div>
@@ -255,46 +271,32 @@ export default function Gifts() {
       </section>
 
       {/* Imagine Your Family Connected */}
-      <section className="section-y-sm relative border-b border-white/5 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-purple-500/5 pointer-events-none" />
-        <div className="page-container relative">
-          <div className="text-center mb-8">
-            <h2 className="font-display text-3xl font-bold text-white md:text-4xl">{familyConnected.title}</h2>
-            <p className="mt-2 text-sm text-slate-400">{familyConnected.tagline}</p>
-          </div>
+      <section className="section-y-sm relative overflow-hidden border-b border-white/5">
+  <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-purple-500/5" />
 
-          <div className="relative mx-auto max-w-2xl aspect-square flex items-center justify-center">
-            <div className="absolute z-20 flex h-28 w-28 items-center justify-center rounded-full border-2 border-indigo-500/50 bg-gradient-to-br from-indigo-500/30 to-purple-600/20 shadow-[0_0_40px_rgba(99,102,241,0.4)] backdrop-blur-xl">
-              <div className="text-center">
-                <Heart className="h-8 w-8 text-indigo-300 mx-auto" />
-                <p className="mt-1 text-xs font-bold text-white">{familyConnected.center}</p>
-              </div>
-            </div>
+  <div className="page-container relative">
+    <div className="mx-auto max-w-4xl text-center">
+      <h2 className="font-display text-3xl font-bold text-white md:text-5xl">
+        {familyConnected.title}
+      </h2>
 
-            {familyConnected.nodes.map((node, idx) => {
-              const radius = 140;
-              const angleRad = (node.angle * Math.PI) / 180;
-              const x = Math.cos(angleRad) * radius;
-              const y = Math.sin(angleRad) * radius;
-              return (
-                <motion.div
-                  key={node.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.08, duration: 0.5 }}
-                  className="absolute z-10"
-                  style={{ transform: `translate(${x}px, ${y}px)` }}
-                >
-                  <div className="flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-white/15 bg-white/[0.06] backdrop-blur-xl shadow-lg transition hover:border-indigo-500/40 hover:bg-indigo-500/10 hover:scale-105">
-                    <Users className="h-5 w-5 text-indigo-400 mb-1" />
-                    <span className="text-[10px] font-semibold text-center text-slate-300 leading-tight px-1">{node.label}</span>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <p className="mt-3 text-slate-400">
+        {familyConnected.tagline}
+      </p>
+
+      <div className="mmt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {familyConnected.items.map((item) => (
+          <span
+            key={item}
+            className="rounded-full border border-indigo-500/20 bg-white/5 px-5 py-3 text-lg font-medium text-blue-300 backdrop-blur transition hover:border-indigo-500/40 hover:bg-indigo-500/10 hover:text-blue-200"
+          >
+            {item}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* Join Thousands of Families */}
       <section className="section-y-sm relative bg-[#0f172a]/40 border-b border-white/5">
@@ -303,34 +305,38 @@ export default function Gifts() {
             <h2 className="font-display text-2xl font-bold text-white md:text-3xl">
               Join Thousands of Families Building Stronger Connections
             </h2>
-            <p className="mt-4 text-base text-slate-400">
+            <p className="mt-4 text-lg text-slate-400">
               Closed Circuit isn&apos;t another social media platform. It&apos;s a private digital home built exclusively for the people who matter most.
             </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* First CTA — after all Families.docx content */}
-      <section className="section-y-sm relative border-b border-white/5 overflow-hidden text-center">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-indigo-950/30" />
+            <section className="section-y-sm relative overflow-hidden text-center">
+        {/* <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-indigo-950/40" /> */}
         <div className="page-container relative max-w-2xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            {/* <h2 className="font-display text-3xl font-bold text-white md:text-4xl">Start Your Family Circle Today</h2> */}
             <Link
               to="/contact"
-              className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.25)] transition hover:-translate-y-0.5"
+              className="group mt-6 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-lg font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.25)] transition hover:-translate-y-0.5"
             >
-              Create Your Family Circle
+              Start Your Family Circle Today
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </Link>
+            <p className="mt-3 text-lg text-slate-400">Reconnect. Celebrate. Protect. Belong.</p>
+            <p className="mt-2 text-lg text-indigo-400">Closed Circuit — Where Families Stay Together. ❤️</p>
+            
           </motion.div>
         </div>
       </section>
+          </motion.div>
+        </div>
+      </section>
+       {/* Final CTA — after existing Gifts section */}
+      
 
       {/* ══════════════════════════════════════════════════════════════════════
           SECTION 2 — Existing Gifts content (unchanged, grouped together)
           ══════════════════════════════════════════════════════════════════════ */}
 
-      <SectionDivider label="Gifts" />
+      {/* <SectionDivider label="Gifts" /> */}
 
       <Hero
         eyebrow="Gifts"
@@ -359,7 +365,7 @@ export default function Gifts() {
               <img src={visuals.gift} alt="Thoughtful gift" className="h-[480px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
               <div className="absolute bottom-0 left-0 right-0 z-20 p-10">
                 <p className="text-2xl font-display font-bold text-white tracking-tight">A Gift That Lasts Forever</p>
-                <p className="mt-3 text-slate-400 leading-relaxed text-base max-w-xs">A lasting digital home for memories, messages, and shared moments.</p>
+                <p className="mt-3 text-slate-400 leading-relaxed text-lg max-w-xs">A lasting digital home for memories, messages, and shared moments.</p>
               </div>
             </Card>
           </motion.div>
@@ -443,25 +449,6 @@ export default function Gifts() {
           <Card className="overflow-hidden p-0 border border-white/10 group h-full shadow-2xl">
             <img src={visuals.celebration} alt="Family celebration" className="h-full min-h-[400px] w-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           </Card>
-        </div>
-      </section>
-
-      {/* Final CTA — after existing Gifts section */}
-      <section className="section-y-sm relative overflow-hidden text-center">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-indigo-950/40" />
-        <div className="page-container relative max-w-2xl mx-auto">
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-            <h2 className="font-display text-3xl font-bold text-white md:text-4xl">Start Your Family Circle Today</h2>
-            <p className="mt-3 text-base text-slate-400">Reconnect. Celebrate. Protect. Belong.</p>
-            <p className="mt-2 text-sm text-indigo-400">Closed Circuit — Where Families Stay Together. ❤️</p>
-            <Link
-              to="/contact"
-              className="group mt-6 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.25)] transition hover:-translate-y-0.5"
-            >
-              Contact Us
-              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-            </Link>
-          </motion.div>
         </div>
       </section>
     </motion.div>

@@ -9,12 +9,34 @@ import { businessChips } from '../data/companiesContent';
 import { familyChips } from '../data/familiesContent';
 
 export default function Home() {
-  const businessTaglines = businessChips;
+  
+  const businessTaglines = [
+    'Customer Community',
+    'Secure Media Sharing',
+    'No Public Exposure',
+    'Real-Time Notifications',
+    'Privacy-First Communication',
+    'Secure Group Collaboration',
+    'Strengthen Relationships',
+    'Private Business Network',
+    'Complete Ownership & Control',
+  ];
 
-  const familyOccasions = familyChips;
+  const familyOccasions = [
+    'Sibling Birthday',
+    'Thank You Gift',
+    'Marriage Gift',
+    'Wedding Anniversary Gift',
+    'Baby Shower Gift',
+    'Housewarming Gift',
+    'Children Birthday',
+    'Friend or Relative Birthday',
+    "Friend's Kid Birthday",
+  ];
+
 
   const pillClass =
-    'cursor-default rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 backdrop-blur-md';
+  "rounded-full border border-white/10 bg-white/5 px-4 py-3 min-h-[52px] text-sm text-slate-300 backdrop-blur-md";
 
   const keyFeatures = [
     {
@@ -111,9 +133,9 @@ export default function Home() {
               <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
                 Because family deserves a private space. Communicate, celebrate, organize, and preserve memories — without ads, without unwanted audiences, and without compromising privacy.
               </p>
-              <div className="mt-4 flex flex-wrap gap-2">
+               <div className="mt-4 grid grid-cols-3 gap-3">
                 {familyOccasions.map((item) => (
-                  <span key={item} className={pillClass}>
+                  <span key={item} className={`${pillClass} flex items-center justify-center text-center`}>
                     {item}
                   </span>
                 ))}
@@ -159,9 +181,9 @@ export default function Home() {
               <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
                 Connect employees, teams, customers, and stakeholders within one private digital network — with complete control over access and information sharing.
               </p>
-              <div className="mt-4 flex flex-wrap gap-2">
+               <div className="mt-4 grid grid-cols-3 gap-3">
                 {businessTaglines.map((item) => (
-                  <span key={item} className={pillClass}>
+                  <span key={item} className={`${pillClass} flex items-center justify-center text-center`}>
                     {item}
                   </span>
                 ))}

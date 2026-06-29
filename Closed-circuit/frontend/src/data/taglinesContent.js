@@ -5,6 +5,13 @@ export const heroTaglines = [
   'Own Your Community. Control Every Connection.',
   'Private by Design. Powerful by Control.',
   'Community Communication. Reimagined.',
+  'The Private, Secure, and Fully Controlled Digital Platform for Modern Communities.',
+  'Where Communities Communicate with Confidence.',
+  'The Digital Headquarters for Modern Communities.',
+  'Every Community. One Private Platform.',
+  'The Future of Secure Community Management.',
+  'Your Community. One Platform. Complete Control.',
+  'Built for Communities That Value Privacy, Security, and Control.',
 ];
 
 export const coreValues = [
