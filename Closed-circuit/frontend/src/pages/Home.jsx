@@ -172,13 +172,13 @@ export default function Home() {
                 </span>
               </div>
               <h1 className="font-display mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
-                Private Communication.<br />
+                Your Clients<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                  Organized
+                  Your Stratagy
                 </span><br />
-                Collaboration.<br />
+                Your Business<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                  Your Network.
+                  Your Plans
                 </span>
               </h1>
               <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
