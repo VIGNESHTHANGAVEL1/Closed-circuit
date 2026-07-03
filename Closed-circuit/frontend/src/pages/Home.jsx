@@ -1,6 +1,25 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Bell, Calendar, CheckCircle, Globe, Image as ImageIcon, Lock, Shield, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+function IsoBadge() {
+  return (
+    <Link
+      to="/iso-certification"
+      className="absolute top-4 right-4 sm:top-5 sm:right-5 z-10 group"
+      title="View ISO 9001:2015 Certification"
+    >
+      <div className="flex items-center gap-1.5 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-1.5 backdrop-blur-md shadow-sm cursor-pointer transition-all duration-200 group-hover:bg-yellow-500/20 group-hover:border-yellow-500/50 group-hover:shadow-[0_0_12px_rgba(234,179,8,0.2)]">
+        <svg className="h-3.5 w-3.5 text-yellow-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-yellow-300 leading-none">
+          ISO 9001:2015
+        </span>
+      </div>
+    </Link>
+  );
+}
 import Card from '../components/Card';
 import heroVisual from '../assets/generated_1.png';
 import shieldVisual from '../assets/generated_2.png';
@@ -115,17 +134,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="relative flex h-full min-h-[400px] sm:min-h-[480px] md:min-h-[520px] flex-col overflow-hidden rounded-[28px] sm:rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
             >
-              {/* ISO Badge */}
-              <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-10">
-                <div className="flex items-center gap-1.5 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-1.5 backdrop-blur-md shadow-sm">
-                  <svg className="h-3.5 w-3.5 text-yellow-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-yellow-300 leading-none">
-                    ISO 9001:2015
-                  </span>
-                </div>
-              </div>
+              <IsoBadge />
               <div className="inline-flex w-fit rounded-full border border-indigo-500/40 bg-[#0b1235] px-4 sm:px-6 py-2 shadow-[0_0_20px_rgba(99,102,241,0.25)]">
                 <span className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">
                   Closed Circuit for Families
@@ -177,17 +186,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="relative flex h-full min-h-[400px] sm:min-h-[480px] md:min-h-[520px] flex-col overflow-hidden rounded-[28px] sm:rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
             >
-              {/* ISO Badge */}
-              <div className="absolute top-4 right-4 sm:top-5 sm:right-5 z-10">
-                <div className="flex items-center gap-1.5 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-2.5 py-1.5 backdrop-blur-md shadow-sm">
-                  <svg className="h-3.5 w-3.5 text-yellow-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-yellow-300 leading-none">
-                    ISO 9001:2015
-                  </span>
-                </div>
-              </div>
+              <IsoBadge />
               <div className="inline-flex w-fit rounded-full border border-purple-500/40 bg-[#0b1235] px-4 sm:px-6 py-2 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
                 <span className="text-xs font-semibold uppercase tracking-[0.4em] text-purple-200">
                   Closed Circuit for Businesses

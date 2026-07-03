@@ -3,7 +3,12 @@ import { bootstrapDatabase } from './config/bootstrap.js';
 import { createApp } from './app.js';
 import { seedDefaultAdmin } from './scripts/seedAdmin.js';
 import { seedDefaultTemplates } from './scripts/seedTemplates.js';
-import { ensureClientFoldersExist, ensureDemoVideoFolderExists } from './services/spaces.service.js';
+import {
+  ensureClientFoldersExist,
+  ensureDemoVideoFolderExists,
+  ensureBrochureFolderExists,
+  ensureCertificateFolderExists,
+} from './services/spaces.service.js';
 import { startCallReminderScheduler } from './schedulers/callReminderScheduler.js';
 import { logNotificationConfigStatus } from './utils/notificationConfig.js';
 
@@ -43,6 +48,8 @@ try {
   logNotificationConfigStatus();
   await ensureClientFoldersExist();
   await ensureDemoVideoFolderExists();
+  await ensureBrochureFolderExists();
+  await ensureCertificateFolderExists();
 
   const app = createApp();
   startCallReminderScheduler();

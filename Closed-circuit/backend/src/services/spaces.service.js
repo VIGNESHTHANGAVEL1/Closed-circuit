@@ -296,6 +296,133 @@ export async function ensureDemoVideoFolderExists() {
   await ensureFolderPlaceholder(getDemoVideoFolder());
 }
 
+export async function ensureBrochureFolderExists() {
+  if (!config.spaces.enabled) {
+    console.warn('[spaces] DigitalOcean Spaces not configured — Brochures folder skipped.');
+    return;
+  }
+
+  const key = buildObjectKey('Brochures', '.keep');
+  const client = getS3Client();
+
+  try {
+    await client.send(new HeadObjectCommand({ Bucket: config.spaces.bucket, Key: key }));
+  } catch {
+    try {
+      await client.send(
+        new PutObjectCommand({
+          Bucket: config.spaces.bucket,
+          Key: key,
+          Body: '',
+          ContentType: 'text/plain',
+          ACL: 'public-read',
+        })
+      );
+    } catch (err) {
+      console.warn('[spaces] Could not create Brochures folder placeholder:', err.message);
+      return;
+    }
+  }
+
+  console.log('✅ Brochures folder ready');
+}
+
+export async function ensureCertificateFolderExists() {
+  if (!config.spaces.enabled) {
+    console.warn('[spaces] DigitalOcean Spaces not configured — Certificates folder skipped.');
+    return;
+  }
+
+  const key = buildObjectKey('Certificates', '.keep');
+  const client = getS3Client();
+
+  try {
+    await client.send(new HeadObjectCommand({ Bucket: config.spaces.bucket, Key: key }));
+  } catch {
+    try {
+      await client.send(
+        new PutObjectCommand({
+          Bucket: config.spaces.bucket,
+          Key: key,
+          Body: '',
+          ContentType: 'text/plain',
+          ACL: 'public-read',
+        })
+      );
+    } catch (err) {
+      console.warn('[spaces] Could not create Certificates folder placeholder:', err.message);
+      return;
+    }
+  }
+
+  console.log('✅ Certificates folder ready');
+}
+
+const SUPPORTED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.pdf']);
+
+function detectFileType(filename) {
+  const ext = path.extname(filename).toLowerCase();
+  if (ext === '.pdf') return 'pdf';
+  if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) return 'image';
+  return null;
+}
+
+async function listFolderFiles(relativeFolder) {
+  if (!config.spaces.enabled) {
+    return [];
+  }
+
+  const client = getS3Client();
+  if (!client) return [];
+
+  const prefix = buildObjectKey(relativeFolder, '');
+  const files = [];
+  let continuationToken;
+
+  do {
+    const response = await client.send(
+      new ListObjectsV2Command({
+        Bucket: config.spaces.bucket,
+        Prefix: prefix,
+        ContinuationToken: continuationToken,
+      })
+    );
+
+    for (const item of response.Contents || []) {
+      if (!item.Key) continue;
+
+      const filename = item.Key.split('/').pop();
+      if (!filename || filename === '.keep') continue;
+
+      const ext = path.extname(filename).toLowerCase();
+      if (!SUPPORTED_EXTENSIONS.has(ext)) continue;
+
+      const fileType = detectFileType(filename);
+      if (!fileType) continue;
+
+      files.push({
+        fileName: filename,
+        fileType,
+        url: getPublicUrl(item.Key),
+        lastModified: item.LastModified,
+      });
+    }
+
+    continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  files.sort((a, b) => a.fileName.localeCompare(b.fileName));
+  return files;
+}
+
+export async function listBrochureFiles() {
+  return listFolderFiles('Brochures');
+}
+
+export async function listCertificateFiles() {
+  return listFolderFiles('Certificates');
+}
+
 /** List all object keys under a given prefix. */
 export async function listObjectKeys(prefix) {
   const client = getS3Client();

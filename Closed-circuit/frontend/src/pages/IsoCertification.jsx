@@ -2,33 +2,19 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Image as ImageIcon, Download, ExternalLink, Award } from 'lucide-react';
 import Hero from '../components/Hero';
-
-const FOLDER = '/Closed Circuit/Certificates';
-const MANIFEST = `${FOLDER}/manifest.json`;
+import { getApiBaseUrl } from '../lib/api';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: (i) => ({ opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.08 } }),
 };
 
-function isPdf(filename) {
-  return /\.pdf$/i.test(filename);
-}
-
-function isImage(filename) {
-  return /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(filename);
-}
-
 function CertCard({ file, index }) {
   const [imgError, setImgError] = useState(false);
-  const fileUrl = `${FOLDER}/${file.name}`;
-  const label = file.label || file.name;
-  const pdf = isPdf(file.name);
-  const img = isImage(file.name) && !imgError;
-
-  const openFile = () => {
-    window.open(fileUrl, '_blank', 'noopener,noreferrer');
-  };
+  const { fileName, fileType, url } = file;
+  const isPdf = fileType === 'pdf';
+  const isImg = fileType === 'image' && !imgError;
+  const label = fileName.replace(/[-_]/g, ' ').replace(/\.[^.]+$/, '');
 
   return (
     <motion.div
@@ -40,16 +26,16 @@ function CertCard({ file, index }) {
       whileHover={{ y: -6 }}
       className="group rounded-[24px] border border-white/10 bg-white/[0.03] overflow-hidden shadow-xl transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.06]"
     >
-      {/* Preview area */}
+      {/* Preview */}
       <div className="relative bg-[#0a0f1e] overflow-hidden" style={{ minHeight: '220px' }}>
-        {img ? (
+        {isImg ? (
           <img
-            src={fileUrl}
+            src={url}
             alt={label}
             className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImgError(true)}
           />
-        ) : pdf ? (
+        ) : isPdf ? (
           <div className="flex flex-col items-center justify-center h-56 gap-3">
             <div className="rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/10 border border-purple-500/20 p-5">
               <FileText className="h-14 w-14 text-purple-400" />
@@ -61,12 +47,9 @@ function CertCard({ file, index }) {
             <div className="rounded-2xl bg-gradient-to-br from-slate-500/20 to-slate-400/10 border border-white/10 p-5">
               <ImageIcon className="h-14 w-14 text-slate-400" />
             </div>
-            <span className="text-sm text-slate-500">Preview unavailable</span>
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-[#030712]/80 via-transparent to-transparent pointer-events-none" />
-
-        {/* Certification badge overlay */}
         <div className="absolute top-3 right-3">
           <div className="flex items-center gap-1.5 rounded-full border border-purple-500/40 bg-[#0b1235]/90 px-3 py-1 backdrop-blur-md">
             <Award className="h-3.5 w-3.5 text-purple-400" />
@@ -77,24 +60,25 @@ function CertCard({ file, index }) {
 
       {/* Info + actions */}
       <div className="p-5">
-        <h3 className="font-display font-bold text-white text-base mb-1 truncate" title={label}>
+        <h3 className="font-display font-bold text-white text-base mb-1 truncate capitalize" title={label}>
           {label}
         </h3>
         <p className="text-xs text-slate-500 mb-4 uppercase tracking-wider">
-          {pdf ? 'PDF Certificate' : 'Certificate Image'} • {file.name}
+          {isPdf ? 'PDF Certificate' : 'Certificate Image'} • {fileName}
         </p>
         <div className="flex gap-2 flex-wrap">
-          <button
-            type="button"
-            onClick={openFile}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 text-xs font-bold text-white shadow-md transition hover:scale-105 hover:shadow-purple-500/30"
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 text-xs font-bold text-white shadow-md transition hover:scale-105"
           >
             <ExternalLink size={14} />
-            {pdf ? 'Open Certificate' : 'View Certificate'}
-          </button>
+            {isPdf ? 'Open Certificate' : 'View Certificate'}
+          </a>
           <a
-            href={fileUrl}
-            download
+            href={url}
+            download={fileName}
             className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white"
           >
             <Download size={14} />
@@ -111,14 +95,12 @@ export default function IsoCertification() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(MANIFEST)
+    fetch(`${getApiBaseUrl()}/api/public/certificates`)
       .then((res) => {
-        if (!res.ok) throw new Error('Manifest not found');
+        if (!res.ok) throw new Error('API error');
         return res.json();
       })
-      .then((data) => {
-        setFiles(Array.isArray(data.files) ? data.files : []);
-      })
+      .then((data) => setFiles(Array.isArray(data) ? data : []))
       .catch(() => setFiles([]))
       .finally(() => setLoading(false));
   }, []);
@@ -139,7 +121,7 @@ export default function IsoCertification() {
         compact
       />
 
-      {/* ISO Info Banner */}
+      {/* ISO info strip */}
       <section className="border-b border-white/5 bg-[#020617] py-5">
         <div className="page-container">
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8">
@@ -171,7 +153,7 @@ export default function IsoCertification() {
           ) : files && files.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {files.map((file, i) => (
-                <CertCard key={file.name} file={file} index={i} />
+                <CertCard key={file.fileName} file={file} index={i} />
               ))}
             </div>
           ) : (
