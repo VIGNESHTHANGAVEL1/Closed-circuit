@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Menu, X } from 'lucide-react';
 
-const navItems = [
+const mainNavItems = [
   { label: 'Home', path: '/' },
   {
     label: 'Features',
@@ -31,9 +31,15 @@ const navItems = [
   { label: 'Top 10 Reasons', path: '/top-reasons' },
   { label: 'Families', path: '/gifts' },
   { label: 'Businesses', path: '/use-cases' },
-  { label: 'Taglines', path: '/taglines' },
   { label: 'Contact Us', path: '/contact' },
   { label: 'Our Clients', path: '/clients' },
+];
+
+const moreItems = [
+  { label: 'Taglines', path: '/taglines' },
+  { label: 'Social Media', path: '/social-media' },
+  { label: 'Brochure', path: '/brochure' },
+  { label: 'ISO Certification', path: '/iso-certification' },
 ];
 
 const navLinkClass = (active) =>
@@ -55,6 +61,8 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  const moreRef = useRef(null);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 1024px)');
@@ -64,7 +72,19 @@ export default function Navbar() {
     return () => media.removeEventListener('change', handleChange);
   }, []);
 
+  // Close More dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (moreRef.current && !moreRef.current.contains(e.target)) {
+        if (activeDropdown === '__more__') setActiveDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [activeDropdown]);
+
   const isActive = (path) => location.pathname === path;
+  const isMoreActive = moreItems.some((item) => isActive(item.path));
 
   const handleDropdownToggle = (label) => {
     if (isDesktop) return;
@@ -102,9 +122,10 @@ export default function Navbar() {
             </div>
           </Link>
 
+          {/* Desktop Nav */}
           <div className="hidden lg:flex flex-1 items-center justify-center min-w-0 mx-1">
             <div className="flex items-center gap-0.5 bg-white/5 px-1 py-1 rounded-full border border-white/10">
-              {navItems.map((item) => {
+              {mainNavItems.map((item) => {
                 const isSubActive = item.submenu?.some((sub) => isActive(sub.path));
                 return (
                   <div
@@ -162,9 +183,60 @@ export default function Navbar() {
                   </div>
                 );
               })}
+
+              {/* More dropdown */}
+              <div
+                ref={moreRef}
+                className="relative"
+                onMouseEnter={() => handleMouseEnter('__more__')}
+                onMouseLeave={handleMouseLeave}
+              >
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveDropdown(activeDropdown === '__more__' ? null : '__more__')
+                  }
+                  className={dropdownBtnClass(activeDropdown === '__more__' || isMoreActive)}
+                >
+                  More
+                  <ChevronDown
+                    size={12}
+                    className={`shrink-0 transition-transform duration-200 ${
+                      activeDropdown === '__more__' ? 'rotate-180 text-indigo-400' : 'text-slate-500'
+                    }`}
+                  />
+                </button>
+                <AnimatePresence>
+                  {activeDropdown === '__more__' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#0f172a]/95 p-2 shadow-2xl backdrop-blur-xl z-50"
+                    >
+                      {moreItems.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setActiveDropdown(null)}
+                          className={`block rounded-lg px-3 py-2 text-xs font-medium transition ${
+                            isActive(item.path)
+                              ? 'bg-indigo-500/10 text-indigo-400'
+                              : 'text-slate-400 hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
 
+          {/* Mobile hamburger */}
           <div className="lg:hidden shrink-0">
             <button
               type="button"
@@ -177,6 +249,7 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Mobile drawer */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -187,7 +260,7 @@ export default function Navbar() {
               className="lg:hidden overflow-hidden border-t border-white/10 bg-[#0f172a]/95 backdrop-blur-xl"
             >
               <div className="space-y-1 px-4 py-4 max-h-[70vh] overflow-y-auto">
-                {navItems.map((item) => (
+                {mainNavItems.map((item) => (
                   <div key={item.label}>
                     {item.submenu ? (
                       <>
@@ -236,6 +309,39 @@ export default function Navbar() {
                     )}
                   </div>
                 ))}
+
+                {/* Mobile More section */}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setMobileMoreOpen((prev) => !prev)}
+                    className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium ${
+                      isMoreActive ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-white/5'
+                    }`}
+                  >
+                    More
+                    <ChevronDown
+                      size={16}
+                      className={mobileMoreOpen ? 'rotate-180 text-indigo-400' : ''}
+                    />
+                  </button>
+                  {mobileMoreOpen && (
+                    <div className="ml-2 mb-1 space-y-0.5 border-l border-white/10 pl-3">
+                      {moreItems.map((item) => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => { setIsOpen(false); setMobileMoreOpen(false); }}
+                          className={`block rounded-lg px-3 py-2 text-sm ${
+                            isActive(item.path) ? 'text-indigo-400' : 'text-slate-400'
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}

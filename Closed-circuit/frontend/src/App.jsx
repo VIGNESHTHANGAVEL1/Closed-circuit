@@ -27,6 +27,9 @@ import DemoVideoManagement from './pages/admin/DemoVideoManagement';
 import ChangePassword from './pages/admin/ChangePassword';
 import Clients from './pages/Clients';
 import FeatureDemos from './pages/FeatureDemos';
+import SocialMedia from './pages/SocialMedia';
+import Brochure from './pages/Brochure';
+import IsoCertification from './pages/IsoCertification';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -159,6 +162,9 @@ function AppShell() {
             <Route path="/taglines" element={<Taglines />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/clients" element={<Clients />} />
+            <Route path="/social-media" element={<SocialMedia />} />
+            <Route path="/brochure" element={<Brochure />} />
+            <Route path="/iso-certification" element={<IsoCertification />} />
             <Route path="/client" element={<Navigate to="/clients" replace />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route
