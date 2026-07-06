@@ -213,7 +213,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#0f172a]/95 p-2 shadow-2xl backdrop-blur-xl z-50"
+                      className="absolute left-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#0f172a]/95 p-2 shadow-2xl backdrop-blur-xl z-50"
                     >
                       {moreItems.map((item) => (
                         <Link

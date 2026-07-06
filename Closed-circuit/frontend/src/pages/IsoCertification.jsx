@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Image as ImageIcon, Download, ExternalLink, Award } from 'lucide-react';
+import { FileText, Image as ImageIcon, ExternalLink, Award } from 'lucide-react';
 import Hero from '../components/Hero';
 import { getApiBaseUrl } from '../lib/api';
 
@@ -8,6 +8,46 @@ const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: (i) => ({ opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.08 } }),
 };
+
+function openPopup(url) {
+  const w = Math.round(window.screen.width * 0.6);
+  const h = Math.round(window.screen.height * 0.85);
+  window.open(url, 'cert_popup', `width=${w},height=${h},resizable=yes,scrollbars=yes`);
+}
+
+function PdfPreview({ url, label }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-56 gap-3">
+        <div className="rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/10 border border-purple-500/20 p-5">
+          <FileText className="h-14 w-14 text-purple-400" />
+        </div>
+        <span className="text-sm font-semibold text-purple-300 uppercase tracking-wider">PDF Certificate</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-56 bg-white overflow-hidden">
+      {!loaded && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0a0f1e]">
+          <div className="h-7 w-7 rounded-full border-2 border-purple-500/60 border-t-transparent animate-spin" />
+        </div>
+      )}
+      <iframe
+        src={`${url}#toolbar=0&navpanes=0&scrollbar=0`}
+        className={`w-full h-56 border-0 pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        title={label}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        loading="lazy"
+      />
+    </div>
+  );
+}
 
 function CertCard({ file, index }) {
   const [imgError, setImgError] = useState(false);
@@ -27,7 +67,7 @@ function CertCard({ file, index }) {
       className="group rounded-[24px] border border-white/10 bg-white/[0.03] overflow-hidden shadow-xl transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.06]"
     >
       {/* Preview */}
-      <div className="relative bg-[#0a0f1e] overflow-hidden" style={{ minHeight: '220px' }}>
+      <div className="relative bg-[#0a0f1e] overflow-hidden" style={{ minHeight: '224px' }}>
         {isImg ? (
           <img
             src={url}
@@ -36,12 +76,7 @@ function CertCard({ file, index }) {
             onError={() => setImgError(true)}
           />
         ) : isPdf ? (
-          <div className="flex flex-col items-center justify-center h-56 gap-3">
-            <div className="rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-500/10 border border-purple-500/20 p-5">
-              <FileText className="h-14 w-14 text-purple-400" />
-            </div>
-            <span className="text-sm font-semibold text-purple-300 uppercase tracking-wider">PDF Certificate</span>
-          </div>
+          <PdfPreview url={url} label={label} />
         ) : (
           <div className="flex flex-col items-center justify-center h-56 gap-3">
             <div className="rounded-2xl bg-gradient-to-br from-slate-500/20 to-slate-400/10 border border-white/10 p-5">
@@ -67,27 +102,24 @@ function CertCard({ file, index }) {
           {isPdf ? 'PDF Certificate' : 'Certificate Image'} • {fileName}
         </p>
         <div className="flex gap-2 flex-wrap">
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => openPopup(url)}
             className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 px-4 py-2 text-xs font-bold text-white shadow-md transition hover:scale-105"
           >
             <ExternalLink size={14} />
             {isPdf ? 'Open Certificate' : 'View Certificate'}
-          </a>
-          <a
-            href={url}
-            download={fileName}
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white"
-          >
-            <Download size={14} />
-            Download
-          </a>
+          </button>
         </div>
       </div>
     </motion.div>
   );
+}
+
+function gridClass(count) {
+  if (count === 1) return 'grid grid-cols-1 gap-6 w-full max-w-sm mx-auto';
+  if (count === 2) return 'grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto';
+  return 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3';
 }
 
 export default function IsoCertification() {
@@ -115,7 +147,7 @@ export default function IsoCertification() {
       <Hero
         eyebrow="Quality Assurance"
         title="ISO Certification"
-        subtitle="Closed Circuit is committed to international quality standards. View and download our official ISO certifications below."
+        subtitle="Closed Circuit is committed to international quality standards. View our official ISO certifications below."
         gradient="from-[#020617] via-[#0f172a] to-[#030712]"
         contentClassName="page-container py-8 md:py-12 text-center"
         compact
@@ -151,7 +183,7 @@ export default function IsoCertification() {
               </div>
             </div>
           ) : files && files.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className={gridClass(files.length)}>
               {files.map((file, i) => (
                 <CertCard key={file.fileName} file={file} index={i} />
               ))}

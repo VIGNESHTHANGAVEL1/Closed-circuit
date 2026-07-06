@@ -9,6 +9,46 @@ const fadeUp = {
   visible: (i) => ({ opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.08 } }),
 };
 
+function openPopup(url) {
+  const w = Math.round(window.screen.width * 0.6);
+  const h = Math.round(window.screen.height * 0.85);
+  window.open(url, 'brochure_popup', `width=${w},height=${h},resizable=yes,scrollbars=yes`);
+}
+
+function PdfPreview({ url, label }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-56 gap-3">
+        <div className="rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-indigo-500/20 p-5">
+          <FileText className="h-14 w-14 text-indigo-400" />
+        </div>
+        <span className="text-sm font-semibold text-indigo-300 uppercase tracking-wider">PDF Document</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-56 bg-white overflow-hidden">
+      {!loaded && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0a0f1e]">
+          <div className="h-7 w-7 rounded-full border-2 border-indigo-500/60 border-t-transparent animate-spin" />
+        </div>
+      )}
+      <iframe
+        src={`${url}#toolbar=0&navpanes=0&scrollbar=0`}
+        className={`w-full h-56 border-0 pointer-events-none transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        title={label}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+        loading="lazy"
+      />
+    </div>
+  );
+}
+
 function FileCard({ file, index }) {
   const [imgError, setImgError] = useState(false);
   const { fileName, fileType, url } = file;
@@ -27,7 +67,7 @@ function FileCard({ file, index }) {
       className="group rounded-[24px] border border-white/10 bg-white/[0.03] overflow-hidden shadow-xl transition-all duration-300 hover:border-indigo-500/30 hover:bg-white/[0.06]"
     >
       {/* Preview */}
-      <div className="relative bg-[#0a0f1e] overflow-hidden" style={{ minHeight: '220px' }}>
+      <div className="relative bg-[#0a0f1e] overflow-hidden" style={{ minHeight: '224px' }}>
         {isImg ? (
           <img
             src={url}
@@ -36,12 +76,7 @@ function FileCard({ file, index }) {
             onError={() => setImgError(true)}
           />
         ) : isPdf ? (
-          <div className="flex flex-col items-center justify-center h-56 gap-3">
-            <div className="rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/10 border border-indigo-500/20 p-5">
-              <FileText className="h-14 w-14 text-indigo-400" />
-            </div>
-            <span className="text-sm font-semibold text-indigo-300 uppercase tracking-wider">PDF Document</span>
-          </div>
+          <PdfPreview url={url} label={label} />
         ) : (
           <div className="flex flex-col items-center justify-center h-56 gap-3">
             <div className="rounded-2xl bg-gradient-to-br from-slate-500/20 to-slate-400/10 border border-white/10 p-5">
@@ -61,15 +96,14 @@ function FileCard({ file, index }) {
           {isPdf ? 'PDF Document' : 'Image File'} • {fileName}
         </p>
         <div className="flex gap-2 flex-wrap">
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => openPopup(url)}
             className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-2 text-xs font-bold text-white shadow-md transition hover:scale-105"
           >
             <ExternalLink size={14} />
-            {isPdf ? 'Open PDF' : 'View Image'}
-          </a>
+            {isPdf ? 'Open Brochure' : 'View Image'}
+          </button>
           <a
             href={url}
             download={fileName}
@@ -82,6 +116,12 @@ function FileCard({ file, index }) {
       </div>
     </motion.div>
   );
+}
+
+function gridClass(count) {
+  if (count === 1) return 'grid grid-cols-1 gap-6 w-full max-w-sm mx-auto';
+  if (count === 2) return 'grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto';
+  return 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3';
 }
 
 export default function Brochure() {
@@ -126,7 +166,7 @@ export default function Brochure() {
               </div>
             </div>
           ) : files && files.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className={gridClass(files.length)}>
               {files.map((file, i) => (
                 <FileCard key={file.fileName} file={file} index={i} />
               ))}
