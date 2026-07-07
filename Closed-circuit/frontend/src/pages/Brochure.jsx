@@ -15,6 +15,24 @@ function openPopup(url) {
   window.open(url, 'brochure_popup', `width=${w},height=${h},resizable=yes,scrollbars=yes`);
 }
 
+async function downloadFile(url, fileName) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Download failed');
+  }
+
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = fileName;
+  link.style.display = 'none';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(blobUrl);
+}
+
 function PdfPreview({ url, label }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -51,10 +69,24 @@ function PdfPreview({ url, label }) {
 
 function FileCard({ file, index }) {
   const [imgError, setImgError] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const { fileName, fileType, url } = file;
   const isPdf = fileType === 'pdf';
   const isImg = fileType === 'image' && !imgError;
   const label = fileName.replace(/[-_]/g, ' ').replace(/\.[^.]+$/, '');
+
+  const handleDownload = async () => {
+    if (downloading) return;
+
+    setDownloading(true);
+    try {
+      await downloadFile(url, fileName);
+    } catch {
+      window.alert('Unable to download the file. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -104,14 +136,15 @@ function FileCard({ file, index }) {
             <ExternalLink size={14} />
             {isPdf ? 'Open Brochure' : 'View Image'}
           </button>
-          <a
-            href={url}
-            download={fileName}
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white"
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Download size={14} />
-            Download
-          </a>
+            {downloading ? 'Downloading…' : 'Download'}
+          </button>
         </div>
       </div>
     </motion.div>

@@ -12,17 +12,17 @@ import {
   KeyRound,
   Bell,
   Settings,
-  Infinity,
+  Infinity as InfinityIcon,
   MessageSquare,
   FileCheck,
 } from 'lucide-react';
 import Hero from '../components/Hero';
 import Card from '../components/Card';
-import { heroTaglines, coreValues, taglineCategories, platformTaglines } from '../data/taglinesContent';
+import { heroTaglines, coreValues, taglineCategories } from '../data/taglinesContent';
 
 const iconMap = {
   Shield, Lock, Crown, Globe, Users, EyeOff, Ban, UserCircle,
-  Layers, KeyRound, Bell, Settings, Infinity, MessageSquare, FileCheck,
+  Layers, KeyRound, Bell, Settings, Infinity: InfinityIcon, MessageSquare, FileCheck,
 };
 
 const fadeUp = {
@@ -45,12 +45,12 @@ export default function Taglines() {
       {/* ── NEW CONTENT from taglines.docx ── */}
 
       {/* Top hero taglines */}
-      <section className="section-y-sm relative border-b border-white/5 bg-[#020617]">
+      <section className="relative border-b border-white/5 bg-[#020617] py-4 md:py-6">
         <div className="page-container text-center">
-          <p className="text-lg font-bold uppercase tracking-[0.3em] text-indigo-400 mb-5">
+          <p className="text-lg font-bold uppercase tracking-[0.3em] text-indigo-400 mb-3">
             Closed Circuit — The Private, Secure, and Fully Controlled Digital Platform for Modern Communities.
           </p>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-2 md:grid-cols-2">
             {heroTaglines.map((line, idx) => (
               <motion.div
                 key={line}
@@ -59,7 +59,7 @@ export default function Taglines() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 custom={idx * 0.06}
-                className="rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 px-6 py-5 transition hover:border-indigo-500/30 hover:-translate-y-0.5"
+                className="rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/10 to-purple-500/5 px-6 py-3 transition hover:border-indigo-500/30 hover:-translate-y-0.5"
               >
                 <p className="font-display text-lg font-bold text-white md:text-xl leading-snug">{line}</p>
               </motion.div>
@@ -69,13 +69,13 @@ export default function Taglines() {
       </section>
 
       {/* Core values chips */}
-      <section className="section-y-sm relative border-b border-white/5 bg-[#030712]">
+      <section className="relative border-b border-white/5 bg-[#030712] py-4 md:py-6">
   <div className="page-container">
-    <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div className="mt-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
       {coreValues.map((value) => (
         <span
           key={value}
-          className="flex items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 px-4 py-2 text-sm font-bold uppercase tracking-wider text-indigo-300 whitespace-nowrap"
+          className="flex items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 px-4 py-1.5 text-sm font-bold uppercase tracking-wider text-indigo-300 whitespace-nowrap transition hover:bg-indigo-500/20"
         >
           {value}
         </span>
@@ -106,10 +106,10 @@ export default function Taglines() {
       </section> */}
 
       {/* Category glass cards */}
-      <section className="section-y-sm relative bg-[#030712]">
+      <section className="relative bg-[#030712] py-4 md:py-6">
         <div className="absolute inset-0 section-grid opacity-20 pointer-events-none" />
         <div className="page-container relative z-10">
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
             {taglineCategories.map((category, idx) => {
               const Icon = iconMap[category.icon] || Shield;
               return (
@@ -126,13 +126,13 @@ export default function Taglines() {
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-purple-500/10 opacity-80" />
                     <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-50" />
                     <div className="relative z-10 flex h-full flex-col">
-                      <div className="flex items-center gap-3 mb-4">
+                      <div className="flex items-center gap-3 mb-2.5">
                         <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-2.5 text-indigo-300 transition group-hover:scale-110 group-hover:bg-indigo-500/20">
                           <Icon className="h-5 w-5" />
                         </div>
                         <h3 className="font-display text-lg font-bold text-white">{category.title}</h3>
                       </div>
-                      <ul className="space-y-2.5 flex-1">
+                      <ul className="space-y-1.5 flex-1">
                         {category.taglines.map((tagline) => (
                           <li key={tagline} className="flex items-start gap-2 text-sm text-white leading-snug group-hover:text-slate-300 transition">
                             <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400 shadow-[0_0_6px_rgba(129,140,248,0.8)]" />

@@ -7,6 +7,24 @@ import Card from '../components/Card';
 import OtpVerificationModal from '../components/OtpVerificationModal';
 import { apiRequest, getGoogleScriptUrl, isApiEnabled } from '../lib/api';
 
+function formatDateInput(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getAppointmentDateBounds() {
+  const today = new Date();
+  const maxDate = new Date(today);
+  maxDate.setDate(maxDate.getDate() + 30);
+
+  return {
+    min: formatDateInput(today),
+    max: formatDateInput(maxDate),
+  };
+}
+
 export default function Contact() {
   const formatPreferredTime = (hour, minute, period) => {
     if (!hour || !minute || !period) {
@@ -411,7 +429,7 @@ export default function Contact() {
   };
 
   const submitToBackend = async (data) => {
-    const { consentAccepted, ...contactFields } = data;
+    const { consentAccepted: _consentAccepted, ...contactFields } = data;
 
     const response = await apiRequest('/api/contact', {
       method: 'POST',
@@ -442,11 +460,17 @@ export default function Contact() {
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    const { min: today, max: maxDate } = getAppointmentDateBounds();
 
     if (formData.preferredDate < today) {
       setStatus('error');
       setMessage('Preferred Date cannot be in the past.');
+      return;
+    }
+
+    if (formData.preferredDate > maxDate) {
+      setStatus('error');
+      setMessage('Preferred Date must be within the next 30 days.');
       return;
     }
 
@@ -517,6 +541,7 @@ export default function Contact() {
   const selectOptionClasses = '[&>option]:bg-slate-900 [&>option]:text-white [&>option]:text-sm [&>option]:sm:text-base';
   const verifyFieldRowClasses = 'flex flex-col gap-1 sm:flex-row sm:items-stretch';
   const verifyInputClasses = `${inputClasses} min-w-0 flex-1`;
+  const appointmentDateBounds = getAppointmentDateBounds();
 
   return (
     <motion.div
@@ -762,7 +787,8 @@ export default function Contact() {
     name="preferredDate"
     value={formData.preferredDate}
     onChange={handleChange}
-    min={new Date().toISOString().split('T')[0]}
+    min={appointmentDateBounds.min}
+    max={appointmentDateBounds.max}
     required
     disabled={!canEnterPreferredDate}
     className={`${inputClasses} [color-scheme:dark]`}

@@ -56,6 +56,11 @@ const dropdownBtnClass = (active) =>
       : 'text-slate-400 hover:text-white hover:bg-white/10 border border-transparent'
   }`;
 
+const chevronClass = (isOpen) =>
+  `shrink-0 transition-transform duration-300 ease-in-out ${
+    isOpen ? 'rotate-180 text-indigo-300' : 'text-slate-300'
+  }`;
+
 export default function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -143,10 +148,9 @@ export default function Navbar() {
                         >
                           {item.label}
                           <ChevronDown
-                            size={12}
-                            className={`shrink-0 transition-transform duration-200 ${
-                              activeDropdown === item.label ? 'rotate-180 text-indigo-400' : 'text-slate-500'
-                            }`}
+                            size={16}
+                            strokeWidth={2.5}
+                            className={chevronClass(activeDropdown === item.label)}
                           />
                         </button>
                         <AnimatePresence>
@@ -200,10 +204,9 @@ export default function Navbar() {
                 >
                   More
                   <ChevronDown
-                    size={12}
-                    className={`shrink-0 transition-transform duration-200 ${
-                      activeDropdown === '__more__' ? 'rotate-180 text-indigo-400' : 'text-slate-500'
-                    }`}
+                    size={16}
+                    strokeWidth={2.5}
+                    className={chevronClass(activeDropdown === '__more__')}
                   />
                 </button>
                 <AnimatePresence>
@@ -275,8 +278,9 @@ export default function Navbar() {
                         >
                           {item.label}
                           <ChevronDown
-                            size={16}
-                            className={activeDropdown === item.label ? 'rotate-180 text-indigo-400' : ''}
+                            size={20}
+                            strokeWidth={2.5}
+                            className={chevronClass(activeDropdown === item.label)}
                           />
                         </button>
                         {activeDropdown === item.label && (
@@ -321,8 +325,9 @@ export default function Navbar() {
                   >
                     More
                     <ChevronDown
-                      size={16}
-                      className={mobileMoreOpen ? 'rotate-180 text-indigo-400' : ''}
+                      size={20}
+                      strokeWidth={2.5}
+                      className={chevronClass(mobileMoreOpen)}
                     />
                   </button>
                   {mobileMoreOpen && (
