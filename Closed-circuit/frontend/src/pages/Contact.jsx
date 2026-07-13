@@ -130,17 +130,17 @@ export default function Contact() {
   const minuteOptions = Array.from({ length: 60 }, (_, index) => String(index).padStart(2, '0'));
   const periodOptions = ['AM', 'PM'];
 
-  const callWindows = [
-    'Mon to Fri, 10:00 AM to 1:00 PM IST for project scoping and onboarding calls.',
-    'Sat, 11:30 AM to 2:30 PM IST for quick planning discussions and follow-ups.',
-    'Best for detailed requirement conversations, pricing walkthroughs, and launch timelines.',
-  ];
+  // const callWindows = [
+  //   'Mon to Fri, 10:00 AM to 1:00 PM IST for project scoping and onboarding calls.',
+  //   'Sat, 11:30 AM to 2:30 PM IST for quick planning discussions and follow-ups.',
+  //   'Best for detailed requirement conversations, pricing walkthroughs, and launch timelines.',
+  // ];
 
-  const chatWindows = [
-    'Daily, 9:00 AM to 9:00 PM IST for quick questions and first responses.',
-    'Average reply time: 15 to 30 minutes during active support hours.',
-    'Best for sharing ideas, collecting documents, and resolving small doubts quickly.',
-  ];
+  // const chatWindows = [
+  //   'Daily, 9:00 AM to 9:00 PM IST for quick questions and first responses.',
+  //   'Average reply time: 15 to 30 minutes during active support hours.',
+  //   'Best for sharing ideas, collecting documents, and resolving small doubts quickly.',
+  // ];
 
   const resetMobileVerification = () => {
     setMobileOtp('');
@@ -920,7 +920,7 @@ export default function Contact() {
             </div>
           </motion.div>
 
-          <div className="mt-4 grid w-full gap-3 items-stretch lg:grid-cols-2">
+          {/* <div className="mt-4 grid w-full gap-3 items-stretch lg:grid-cols-2">
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
@@ -976,7 +976,7 @@ export default function Contact() {
                 </div>
               </Card>
             </motion.div>
-          </div>
+          </div> */}
         </div>
       </section>
 

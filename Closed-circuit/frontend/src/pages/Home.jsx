@@ -9,11 +9,11 @@ function IsoBadge() {
       className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 group"
       title="View ISO 9001:2015 Certification"
     >
-      <div className="flex items-center gap-2 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-2.5 backdrop-blur-md shadow-sm cursor-pointer transition-all duration-200 group-hover:bg-yellow-500/20 group-hover:border-yellow-500/50 group-hover:shadow-[0_0_16px_rgba(234,179,8,0.25)]">
-        <svg className="h-5 w-5 text-yellow-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+      <div className="flex items-center gap-2 rounded-2xl border border-blue-500/30 bg-blue-500/10 px-4 py-2.5 backdrop-blur-md shadow-sm cursor-pointer transition-all duration-200 group-hover:bg-blue-500/20 group-hover:border-white/50 group-hover:shadow-[0_0_16px_rgba(234,179,8,0.25)]">
+        <svg className="h-6 w-6 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
-        <span className="text-[13px] sm:text-[17px] font-bold uppercase tracking-wider text-yellow-300 leading-none">
+        <span className="text-[13px] sm:text-[17px] font-bold uppercase tracking-wider text-white leading-none">
           ISO 9001:2015
         </span>
       </div>
