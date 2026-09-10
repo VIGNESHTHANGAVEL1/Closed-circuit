@@ -5,6 +5,7 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 
 const mainNavItems = [
   { label: 'Home', path: '/' },
+  { label: 'About Us', path: '/about-us' },
   {
     label: 'Features',
     submenu: [
@@ -43,14 +44,14 @@ const moreItems = [
 ];
 
 const navLinkClass = (active) =>
-  `block whitespace-nowrap rounded-full px-2.5 lg:px-3 py-1.5 text-sm lg:text-base font-semibold transition-all duration-200 border ${
+  `block whitespace-nowrap rounded-full px-2 lg:px-2.5 py-1.5 text-sm lg:text-base font-semibold transition-all duration-200 border ${
     active
       ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white border-indigo-500/30'
       : 'text-slate-400 border-transparent hover:text-white hover:bg-white/10'
   }`;
 
 const dropdownBtnClass = (active) =>
-  `flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 lg:px-3 py-1.5 text-sm lg:text-base font-semibold transition-all duration-200 ${
+  `flex items-center gap-1 whitespace-nowrap rounded-full px-2 lg:px-2.5 py-1.5 text-sm lg:text-base font-semibold transition-all duration-200 ${
     active
       ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white border border-indigo-500/30'
       : 'text-slate-400 hover:text-white hover:bg-white/10 border border-transparent'
@@ -112,7 +113,7 @@ export default function Navbar() {
         transition={{ duration: 0.6 }}
         className="fixed top-0 z-50 w-full border-b border-white/5 bg-[#030712]/70 backdrop-blur-2xl"
       >
-        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-2 px-3 sm:px-4 lg:px-5">
+        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-1 px-2 sm:px-3 lg:px-4">
           <Link to="/" className="flex shrink-0 items-center gap-2.5 group min-w-0">
             <div className="relative grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-sm text-white font-bold shadow-[0_0_16px_rgba(99,102,241,0.4)] transition-transform duration-300 group-hover:scale-105">
               <span className="relative z-10">CC</span>
@@ -128,8 +129,8 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex flex-1 items-center justify-center min-w-0 mx-1">
-            <div className="flex items-center gap-0.5 bg-white/5 px-1 py-1 rounded-full border border-white/10">
+          <div className="hidden lg:flex flex-1 items-center justify-center min-w-0">
+            <div className="flex items-center gap-0 bg-white/5 px-0.5 py-1 rounded-full border border-white/10">
               {mainNavItems.map((item) => {
                 const isSubActive = item.submenu?.some((sub) => isActive(sub.path));
                 return (
@@ -166,7 +167,7 @@ export default function Navbar() {
                                 <Link
                                   key={subitem.path}
                                   to={subitem.path}
-                                  className={`block rounded-lg px-3 py-2 text-xs font-medium transition ${
+                                  className={`block rounded-lg px-3 py-2 text-sm lg:text-base font-semibold transition ${
                                     isActive(subitem.path)
                                       ? 'bg-indigo-500/10 text-indigo-400'
                                       : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -223,7 +224,7 @@ export default function Navbar() {
                           key={item.path}
                           to={item.path}
                           onClick={() => setActiveDropdown(null)}
-                          className={`block rounded-lg px-3 py-2 text-xs font-medium transition ${
+                          className={`block rounded-lg px-3 py-2 text-sm lg:text-base font-semibold transition ${
                             isActive(item.path)
                               ? 'bg-indigo-500/10 text-indigo-400'
                               : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -290,7 +291,7 @@ export default function Navbar() {
                                 key={subitem.path}
                                 to={subitem.path}
                                 onClick={() => setIsOpen(false)}
-                                className={`block rounded-lg px-3 py-2 text-sm ${
+                                className={`block rounded-lg px-3 py-2 text-sm font-semibold ${
                                   isActive(subitem.path) ? 'text-indigo-400' : 'text-slate-400'
                                 }`}
                               >
@@ -337,7 +338,7 @@ export default function Navbar() {
                           key={item.path}
                           to={item.path}
                           onClick={() => { setIsOpen(false); setMobileMoreOpen(false); }}
-                          className={`block rounded-lg px-3 py-2 text-sm ${
+                          className={`block rounded-lg px-3 py-2 text-sm font-semibold ${
                             isActive(item.path) ? 'text-indigo-400' : 'text-slate-400'
                           }`}
                         >

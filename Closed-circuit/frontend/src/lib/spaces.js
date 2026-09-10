@@ -33,7 +33,12 @@ export function getRootMediaUrl(filename) {
 
 /** Pre-configured media URLs for static marketing videos. */
 export function getFlowVoiceVideoUrl() {
-  const file = import.meta.env.VITE_DO_SPACES_FLOW_VIDEO_FILE || 'flow_in_voice.mp4';
+  return 'https://lara.blr1.cdn.digitaloceanspaces.com/Closed%20Circuit/flow_in_voice.mp4';
+}
+
+export function getFlowVoiceMobileVideoUrl() {
+  const file =
+    import.meta.env.VITE_DO_SPACES_FLOW_VIDEO_MOBILE_FILE || 'flow_in_voice_mobile_View.mp4';
   return getRootMediaUrl(file);
 }
 

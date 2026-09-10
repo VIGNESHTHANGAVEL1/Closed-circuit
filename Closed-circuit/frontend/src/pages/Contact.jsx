@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { listenForWebOtp } from '../utils/webOtp';
 import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import Hero from '../components/Hero';
 import Card from '../components/Card';
 import OtpVerificationModal from '../components/OtpVerificationModal';
 import { apiRequest, getGoogleScriptUrl, isApiEnabled } from '../lib/api';
@@ -551,17 +550,72 @@ export default function Contact() {
       transition={{ duration: 0.5 }}
       className="bg-[#030712] text-slate-300"
     >
-      <Hero
-        title="Talk to Our Team"
-        subtitle={
-          <>
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative overflow-hidden bg-gradient-to-br from-[#030712] via-[#0f172a] to-[#030712] text-white border-b border-white/5"
+      >
+        <div className="absolute inset-0 opacity-60">
+          <div className="absolute -top-40 -left-20 h-96 w-96 rounded-full bg-indigo-500/30 blur-[120px]" />
+          <div className="absolute top-20 right-0 h-96 w-96 rounded-full bg-purple-500/20 blur-[120px]" />
+          <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 h-[300px] w-full bg-gradient-to-t from-black to-transparent z-10" />
+        </div>
+
+        <div className="relative z-20 page-container py-2 md:py-3 text-center">
+          <motion.h1
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="mt-3 font-display font-bold leading-[1.1] tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
+          >
+            Address
+          </motion.h1>
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.35, duration: 0.8 }}
+            className="mx-auto mt-3 max-w-3xl text-slate-400 font-normal text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed"
+          >
+            <div>Closed Circuit AI Pvt Ltd,</div>
+            <div>3rd Floor, Under Collab Cubicles Section, Brigade IRV Center</div>
+            <div>Nallurhalli, Whitefield, Bengaluru – 560066</div>
+            <div>
+              Email: cc@closedcircuit.in, Mobile: +91 82175 43446
+            </div>
+            <div>
+              Google Map :{' '}
+              <a
+                href="https://maps.app.goo.gl/cZ67tsC2ryFeegSg6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2"
+              >
+                https://maps.app.goo.gl/cZ67tsC2ryFeegSg6
+              </a>
+            </div>
+          </motion.div>
+
+          <motion.h1
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="mt-6 md:mt-8 font-display font-bold leading-[1.1] tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
+          >
+            Talk to Our Team
+          </motion.h1>
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.65, duration: 0.8 }}
+            className="mx-auto mt-3 max-w-3xl text-slate-400 font-normal text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed"
+          >
             <div>Have questions? We'd be happy to help you explore Closed Circuit.</div>
             <div>Email: cc@closedcircuit.in &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mobile: +91 82175 43446</div>
             <div>Kindly fill out the form below so we can connect with you at your convenience.</div>
-          </>
-        }
-        contentClassName="page-container py-2 md:py-3 text-center"
-      />
+          </motion.div>
+        </div>
+      </motion.section>
 
       <section className="relative py-8 md:py-10 border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />

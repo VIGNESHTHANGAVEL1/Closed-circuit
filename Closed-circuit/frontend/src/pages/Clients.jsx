@@ -126,11 +126,11 @@ function ClientCard({ client, index }) {
           <p className="text-sm leading-snug text-white">Using for {client.business_type}</p>
         )}
 
-        {client.onboard_date && (
+        {/* {client.onboard_date && (
           <p className="text-sm leading-snug text-white/90">
             Partner since {formatOnboardDate(client.onboard_date)}
           </p>
-        )}
+        )} */}
 
         <DomainLink domainUrl={client.domain_url} />
       </div>

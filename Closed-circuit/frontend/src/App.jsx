@@ -30,6 +30,7 @@ import FeatureDemos from './pages/FeatureDemos';
 import SocialMedia from './pages/SocialMedia';
 import Brochure from './pages/Brochure';
 import IsoCertification from './pages/IsoCertification';
+import AboutUs from './pages/AboutUs';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -116,7 +117,7 @@ function Footer() {
               Privacy Policy
             </button>
 
-            <p>© 2026 Closed Circuit AI Pvt Ltd</p>
+            <p>© 2026 Closed Circuit AI Pvt Ltd, WhiteField, Bengaluru</p>
 
             <button
               onClick={() => setLegalModal('terms')}
@@ -148,6 +149,7 @@ function AppShell() {
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/about-us" element={<AboutUs />} />
             <Route path="/features" element={<Features />} />
             <Route path="/feature-demos" element={<FeatureDemos />} />
             <Route path="/flow-text" element={<FlowText />} />

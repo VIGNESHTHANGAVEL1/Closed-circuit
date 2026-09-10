@@ -4,7 +4,7 @@ import Hero from '../components/Hero';
 import Card from '../components/Card';
 import MediaPlayer from '../components/MediaPlayer';
 import { visuals } from '../data/visuals';
-import { getFlowVoiceVideoUrl } from '../lib/spaces';
+import { getFlowVoiceVideoUrl, getFlowVoiceMobileVideoUrl } from '../lib/spaces';
 
 export default function FlowVoice() {
   return (
@@ -20,7 +20,12 @@ export default function FlowVoice() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
         <div className="relative z-10 page-container">
           <div className="flex justify-center">
-            <MediaPlayer src={getFlowVoiceVideoUrl()} title="Flow in Voice" />
+            <div className="hidden md:block w-full max-w-[1100px]">
+              <MediaPlayer src={getFlowVoiceVideoUrl()} title="Flow in Voice" />
+            </div>
+            <div className="block md:hidden w-full max-w-[1100px]">
+              <MediaPlayer src={getFlowVoiceMobileVideoUrl()} title="Flow in Voice" />
+            </div>
           </div>
         </div>
       </section>
