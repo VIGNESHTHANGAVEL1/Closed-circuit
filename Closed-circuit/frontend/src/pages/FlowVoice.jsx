@@ -24,7 +24,12 @@ export default function FlowVoice() {
               <MediaPlayer src={getFlowVoiceVideoUrl()} title="Flow in Voice" />
             </div>
             <div className="block md:hidden w-full max-w-[1100px]">
-              <MediaPlayer src={getFlowVoiceMobileVideoUrl()} title="Flow in Voice" />
+              <MediaPlayer
+                src={getFlowVoiceMobileVideoUrl()}
+                title="Flow in Voice"
+                objectFit="contain"
+                fixedHeight={false}
+              />
             </div>
           </div>
         </div>

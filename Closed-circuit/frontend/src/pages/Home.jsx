@@ -6,14 +6,14 @@ function IsoBadge() {
   return (
     <Link
       to="/iso-certification"
-      className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 group"
+      className="group shrink-0"
       title="View ISO 9001:2015 Certification"
     >
-      <div className="flex items-center gap-2 rounded-2xl border border-blue-500/30 bg-blue-500/10 px-4 py-2.5 backdrop-blur-md shadow-sm cursor-pointer transition-all duration-200 group-hover:bg-blue-500/20 group-hover:border-white/50 group-hover:shadow-[0_0_16px_rgba(234,179,8,0.25)]">
-        <svg className="h-6 w-6 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
+      <div className="flex items-center gap-1.5 rounded-2xl border border-blue-500/30 bg-blue-500/10 px-2.5 py-1.5 sm:gap-2 sm:px-4 sm:py-2.5 backdrop-blur-md shadow-sm cursor-pointer transition-all duration-200 group-hover:bg-blue-500/20 group-hover:border-white/50 group-hover:shadow-[0_0_16px_rgba(234,179,8,0.25)]">
+        <svg className="h-4 w-4 sm:h-6 sm:w-6 text-white shrink-0" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
-        <span className="text-[13px] sm:text-[17px] font-bold uppercase tracking-wider text-white leading-none">
+        <span className="text-[10px] sm:text-[13px] md:text-[17px] font-bold uppercase tracking-wider text-white leading-none whitespace-nowrap">
           ISO 9001:2015
         </span>
       </div>
@@ -125,18 +125,20 @@ export default function Home() {
       <section className="relative overflow-hidden bg-aurora">
         <div className="absolute inset-0 section-grid opacity-80" />
         <div className="page-container relative pb-5 pt-5 lg:pr-0 lg:pl-0">
-          <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+          <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch lg:gap-4">
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6 }}
-              className="relative flex h-full min-h-[400px] sm:min-h-[480px] md:min-h-[520px] flex-col overflow-hidden rounded-[28px] sm:rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
+              className="relative flex h-full flex-col rounded-[28px] sm:rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)] sm:min-h-[480px] md:min-h-[520px]"
             >
-              <IsoBadge />
-              <div className="inline-flex w-fit rounded-full border border-indigo-500/40 bg-[#0b1235] px-4 sm:px-6 py-2 shadow-[0_0_20px_rgba(99,102,241,0.25)]">
-                <span className="text-xs font-semibold uppercase tracking-[0.4em] text-indigo-200">
-                  Closed Circuit for Families
-                </span>
+              <div className="flex flex-wrap items-start justify-between gap-2 sm:gap-3">
+                <div className="inline-flex max-w-full rounded-full border border-indigo-500/40 bg-[#0b1235] px-3 sm:px-6 py-2 shadow-[0_0_20px_rgba(99,102,241,0.25)]">
+                  <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.25em] sm:tracking-[0.4em] text-indigo-200">
+                    Closed Circuit for Families
+                  </span>
+                </div>
+                <IsoBadge />
               </div>
               <h1 className="font-display mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
                 Your Memories.<br />
@@ -151,17 +153,17 @@ export default function Home() {
               <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
                 Because family deserves a private space. Communicate, celebrate, organize, and preserve memories — without ads, without unwanted audiences, and without compromising privacy.
               </p>
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3">
-  {familyOccasions.map((item) => (
-    <span
-      key={item}
-      className={`${pillClass} flex min-h-[72px] items-center justify-center text-center px-4`}
-    >
-      {item}
-    </span>
-  ))}
-</div>
-              <div className="mt-auto flex flex-wrap gap-3 pt-5">
+              <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+                {familyOccasions.map((item) => (
+                  <span
+                    key={item}
+                    className={`${pillClass} flex min-h-[56px] sm:min-h-[72px] items-center justify-center text-center px-2 sm:px-4 text-xs sm:text-sm`}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-5 sm:mt-auto flex flex-col sm:flex-row flex-wrap gap-3 pt-4 sm:pt-5">
                 <Link
                   to="/contact"
                   className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(255,255,255,0.5)]"
@@ -182,13 +184,15 @@ export default function Home() {
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="relative flex h-full min-h-[400px] sm:min-h-[480px] md:min-h-[520px] flex-col overflow-hidden rounded-[28px] sm:rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)]"
+              className="relative flex h-full flex-col rounded-[28px] sm:rounded-[32px] border border-indigo-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(99,102,241,0.25)] sm:min-h-[480px] md:min-h-[520px]"
             >
-              <IsoBadge />
-              <div className="inline-flex w-fit rounded-full border border-purple-500/40 bg-[#0b1235] px-4 sm:px-6 py-2 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
-                <span className="text-xs font-semibold uppercase tracking-[0.4em] text-purple-200">
-                  Closed Circuit for Businesses
-                </span>
+              <div className="flex flex-wrap items-start justify-between gap-2 sm:gap-3">
+                <div className="inline-flex max-w-full rounded-full border border-purple-500/40 bg-[#0b1235] px-3 sm:px-6 py-2 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
+                  <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.25em] sm:tracking-[0.4em] text-purple-200">
+                    Closed Circuit for Businesses
+                  </span>
+                </div>
+                <IsoBadge />
               </div>
               <h1 className="font-display mt-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
                 Your Clients<br />
@@ -203,17 +207,17 @@ export default function Home() {
               <p className="mt-3 text-base leading-relaxed text-slate-400 md:text-lg">
                 Connect employees, teams, customers, and stakeholders within one private digital network — with complete control over access and information sharing.
               </p>
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3">
-  {businessTaglines.map((item) => (
-    <span
-      key={item}
-      className={`${pillClass} flex min-h-[72px] items-center justify-center text-center px-4`}
-    >
-      {item}
-    </span>
-  ))}
-</div>
-              <div className="mt-auto flex flex-wrap gap-3 pt-5">
+              <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
+                {businessTaglines.map((item) => (
+                  <span
+                    key={item}
+                    className={`${pillClass} flex min-h-[56px] sm:min-h-[72px] items-center justify-center text-center px-2 sm:px-4 text-xs sm:text-sm`}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+              <div className="mt-5 sm:mt-auto flex flex-col sm:flex-row flex-wrap gap-3 pt-4 sm:pt-5">
                 <Link
                   to="/contact"
                   className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.3)] transition hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(255,255,255,0.5)]"

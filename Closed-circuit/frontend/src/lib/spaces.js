@@ -37,9 +37,7 @@ export function getFlowVoiceVideoUrl() {
 }
 
 export function getFlowVoiceMobileVideoUrl() {
-  const file =
-    import.meta.env.VITE_DO_SPACES_FLOW_VIDEO_MOBILE_FILE || 'flow_in_voice_mobile_View.mp4';
-  return getRootMediaUrl(file);
+  return 'https://lara.blr1.cdn.digitaloceanspaces.com/Closed%20Circuit/flow_in_voice_mobile_View.mp4';
 }
 
 export function getFamilyVideoUrl() {

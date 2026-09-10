@@ -13,11 +13,18 @@ export default function MediaPlayer({
   controls = true,
   playsInline = true,
   preload = 'auto',
+  objectFit = 'cover',
+  fixedHeight = true,
   className = '',
 }) {
   if (!src) {
     return null;
   }
+
+  const sizeClasses = fixedHeight
+    ? 'h-[220px] sm:h-[320px] md:h-[416px] lg:h-[494px]'
+    : 'h-auto';
+  const fitClass = objectFit === 'contain' ? 'object-contain' : 'object-cover';
 
   return (
     <video
@@ -30,7 +37,7 @@ export default function MediaPlayer({
       loop={loop}
       playsInline={playsInline}
       preload={preload}
-      className={`h-[220px] sm:h-[320px] md:h-[416px] lg:h-[494px] w-full max-w-[1100px] rounded-2xl object-cover shadow-2xl ${className}`.trim()}
+      className={`${sizeClasses} w-full max-w-[1100px] rounded-2xl ${fitClass} shadow-2xl ${className}`.trim()}
     >
       Your browser does not support the video tag.
     </video>
