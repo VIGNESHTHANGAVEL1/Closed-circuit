@@ -18,8 +18,14 @@ import {
 } from '../controllers/client.controller.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
 import {
+  getCareerApplications,
+  getCareerApplicationById,
+  patchCareerApplicationStatus,
+} from '../controllers/careerApplication.controller.js';
+import {
   validateAdminLoginBody,
   validateEnquiryStatusBody,
+  validateCareerStatusBody,
   validateClientDisplayStatusBody,
   validateChangePasswordBody,
 } from '../middleware/validation.middleware.js';
@@ -50,5 +56,9 @@ router.patch(
   patchClientDisplayStatus
 );
 router.delete('/clients/:id', requireAuth, deleteClientHandler);
+
+router.get('/careers', requireAuth, getCareerApplications);
+router.patch('/careers/:id/status', requireAuth, validateCareerStatusBody, patchCareerApplicationStatus);
+router.get('/careers/:id', requireAuth, getCareerApplicationById);
 
 export default router;

@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, ShieldCheck, Users } from 'lucide-react';
+import { Play } from 'lucide-react';
 import Hero from '../components/Hero';
 import Card from '../components/Card';
-import MediaPlayer from '../components/MediaPlayer';
+import VideoPopupModal from '../components/VideoPopupModal';
 import { visuals } from '../data/visuals';
 import { getFlowVoiceVideoUrl, getFlowVoiceMobileVideoUrl } from '../lib/spaces';
 
 export default function FlowVoice() {
+  const [videoOpen, setVideoOpen] = useState(false);
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="bg-[#030712] text-slate-300">
       <Hero
@@ -15,27 +18,38 @@ export default function FlowVoice() {
         subtitle="Share spoken memories and heartfelt messages with the same privacy controls that protect your community."
       />
 
-      {/* Video section */}
       <section className="relative py-12 border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
         <div className="relative z-10 page-container">
           <div className="flex justify-center">
-            <div className="hidden md:block w-full max-w-[1100px]">
-              <MediaPlayer src={getFlowVoiceVideoUrl()} title="Flow in Voice" />
-            </div>
-            <div className="block md:hidden w-full max-w-[1100px]">
-              <MediaPlayer
-                src={getFlowVoiceMobileVideoUrl()}
-                title="Flow in Voice"
-                objectFit="contain"
-                fixedHeight={false}
-              />
-            </div>
+            <Card className="w-full max-w-[1100px] overflow-hidden border border-white/10 bg-gradient-to-br from-indigo-500/10 to-transparent p-6 sm:p-10 text-center">
+              <p className="text-base sm:text-lg md:text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto">
+                Watch how Flow in Voice works inside Closed Circuit — private voice sharing with the same approval and
+                privacy controls as the rest of your community.
+              </p>
+              <button
+                type="button"
+                onClick={() => setVideoOpen(true)}
+                className="mt-6 inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 text-sm sm:text-base font-bold text-slate-900 shadow-[0_0_30px_rgba(255,255,255,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_0_40px_rgba(255,255,255,0.35)]"
+              >
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-indigo-600 text-white">
+                  <Play size={18} fill="currentColor" />
+                </span>
+                Watch Video
+              </button>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* 2-col: text left | image right */}
+      <VideoPopupModal
+        isOpen={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        title="Flow in Voice"
+        desktopUrl={getFlowVoiceVideoUrl()}
+        mobileUrl={getFlowVoiceMobileVideoUrl()}
+      />
+
       <section className="section-y relative bg-[#0f172a]/40">
         <div className="page-container grid gap-6 lg:grid-cols-2 items-center">
           <motion.div
@@ -82,7 +96,6 @@ export default function FlowVoice() {
         </div>
       </section>
 
-      {/* 2-col: image left | text right */}
       <section className="section-y relative border-b border-white/5 bg-[#030712]">
         <div className="page-container grid items-center gap-6 lg:grid-cols-2">
           <Card className="overflow-hidden p-0 border border-white/10 group h-full">

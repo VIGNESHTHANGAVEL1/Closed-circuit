@@ -29,14 +29,15 @@ const mainNavItems = [
       { label: 'With WhatsApp', path: '/differ-whatsapp' },
     ],
   },
-  { label: 'Top 10 Reasons', path: '/top-reasons' },
   { label: 'Families', path: '/gifts' },
   { label: 'Businesses', path: '/use-cases' },
   { label: 'Contact Us', path: '/contact' },
   { label: 'Our Clients', path: '/clients' },
+  { label: 'Careers', path: '/careers' },
 ];
 
 const moreItems = [
+  { label: 'Top 10 Reasons', path: '/top-reasons' },
   { label: 'Taglines', path: '/taglines' },
   { label: 'Social Media', path: '/social-media' },
   { label: 'Brochure', path: '/brochure' },

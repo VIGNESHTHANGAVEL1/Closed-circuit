@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MessageSquare, Users, Sparkles, CalendarClock, Video } from 'lucide-react';
+import { MessageSquare, Users, Sparkles, CalendarClock, Video, Briefcase } from 'lucide-react';
 import AdminShell from '../../components/AdminShell';
 import { apiRequest } from '../../lib/api';
 import { clearAuthSession, getStoredToken } from '../../lib/auth';
@@ -13,6 +13,7 @@ export default function AdminDashboard() {
     newEnquiries: 0,
     totalClients: 0,
     todayScheduledCalls: 0,
+    totalCareerApplications: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -46,6 +47,15 @@ export default function AdminDashboard() {
       stat: loading ? '…' : stats.totalEnquiries,
       statLabel: 'Total enquiries',
       accent: 'from-indigo-500/20 to-purple-600/10 border-indigo-500/30',
+    },
+    {
+      title: 'Job Candidates',
+      description: 'Review career applications and update candidate status',
+      path: '/admin/careers',
+      icon: Briefcase,
+      stat: loading ? '…' : stats.totalCareerApplications,
+      statLabel: 'Total applications',
+      accent: 'from-cyan-500/20 to-blue-600/10 border-cyan-500/30',
     },
     {
       title: 'Clients',

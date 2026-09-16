@@ -93,7 +93,15 @@ export const config = {
     maxImageBytes: Number(process.env.CLIENT_IMAGE_MAX_BYTES) || 5 * 1024 * 1024,
     maxVideoBytes: Number(process.env.DEMO_VIDEO_MAX_BYTES) || 200 * 1024 * 1024,
     flowVideoFile: process.env.DO_SPACES_FLOW_VIDEO_FILE || 'flow_in_voice.mp4',
+    flowVideoMobileFile:
+      process.env.DO_SPACES_FLOW_VIDEO_MOBILE_FILE || 'flow_in_voice_mobile_View.mp4',
+    careerVideoFile: process.env.DO_SPACES_CAREER_VIDEO_FILE || 'career_information.mp4',
+    careerVideoMobileFile:
+      process.env.DO_SPACES_CAREER_VIDEO_MOBILE_FILE || 'career_information_mobile.mp4',
     familyVideoFile: process.env.DO_SPACES_FAMILY_VIDEO_FILE || 'gifts_in_voice.mp4',
+    videosFolder: (process.env.DO_SPACES_VIDEOS_FOLDER || 'Videos').replace(/^\/|\/$/g, ''),
+    resumesFolder: (process.env.DO_SPACES_RESUMES_FOLDER || 'Resumes').replace(/^\/|\/$/g, ''),
+    maxResumeBytes: Number(process.env.RESUME_MAX_BYTES) || 5 * 1024 * 1024,
   },
   timezone: process.env.APP_TIMEZONE || 'Asia/Kolkata',
   smtp: {

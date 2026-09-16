@@ -9,6 +9,7 @@ import {
   countTodayScheduledContacts,
 } from '../models/contact.model.js';
 import { countAllClients } from '../models/client.model.js';
+import { countAllCareerApplications } from '../models/careerApplication.model.js';
 import {
   DEFAULT_ENQUIRY_STATUS,
   normalizeEnquiryStatus,
@@ -207,12 +208,14 @@ export async function updateEnquiryStatus(id, statusValue) {
 
 export async function getDashboardStats() {
   const todayDate = getTodayDateString();
-  const [totalEnquiries, newEnquiries, totalClients, todayScheduledCalls] = await Promise.all([
-    countAllContacts(),
-    countContactsByStatus(DEFAULT_ENQUIRY_STATUS),
-    countAllClients(),
-    countTodayScheduledContacts(todayDate),
-  ]);
+  const [totalEnquiries, newEnquiries, totalClients, todayScheduledCalls, totalCareerApplications] =
+    await Promise.all([
+      countAllContacts(),
+      countContactsByStatus(DEFAULT_ENQUIRY_STATUS),
+      countAllClients(),
+      countTodayScheduledContacts(todayDate),
+      countAllCareerApplications(),
+    ]);
 
-  return { totalEnquiries, newEnquiries, totalClients, todayScheduledCalls };
+  return { totalEnquiries, newEnquiries, totalClients, todayScheduledCalls, totalCareerApplications };
 }

@@ -31,6 +31,8 @@ import SocialMedia from './pages/SocialMedia';
 import Brochure from './pages/Brochure';
 import IsoCertification from './pages/IsoCertification';
 import AboutUs from './pages/AboutUs';
+import Careers from './pages/Careers';
+import CareerDashboard from './pages/admin/CareerDashboard';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -164,6 +166,7 @@ function AppShell() {
             <Route path="/taglines" element={<Taglines />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/clients" element={<Clients />} />
+            <Route path="/careers" element={<Careers />} />
             <Route path="/social-media" element={<SocialMedia />} />
             <Route path="/brochure" element={<Brochure />} />
             <Route path="/iso-certification" element={<IsoCertification />} />
@@ -198,6 +201,14 @@ function AppShell() {
               element={
                 <AdminRoute>
                   <DemoVideoManagement />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/careers"
+              element={
+                <AdminRoute>
+                  <CareerDashboard />
                 </AdminRoute>
               }
             />

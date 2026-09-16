@@ -8,6 +8,7 @@ import {
   ensureDemoVideoFolderExists,
   ensureBrochureFolderExists,
   ensureCertificateFolderExists,
+  ensureWebsiteMediaFoldersExist,
 } from './services/spaces.service.js';
 import { startCallReminderScheduler } from './schedulers/callReminderScheduler.js';
 import { logNotificationConfigStatus } from './utils/notificationConfig.js';
@@ -50,6 +51,7 @@ try {
   await ensureDemoVideoFolderExists();
   await ensureBrochureFolderExists();
   await ensureCertificateFolderExists();
+  await ensureWebsiteMediaFoldersExist();
 
   const app = createApp();
   startCallReminderScheduler();

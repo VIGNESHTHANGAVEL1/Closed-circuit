@@ -6,11 +6,13 @@ import clientRoutes from './client.routes.js';
 import demoVideoRoutes from './demoVideo.routes.js';
 import publicDemoVideoRoutes from './publicDemoVideo.routes.js';
 import publicDocumentsRoutes from './publicDocuments.routes.js';
+import careerRoutes from './career.routes.js';
 
 const router = Router();
 
 router.use(verificationRoutes);
 router.use(enquiryRoutes);
+router.use(careerRoutes);
 router.use(clientRoutes);
 router.use('/demo-videos', demoVideoRoutes);
 router.use('/public/demo-videos', publicDemoVideoRoutes);

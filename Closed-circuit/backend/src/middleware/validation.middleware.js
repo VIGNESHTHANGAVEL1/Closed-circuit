@@ -1,5 +1,6 @@
 import { normalizeContactInput, validateContactPayload } from '../services/enquiry.service.js';
 import { normalizeEnquiryStatus } from '../constants/enquiryStatus.js';
+import { normalizeCareerStatus } from '../constants/careerStatus.js';
 
 export function validateEnquiryBody(req, res, next) {
   const payload = normalizeContactInput(req.body);
@@ -106,6 +107,45 @@ export function validateChangePasswordBody(req, res, next) {
     });
   }
 
+  next();
+}
+
+export function validateCareerApplicationBody(req, res, next) {
+  if (!req.body?.mobileVerificationToken?.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Mobile verification is required before submitting.',
+    });
+  }
+
+  if (!req.body?.emailVerificationToken?.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email verification is required before submitting.',
+    });
+  }
+
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: 'Resume upload is required.',
+    });
+  }
+
+  next();
+}
+
+export function validateCareerStatusBody(req, res, next) {
+  const status = normalizeCareerStatus(req.body?.status);
+
+  if (!status) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid status. Allowed: New, Processing, Selected/Accepted, Rejected.',
+    });
+  }
+
+  req.validatedStatus = status;
   next();
 }
 

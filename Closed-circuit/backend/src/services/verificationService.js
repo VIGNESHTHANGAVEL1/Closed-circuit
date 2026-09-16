@@ -93,12 +93,41 @@ async function issueVerificationSession(channel, identifier, clientName) {
   return token;
 }
 
-export async function sendMobileVerificationOtp({ fullName, mobileNumber, clientOrigin }) {
+export async function sendMobileVerificationOtp({
+  fullName,
+  mobileNumber,
+  clientOrigin,
+  verificationFlow,
+  emailVerificationToken,
+  emailId,
+}) {
   const clientName = String(fullName || '').trim();
   const mobile = normalizeMobile(mobileNumber);
+  const email = normalizeEmail(emailId);
+  const isCareersFlow = verificationFlow === 'careers';
 
   if (!clientName) {
     throw createHttpError('Full Name is required before mobile verification.');
+  }
+
+  if (isCareersFlow) {
+    if (!isValidEmail(email)) {
+      throw createHttpError('A verified email address is required before mobile verification.');
+    }
+
+    const emailSession = await findValidVerificationSession(
+      emailVerificationToken,
+      'EMAIL',
+      email
+    );
+
+    if (!emailSession) {
+      throw createHttpError('Email verification is required before mobile verification.');
+    }
+
+    if (emailSession.client_name !== clientName) {
+      throw createHttpError('Email verification does not match the submitted name.');
+    }
   }
 
   if (!isValidMobile(mobile)) {
@@ -199,16 +228,22 @@ export async function verifyMobileOtp({ mobileNumber, otp }) {
   };
 }
 
-export async function sendEmailVerificationOtp({ fullName, emailId, mobileNumber }) {
+export async function sendEmailVerificationOtp({
+  fullName,
+  emailId,
+  mobileNumber,
+  verificationFlow,
+}) {
   const clientName = String(fullName || '').trim();
   const email = normalizeEmail(emailId);
   const mobile = normalizeMobile(mobileNumber);
+  const isCareersFlow = verificationFlow === 'careers';
 
   if (!clientName) {
     throw createHttpError('Full Name is required before email verification.');
   }
 
-  if (!isValidMobile(mobile)) {
+  if (!isCareersFlow && !isValidMobile(mobile)) {
     throw createHttpError('Mobile verification is required before email verification.');
   }
 

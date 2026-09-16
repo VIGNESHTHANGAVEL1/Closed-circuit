@@ -21,3 +21,11 @@ export const demoVideoUpload = multer({
     files: 1,
   },
 }).single('video_file');
+
+export const resumeUpload = multer({
+  storage,
+  limits: {
+    fileSize: config.spaces.maxResumeBytes,
+    files: 1,
+  },
+}).single('resume');

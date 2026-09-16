@@ -23,6 +23,12 @@ const ALLOWED_VIDEO_MIME_TYPES = new Set([
   'video/webm',
 ]);
 
+const ALLOWED_RESUME_MIME_TYPES = new Set([
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]);
+
 const IMAGE_EXT_BY_MIME = {
   'image/jpeg': '.jpg',
   'image/jpg': '.jpg',
@@ -34,6 +40,12 @@ const VIDEO_EXT_BY_MIME = {
   'video/mp4': '.mp4',
   'video/quicktime': '.mov',
   'video/webm': '.webm',
+};
+
+const RESUME_EXT_BY_MIME = {
+  'application/pdf': '.pdf',
+  'application/msword': '.doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
 };
 
 let s3Client = null;
@@ -87,6 +99,22 @@ export function getDemoVideoFolder() {
   return config.spaces.videoFolder;
 }
 
+export function getVideosFolder() {
+  return config.spaces.videosFolder;
+}
+
+export function getResumesFolder() {
+  return config.spaces.resumesFolder;
+}
+
+export function getWebsiteMediaUrl(relativeFolder, filename) {
+  if (!filename) {
+    return '';
+  }
+  const key = buildObjectKey(relativeFolder, filename);
+  return getPublicUrl(key);
+}
+
 /** Build a public URL for a media file stored at the root folder level (e.g. flow_in_voice.mp4). */
 export function getRootMediaUrl(filename) {
   const key = buildObjectKey('', filename);
@@ -117,6 +145,23 @@ export function validateImageFile(file) {
   if (file.size > config.spaces.maxImageBytes) {
     const maxMb = Math.round(config.spaces.maxImageBytes / (1024 * 1024));
     return `Image must be ${maxMb}MB or smaller.`;
+  }
+
+  return null;
+}
+
+export function validateResumeFile(file) {
+  if (!file) {
+    return 'Resume file is required.';
+  }
+
+  if (!ALLOWED_RESUME_MIME_TYPES.has(file.mimetype)) {
+    return 'Only PDF, DOC, and DOCX resume formats are allowed.';
+  }
+
+  if (file.size > config.spaces.maxResumeBytes) {
+    const maxMb = Math.round(config.spaces.maxResumeBytes / (1024 * 1024));
+    return `Resume must be ${maxMb}MB or smaller.`;
   }
 
   return null;
@@ -294,6 +339,53 @@ export async function ensureDemoVideoFolderExists() {
   }
 
   await ensureFolderPlaceholder(getDemoVideoFolder());
+}
+
+export async function ensureWebsiteMediaFoldersExist() {
+  if (!config.spaces.enabled) {
+    console.warn('[spaces] DigitalOcean Spaces not configured — website media folders skipped.');
+    return;
+  }
+
+  await ensureFolderPlaceholder(getVideosFolder());
+  await ensureFolderPlaceholder(getResumesFolder());
+  console.log('✅ Website Videos and Resumes folders ready');
+}
+
+export async function uploadResume(file) {
+  const validationError = validateResumeFile(file);
+  if (validationError) {
+    const error = new Error(validationError);
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const client = getS3Client();
+  if (!client) {
+    const error = new Error('Resume storage is not configured.');
+    error.statusCode = 503;
+    throw error;
+  }
+
+  const folder = getResumesFolder();
+  const filename = generateUniqueFilename(file.originalname, file.mimetype, RESUME_EXT_BY_MIME);
+  const key = buildObjectKey(folder, filename);
+
+  await client.send(
+    new PutObjectCommand({
+      Bucket: config.spaces.bucket,
+      Key: key,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      ACL: 'public-read',
+    })
+  );
+
+  return {
+    key,
+    url: getPublicUrl(key),
+    filename: file.originalname || filename,
+  };
 }
 
 export async function ensureBrochureFolderExists() {

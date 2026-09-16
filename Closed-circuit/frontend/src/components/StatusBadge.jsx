@@ -4,6 +4,8 @@ const statusStyles = {
   'Rejected temporarily': 'bg-orange-500/15 text-orange-300 border-orange-500/30',
   'Rejected permanently': 'bg-red-500/15 text-red-300 border-red-500/30',
   Closed: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+  'Selected/Accepted': 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+  Rejected: 'bg-red-500/15 text-red-300 border-red-500/30',
 };
 
 export default function StatusBadge({ status }) {
