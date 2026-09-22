@@ -95,9 +95,10 @@ export const config = {
     flowVideoFile: process.env.DO_SPACES_FLOW_VIDEO_FILE || 'flow_in_voice.mp4',
     flowVideoMobileFile:
       process.env.DO_SPACES_FLOW_VIDEO_MOBILE_FILE || 'flow_in_voice_mobile_View.mp4',
-    careerVideoFile: process.env.DO_SPACES_CAREER_VIDEO_FILE || 'career_information.mp4',
+    careerVideosFolder: (process.env.DO_SPACES_CAREER_VIDEOS_FOLDER || 'career_videos').replace(/^\/|\/$/g, ''),
+    careerVideoFile: process.env.DO_SPACES_CAREER_VIDEO_FILE || 'desktop-view-en.mp4',
     careerVideoMobileFile:
-      process.env.DO_SPACES_CAREER_VIDEO_MOBILE_FILE || 'career_information_mobile.mp4',
+      process.env.DO_SPACES_CAREER_VIDEO_MOBILE_FILE || 'mobile-view-en.mp4',
     familyVideoFile: process.env.DO_SPACES_FAMILY_VIDEO_FILE || 'gifts_in_voice.mp4',
     videosFolder: (process.env.DO_SPACES_VIDEOS_FOLDER || 'Videos').replace(/^\/|\/$/g, ''),
     resumesFolder: (process.env.DO_SPACES_RESUMES_FOLDER || 'Resumes').replace(/^\/|\/$/g, ''),

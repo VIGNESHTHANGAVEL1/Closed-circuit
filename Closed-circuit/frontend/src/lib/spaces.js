@@ -29,6 +29,10 @@ function getVideosFolder() {
   return (import.meta.env.VITE_DO_SPACES_VIDEOS_FOLDER || 'Videos').replace(/^\/|\/$/g, '');
 }
 
+function getCareerVideosFolder() {
+  return (import.meta.env.VITE_DO_SPACES_CAREER_VIDEOS_FOLDER || 'career_videos').replace(/^\/|\/$/g, '');
+}
+
 function buildMediaUrl(folder, filename) {
   if (!filename) {
     return '';
@@ -75,11 +79,19 @@ export function getFlowVoiceMobileVideoUrl() {
 }
 
 export function getCareerVideoUrl() {
-  return resolveVideoUrl('VITE_DO_SPACES_CAREER_VIDEO_FILE', 'career_information.mp4');
+  const filename = import.meta.env.VITE_DO_SPACES_CAREER_VIDEO_FILE || 'desktop-view-en.mp4';
+  return (
+    buildMediaUrl(getCareerVideosFolder(), filename) ||
+    'https://lara.blr1.cdn.digitaloceanspaces.com/Closed%20Circuit/career_videos/desktop-view-en.mp4'
+  );
 }
 
 export function getCareerVideoMobileUrl() {
-  return resolveVideoUrl('VITE_DO_SPACES_CAREER_VIDEO_MOBILE_FILE', 'career_information_mobile.mp4');
+  const filename = import.meta.env.VITE_DO_SPACES_CAREER_VIDEO_MOBILE_FILE || 'mobile-view-en.mp4';
+  return (
+    buildMediaUrl(getCareerVideosFolder(), filename) ||
+    'https://lara.blr1.cdn.digitaloceanspaces.com/Closed%20Circuit/career_videos/mobile-view-en.mp4'
+  );
 }
 
 export function getFamilyVideoUrl() {
