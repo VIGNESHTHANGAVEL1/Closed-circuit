@@ -93,11 +93,9 @@ export default function SalesCareerSection() {
               <p>Closed Circuit is looking for motivated and responsible people to join our Inside Sales Team.</p>
               <p>This is a Work From Home opportunity, and candidates from any location can apply.</p>
             </div>
-            <div className="flex flex-row md:flex-col justify-center md:justify-between gap-2 md:gap-3 md:min-w-[11rem] shrink-0">
-              <WfhBadge className="justify-center w-full" />
-              <WfhBadge className="justify-center w-full" />
-              <WfhBadge className="justify-center w-full" />
-            </div>
+            <div className="flex flex-row md:flex-col justify-center md:justify-between gap-3 md:gap-4 md:min-w-[14rem] shrink-0">
+  <WfhBadge className="justify-center h-20 px-10 text-2xl" />
+</div>
           </div>
         </Card>
 
