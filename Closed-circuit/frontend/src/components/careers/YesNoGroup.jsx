@@ -19,7 +19,7 @@ export default function YesNoGroup({ name, label, value, onChange, disabled }) {
               disabled={disabled}
               className="h-4 w-4 sm:h-[1.125rem] sm:w-[1.125rem] accent-indigo-500 shrink-0"
             />
-            <span className="text-sm sm:text-base font-semibold text-slate-200">{option}</span>
+            <span className="text-sm sm:text-base font-medium italic text-slate-300 tracking-wide">{option}</span>
           </label>
         ))}
       </div>

@@ -31,8 +31,6 @@ const roleTasks = [
   'Converting prospects into customers',
   'Achieving daily performance targets',
   'Providing regular updates on calls and results',
-  'Maintaining accurate records of customer interactions and follow-ups',
-  'Coordinating with the team for escalations when required',
 ];
 
 const expectations = [

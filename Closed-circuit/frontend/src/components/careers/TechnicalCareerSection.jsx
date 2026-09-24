@@ -31,7 +31,6 @@ const LOOKING_FOR_POINTS = [
   'Hands-on experience building and maintaining React and Node.js applications',
   'Basic familiarity with cloud hosting and Linux-based deployment tasks',
   'Confidence working independently and delivering assigned modules on schedule',
-  'Willingness to learn, take ownership, and contribute to production projects',
 ];
 
 export default function TechnicalCareerSection() {
