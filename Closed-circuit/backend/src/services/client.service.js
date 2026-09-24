@@ -7,7 +7,7 @@ import {
   findAllClientsPublic,
   updateClientDisplayStatus,
 } from '../models/client.model.js';
-import { uploadClientImage, deleteObjectByKey } from './spaces.service.js';
+import { uploadClientImage, deleteObjectByKey, resolveSpacesPublicUrl } from './spaces.service.js';
 import { validateDomainUrlOptional } from '../utils/domainUrl.js';
 
 const CLIENT_TYPES = new Set(['b2b', 'b2c']);
@@ -85,9 +85,15 @@ function mapClientRow(row) {
     business_type: row.business_type,
     onboard_date: row.onboard_date,
     client_logo_key: row.client_logo_key,
-    client_logo_url: row.client_logo_url,
+    client_logo_url: resolveSpacesPublicUrl({
+      url: row.client_logo_url,
+      key: row.client_logo_key,
+    }),
     client_profile_pic_key: row.client_profile_pic_key,
-    client_profile_pic_url: row.client_profile_pic_url,
+    client_profile_pic_url: resolveSpacesPublicUrl({
+      url: row.client_profile_pic_url,
+      key: row.client_profile_pic_key,
+    }),
     domain_url: row.domain_url || null,
     display_status: Boolean(row.display_status),
     created_at: row.created_at,
@@ -102,8 +108,11 @@ function mapClientPublic(row) {
     client_type: row.client_type,
     business_type: row.business_type,
     onboard_date: row.onboard_date,
-    logo_url: row.client_logo_url || null,
-    profile_pic_url: row.client_profile_pic_url || null,
+    logo_url: resolveSpacesPublicUrl({ url: row.client_logo_url, key: row.client_logo_key }),
+    profile_pic_url: resolveSpacesPublicUrl({
+      url: row.client_profile_pic_url,
+      key: row.client_profile_pic_key,
+    }),
     domain_url: row.domain_url || null,
   };
 }

@@ -12,7 +12,7 @@ import {
 } from '../constants/careerStatus.js';
 import { assertVerificationTokens } from './verificationService.js';
 import { deleteVerificationSession } from '../models/verificationSession.model.js';
-import { uploadResume } from './spaces.service.js';
+import { uploadResume, normalizeSpacesPublicUrl } from './spaces.service.js';
 
 const REQUIRED_FIELDS = [
   'fullName',
@@ -138,7 +138,7 @@ export function mapCareerForDashboard(row) {
     watchedProductVideo: row.watchedProductVideo,
     watchedCareerVideo: row.watchedCareerVideo,
     productUnderstanding: row.productUnderstanding,
-    resume_url: row.resume_url,
+    resume_url: normalizeSpacesPublicUrl(row.resume_url),
     resume_filename: row.resume_filename,
     email_verified: Boolean(row.email_verified),
     mobile_verified: Boolean(row.mobile_verified),

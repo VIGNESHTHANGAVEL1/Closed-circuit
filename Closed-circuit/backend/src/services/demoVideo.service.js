@@ -6,7 +6,7 @@ import {
   updateDemoVideo,
   deleteDemoVideo,
 } from '../models/demoVideo.model.js';
-import { uploadDemoVideo, deleteObjectByKey } from './spaces.service.js';
+import { uploadDemoVideo, deleteObjectByKey, resolveSpacesPublicUrl } from './spaces.service.js';
 
 function normalizePage(value) {
   const page = Number(value) || 1;
@@ -20,20 +20,47 @@ function normalizeLimit(value) {
   return limit;
 }
 
+function mapDemoVideoRow(row) {
+  if (!row) {
+    return null;
+  }
+
+  const normalizedUrl = resolveSpacesPublicUrl({
+    url: row.video_url,
+    key: row.video_key,
+  });
+
+  return {
+    ...row,
+    video_url: normalizedUrl,
+    videoUrl: normalizedUrl,
+  };
+}
+
 export async function listPublicDemoVideos() {
-  return findAllDemoVideosPublic();
+  const rows = await findAllDemoVideosPublic();
+  return rows.map((row) => ({
+    ...row,
+    videoUrl: resolveSpacesPublicUrl({ url: row.videoUrl, key: row.videoKey }),
+  }));
 }
 
 export async function listDemoVideos(query = {}) {
-  return findDemoVideos({
+  const result = await findDemoVideos({
     search: query.search || '',
     page: normalizePage(query.page),
     limit: normalizeLimit(query.limit),
   });
+
+  return {
+    ...result,
+    rows: (result.rows || []).map(mapDemoVideoRow),
+  };
 }
 
 export async function getDemoVideoById(id) {
-  return findDemoVideoById(id);
+  const row = await findDemoVideoById(id);
+  return mapDemoVideoRow(row);
 }
 
 export async function createDemoVideo({ title }, file) {

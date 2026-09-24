@@ -13,6 +13,7 @@
     "db:init": "node scripts/init-db.js",
     "db:migrate": "node scripts/migrate-db.js",
     "admin:reset-password": "node scripts/reset-admin-password.js",
+    "spaces:update-root-urls": "node scripts/update-spaces-root-urls.js",
     "spaces:migrate": "node scripts/migrate-spaces-structure.js",
     "spaces:migrate:dry-run": "node scripts/migrate-spaces-structure.js --dry-run",
     "spaces:migrate:verify": "node scripts/migrate-spaces-structure.js --verify",

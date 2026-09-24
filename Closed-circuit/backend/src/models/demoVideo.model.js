@@ -41,7 +41,7 @@ export async function findDemoVideoById(id) {
 
 export async function findAllDemoVideosPublic() {
   const [rows] = await db.query(
-    `SELECT id, title, video_url AS videoUrl
+    `SELECT id, title, video_url AS videoUrl, video_key AS videoKey
      FROM demo_videos
      ORDER BY display_order ASC, id ASC`
   );

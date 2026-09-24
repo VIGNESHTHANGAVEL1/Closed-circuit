@@ -85,6 +85,49 @@ export function getPublicUrl(objectKey) {
   return `https://${config.spaces.bucket}.${config.spaces.region}.cdn.digitaloceanspaces.com/${encodedKey}`;
 }
 
+const LEGACY_ROOT_FOLDER = 'Closed Circuit';
+
+/** Rewrite object keys after root folder rename (e.g. Closed Circuit → cc-website). */
+export function normalizeSpacesObjectKey(key) {
+  if (!key || typeof key !== 'string') {
+    return key;
+  }
+
+  const root = config.spaces.rootFolder;
+  if (key.startsWith(`${LEGACY_ROOT_FOLDER}/`)) {
+    return `${root}/${key.slice(LEGACY_ROOT_FOLDER.length + 1)}`;
+  }
+
+  return key;
+}
+
+/** Rewrite public CDN URLs after root folder rename. */
+export function normalizeSpacesPublicUrl(url) {
+  if (!url || typeof url !== 'string') {
+    return url;
+  }
+
+  const root = config.spaces.rootFolder;
+  const encodedLegacy = encodeURIComponent(LEGACY_ROOT_FOLDER);
+
+  return url
+    .replace(new RegExp(encodedLegacy, 'gi'), encodeURIComponent(root))
+    .replace(new RegExp(LEGACY_ROOT_FOLDER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), root);
+}
+
+/** Prefer stored URL, fall back to key; always apply root-folder normalization. */
+export function resolveSpacesPublicUrl({ url, key }) {
+  if (url) {
+    return normalizeSpacesPublicUrl(url);
+  }
+
+  if (key) {
+    return getPublicUrl(normalizeSpacesObjectKey(key));
+  }
+
+  return null;
+}
+
 /** Resolve client image folder paths from environment configuration. */
 export function getClientImageFolders() {
   const clientRoot = config.spaces.clientFolder;

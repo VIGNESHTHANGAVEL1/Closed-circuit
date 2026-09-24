@@ -83,7 +83,7 @@ export const config = {
     endpoint: process.env.DO_SPACES_ENDPOINT || '',
     region: process.env.DO_SPACES_REGION || 'blr1',
     bucket: process.env.DO_SPACES_BUCKET || 'lara',
-    rootFolder: (process.env.DO_SPACES_ROOT_FOLDER || 'Closed Circuit').replace(/^\/|\/$/g, ''),
+    rootFolder: (process.env.DO_SPACES_ROOT_FOLDER || 'cc-website').replace(/^\/|\/$/g, ''),
     clientFolder: (process.env.DO_SPACES_CLIENT_FOLDER || 'clients').replace(/^\/|\/$/g, ''),
     videoFolder: (process.env.DO_SPACES_VIDEO_FOLDER || 'demo-videos').replace(/^\/|\/$/g, ''),
     mediaFolder: (process.env.DO_SPACES_MEDIA_FOLDER || 'media').replace(/^\/|\/$/g, ''),
