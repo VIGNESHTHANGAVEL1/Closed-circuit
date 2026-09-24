@@ -10,6 +10,7 @@ const TECH_SKILLS = [
   'CSS',
   'Bootstrap',
   'JavaScript',
+  'TypeScript',
   'Node.js',
   'Express.js',
   'React.js',
@@ -60,9 +61,9 @@ export default function TechnicalCareerSection() {
           <h2 className="font-display text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
             <Layers size={22} className="text-indigo-400" /> Required Technical Skills
           </h2>
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 flex-1">
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-2 sm:gap-x-3 gap-y-1 flex-1 max-w-full">
             {skillColumns.map((column, colIndex) => (
-              <ul key={colIndex} className={`space-y-2 ${bodyText}`}>
+              <ul key={colIndex} className={`space-y-1.5 ${bodyText}`}>
                 {column.map((skill) => (
                   <li key={skill} className="flex items-start gap-2">
                     <CheckCircle2 size={16} className="mt-1 shrink-0 text-indigo-400" />
