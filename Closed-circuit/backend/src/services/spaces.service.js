@@ -150,6 +150,14 @@ export function getResumesFolder() {
   return config.spaces.resumesFolder;
 }
 
+export function getSalesResumesFolder() {
+  return config.spaces.salesResumesFolder;
+}
+
+export function getTechnicalResumesFolder() {
+  return config.spaces.technicalResumesFolder;
+}
+
 export function getWebsiteMediaUrl(relativeFolder, filename) {
   if (!filename) {
     return '';
@@ -200,6 +208,23 @@ export function validateResumeFile(file) {
 
   if (!ALLOWED_RESUME_MIME_TYPES.has(file.mimetype)) {
     return 'Only PDF, DOC, and DOCX resume formats are allowed.';
+  }
+
+  if (file.size > config.spaces.maxResumeBytes) {
+    const maxMb = Math.round(config.spaces.maxResumeBytes / (1024 * 1024));
+    return `Resume must be ${maxMb}MB or smaller.`;
+  }
+
+  return null;
+}
+
+export function validateTechnicalResumeFile(file) {
+  if (!file) {
+    return 'Resume file is required.';
+  }
+
+  if (file.mimetype !== 'application/pdf') {
+    return 'Only PDF resume format is allowed for technical applications.';
   }
 
   if (file.size > config.spaces.maxResumeBytes) {
@@ -392,11 +417,17 @@ export async function ensureWebsiteMediaFoldersExist() {
 
   await ensureFolderPlaceholder(getVideosFolder());
   await ensureFolderPlaceholder(getResumesFolder());
+  await ensureFolderPlaceholder(getSalesResumesFolder());
+  await ensureFolderPlaceholder(getTechnicalResumesFolder());
   console.log('✅ Website Videos and Resumes folders ready');
 }
 
-export async function uploadResume(file) {
-  const validationError = validateResumeFile(file);
+/**
+ * @param {'sales' | 'technical'} track
+ */
+export async function uploadResume(file, track = 'sales') {
+  const validationError =
+    track === 'technical' ? validateTechnicalResumeFile(file) : validateResumeFile(file);
   if (validationError) {
     const error = new Error(validationError);
     error.statusCode = 400;
@@ -410,7 +441,7 @@ export async function uploadResume(file) {
     throw error;
   }
 
-  const folder = getResumesFolder();
+  const folder = track === 'technical' ? getTechnicalResumesFolder() : getSalesResumesFolder();
   const filename = generateUniqueFilename(file.originalname, file.mimetype, RESUME_EXT_BY_MIME);
   const key = buildObjectKey(folder, filename);
 

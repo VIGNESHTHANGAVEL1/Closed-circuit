@@ -1,10 +1,10 @@
 import {
-  insertCareerApplication,
-  findCareerApplicationById,
-  findCareerApplications,
-  updateCareerApplicationStatus,
-  countAllCareerApplications,
-} from '../models/careerApplication.model.js';
+  insertTechnicalCareerApplication,
+  findTechnicalCareerApplicationById,
+  findTechnicalCareerApplications,
+  updateTechnicalCareerApplicationStatus,
+  countAllTechnicalCareerApplications,
+} from '../models/technicalCareerApplication.model.js';
 import {
   DEFAULT_CAREER_STATUS,
   normalizeCareerStatus,
@@ -19,56 +19,29 @@ const REQUIRED_FIELDS = [
   'emailId',
   'mobileNumber',
   'latestEducation',
+  'specialization',
+  'yearOfPassout',
+  'universityCollege',
+  'totalExperience',
+  'relevantExperience',
+  'currentLastCompany',
+  'currentLastDesignation',
   'currentLocation',
   'city',
   'district',
   'state',
-  'salesExperience',
-  'callsPerDay',
-  'closuresPerDay',
-  'languages',
-  'hasLaptop',
-  'hasMobilePhone',
-  'hasSeparateSim',
-  'hasWorkstation',
-  'hasInternet',
-  'reviewedProduct',
-  'watchedProductVideo',
-  'watchedCareerVideo',
-  'productUnderstanding',
+  'pinCode',
+  'expectedSalary',
+  'noticePeriod',
+  'linkedinProfile',
+  'githubPortfolio',
 ];
 
-const YES_NO_FIELDS = [
-  'hasLaptop',
-  'hasMobilePhone',
-  'hasSeparateSim',
-  'hasWorkstation',
-  'hasInternet',
-  'reviewedProduct',
-  'watchedProductVideo',
-  'watchedCareerVideo',
-];
-
-function normalizeYesNo(value) {
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'yes' || normalized === 'true' || normalized === '1') {
-    return 'Yes';
-  }
-  if (normalized === 'no' || normalized === 'false' || normalized === '0') {
-    return 'No';
-  }
-  return null;
-}
-
-export function normalizeCareerInput(body) {
+export function normalizeTechnicalCareerInput(body) {
   const normalized = {};
 
   for (const field of REQUIRED_FIELDS) {
     normalized[field] = String(body[field] || '').trim();
-  }
-
-  for (const field of YES_NO_FIELDS) {
-    normalized[field] = normalizeYesNo(body[field]);
   }
 
   normalized.declarationAccepted =
@@ -80,13 +53,8 @@ export function normalizeCareerInput(body) {
   return normalized;
 }
 
-export function validateCareerPayload(payload) {
-  const missing = REQUIRED_FIELDS.filter((field) => {
-    if (YES_NO_FIELDS.includes(field)) {
-      return !payload[field];
-    }
-    return !payload[field];
-  });
+export function validateTechnicalCareerPayload(payload) {
+  const missing = REQUIRED_FIELDS.filter((field) => !payload[field]);
 
   if (missing.length) {
     return `Missing required fields: ${missing.join(', ')}`;
@@ -109,7 +77,7 @@ export function validateCareerPayload(payload) {
   return null;
 }
 
-export function mapCareerForDashboard(row) {
+export function mapTechnicalCareerForDashboard(row) {
   return {
     id: row.id,
     name: row.fullName,
@@ -121,23 +89,22 @@ export function mapCareerForDashboard(row) {
     fullName: row.fullName,
     emailId: row.emailId,
     mobileNumber: row.mobileNumber,
+    specialization: row.specialization,
+    yearOfPassout: row.yearOfPassout,
+    universityCollege: row.universityCollege,
+    totalExperience: row.totalExperience,
+    relevantExperience: row.relevantExperience,
+    currentLastCompany: row.currentLastCompany,
+    currentLastDesignation: row.currentLastDesignation,
     currentLocation: row.currentLocation,
     city: row.city,
     district: row.district,
     state: row.state,
-    salesExperience: row.salesExperience,
-    callsPerDay: row.callsPerDay,
-    closuresPerDay: row.closuresPerDay,
-    languages: row.languages,
-    hasLaptop: row.hasLaptop,
-    hasMobilePhone: row.hasMobilePhone,
-    hasSeparateSim: row.hasSeparateSim,
-    hasWorkstation: row.hasWorkstation,
-    hasInternet: row.hasInternet,
-    reviewedProduct: row.reviewedProduct,
-    watchedProductVideo: row.watchedProductVideo,
-    watchedCareerVideo: row.watchedCareerVideo,
-    productUnderstanding: row.productUnderstanding,
+    pinCode: row.pinCode,
+    expectedSalary: row.expectedSalary,
+    noticePeriod: row.noticePeriod,
+    linkedinProfile: row.linkedinProfile,
+    githubPortfolio: row.githubPortfolio,
     resume_url: normalizeSpacesPublicUrl(row.resume_url),
     resume_filename: row.resume_filename,
     email_verified: Boolean(row.email_verified),
@@ -145,9 +112,9 @@ export function mapCareerForDashboard(row) {
   };
 }
 
-export async function createCareerApplication(payload, resumeFile) {
-  const data = normalizeCareerInput(payload);
-  const validationError = validateCareerPayload(data);
+export async function createTechnicalCareerApplication(payload, resumeFile) {
+  const data = normalizeTechnicalCareerInput(payload);
+  const validationError = validateTechnicalCareerPayload(data);
 
   if (validationError) {
     const error = new Error(validationError);
@@ -169,9 +136,9 @@ export async function createCareerApplication(payload, resumeFile) {
     emailVerificationToken: payload.emailVerificationToken,
   });
 
-  const resume = await uploadResume(resumeFile, 'sales');
+  const resume = await uploadResume(resumeFile, 'technical');
 
-  const id = await insertCareerApplication({
+  const id = await insertTechnicalCareerApplication({
     ...data,
     resume_key: resume.key,
     resume_url: resume.url,
@@ -189,12 +156,12 @@ export async function createCareerApplication(payload, resumeFile) {
   return { id };
 }
 
-export async function listCareerApplications(query) {
+export async function listTechnicalCareerApplications(query) {
   const page = Math.max(Number(query.page) || 1, 1);
   const limit = Math.min(Math.max(Number(query.limit) || 10, 1), 100);
   const offset = (page - 1) * limit;
 
-  const { rows, total } = await findCareerApplications({
+  const { rows, total } = await findTechnicalCareerApplications({
     search: query.search?.trim(),
     status: normalizeCareerStatus(query.status) || undefined,
     dateFrom: query.dateFrom,
@@ -204,22 +171,22 @@ export async function listCareerApplications(query) {
   });
 
   return {
-    rows: rows.map(mapCareerForDashboard),
+    rows: rows.map(mapTechnicalCareerForDashboard),
     total,
     page,
     limit,
   };
 }
 
-export async function getCareerApplicationDetail(id) {
-  const row = await findCareerApplicationById(id);
+export async function getTechnicalCareerApplicationDetail(id) {
+  const row = await findTechnicalCareerApplicationById(id);
   if (!row) {
     return null;
   }
-  return mapCareerForDashboard(row);
+  return mapTechnicalCareerForDashboard(row);
 }
 
-export async function updateCareerStatus(id, status) {
+export async function updateTechnicalCareerStatus(id, status) {
   const normalized = normalizeCareerStatus(status);
   if (!normalized) {
     const error = new Error('Invalid status.');
@@ -227,18 +194,18 @@ export async function updateCareerStatus(id, status) {
     throw error;
   }
 
-  const existing = await findCareerApplicationById(id);
+  const existing = await findTechnicalCareerApplicationById(id);
   if (!existing) {
     const error = new Error('Application not found.');
     error.statusCode = 404;
     throw error;
   }
 
-  await updateCareerApplicationStatus(id, normalized);
-  return getCareerApplicationDetail(id);
+  await updateTechnicalCareerApplicationStatus(id, normalized);
+  return getTechnicalCareerApplicationDetail(id);
 }
 
-export async function getCareerStats() {
-  const total = await countAllCareerApplications();
+export async function getTechnicalCareerStats() {
+  const total = await countAllTechnicalCareerApplications();
   return { total };
 }

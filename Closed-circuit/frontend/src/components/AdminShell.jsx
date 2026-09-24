@@ -6,7 +6,8 @@ import { clearAuthSession, getStoredUser } from '../lib/auth';
 const navLinks = [
   { label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Enquiries', path: '/admin/enquiries', icon: MessageSquare },
-  { label: 'Job Candidates', path: '/admin/careers', icon: Briefcase },
+  { label: 'Sales Candidates', path: '/admin/careers/sales', icon: Briefcase },
+  { label: 'Technical Candidates', path: '/admin/careers/technical', icon: Briefcase },
   { label: 'Clients', path: '/admin/clients', icon: Users },
   { label: 'Manage Demo Videos', path: '/admin/demo-videos', icon: Video },
   { label: 'Change Password', path: '/admin/change-password', icon: KeyRound },
@@ -43,7 +44,9 @@ export default function AdminShell({ title, subtitle, children }) {
 
       <nav className="flex-1 space-y-1 px-3 py-4">
         {navLinks.map(({ label, path, icon: Icon }) => {
-          const active = location.pathname === path;
+          const active =
+            location.pathname === path ||
+            (path === '/admin/careers/sales' && location.pathname === '/admin/careers');
           return (
             <Link
               key={path}

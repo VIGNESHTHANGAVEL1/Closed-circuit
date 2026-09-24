@@ -23,6 +23,11 @@ import {
   patchCareerApplicationStatus,
 } from '../controllers/careerApplication.controller.js';
 import {
+  getTechnicalCareerApplications,
+  getTechnicalCareerApplicationById,
+  patchTechnicalCareerApplicationStatus,
+} from '../controllers/technicalCareerApplication.controller.js';
+import {
   validateAdminLoginBody,
   validateEnquiryStatusBody,
   validateCareerStatusBody,
@@ -56,6 +61,19 @@ router.patch(
   patchClientDisplayStatus
 );
 router.delete('/clients/:id', requireAuth, deleteClientHandler);
+
+router.get('/careers/sales', requireAuth, getCareerApplications);
+router.patch('/careers/sales/:id/status', requireAuth, validateCareerStatusBody, patchCareerApplicationStatus);
+router.get('/careers/sales/:id', requireAuth, getCareerApplicationById);
+
+router.get('/careers/technical', requireAuth, getTechnicalCareerApplications);
+router.patch(
+  '/careers/technical/:id/status',
+  requireAuth,
+  validateCareerStatusBody,
+  patchTechnicalCareerApplicationStatus
+);
+router.get('/careers/technical/:id', requireAuth, getTechnicalCareerApplicationById);
 
 router.get('/careers', requireAuth, getCareerApplications);
 router.patch('/careers/:id/status', requireAuth, validateCareerStatusBody, patchCareerApplicationStatus);

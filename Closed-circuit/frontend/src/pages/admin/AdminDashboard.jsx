@@ -14,6 +14,8 @@ export default function AdminDashboard() {
     totalClients: 0,
     todayScheduledCalls: 0,
     totalCareerApplications: 0,
+    totalSalesCareerApplications: 0,
+    totalTechnicalCareerApplications: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -49,13 +51,22 @@ export default function AdminDashboard() {
       accent: 'from-indigo-500/20 to-purple-600/10 border-indigo-500/30',
     },
     {
-      title: 'Job Candidates',
-      description: 'Review career applications and update candidate status',
-      path: '/admin/careers',
+      title: 'Sales Candidates',
+      description: 'Inside sales career applications',
+      path: '/admin/careers/sales',
       icon: Briefcase,
-      stat: loading ? '…' : stats.totalCareerApplications,
-      statLabel: 'Total applications',
+      stat: loading ? '…' : stats.totalSalesCareerApplications ?? stats.totalCareerApplications,
+      statLabel: 'Sales applications',
       accent: 'from-cyan-500/20 to-blue-600/10 border-cyan-500/30',
+    },
+    {
+      title: 'Technical Candidates',
+      description: 'MERN developer career applications',
+      path: '/admin/careers/technical',
+      icon: Briefcase,
+      stat: loading ? '…' : stats.totalTechnicalCareerApplications ?? 0,
+      statLabel: 'Technical applications',
+      accent: 'from-sky-500/20 to-indigo-600/10 border-sky-500/30',
     },
     {
       title: 'Clients',

@@ -1,0 +1,26 @@
+
+MERN Stack Developer –  
+We are looking for MERN Stack Developers who are well-versed in the following technologies and integrations.
+Required Technical Skills
+HTML
+CSS
+Bootstrap
+JavaScript
+Node.js
+Express.js
+React.js
+MySQL
+SMS API Integration
+WhatsApp API Integration
+Email/Mail API Integration
+Payment Gateway Integration
+Basic Cloud Knowledge
+Basic Linux Commands
+What We Are Looking For
+We are looking for candidates who have practical development experience and are comfortable working across frontend, backend, database, API integrations, and basic deployment-related activities.
+Please apply only if you have knowledge of all the above technologies and are confident in working with them.
+Candidate Details
+Name:Email:Mobile Number:Latest Education:Specialization:Year of Pass-out:University/College:Total Experience:Relevant Experience:Current/Last Company:Current/Last Designation:Current Location – City/Town:District:State:PIN Code:Expected Salary:Notice Period:LinkedIn Profile:GitHub/Portfolio:Resume: Upload PDF
+Important
+Only candidates who have all the above-mentioned skills should fill out this form.
+We are looking for strong, responsible, and hands-on developers who are willing to learn, take ownership, and contribute to real-world projects.

@@ -33,6 +33,7 @@ import IsoCertification from './pages/IsoCertification';
 import AboutUs from './pages/AboutUs';
 import Careers from './pages/Careers';
 import CareerDashboard from './pages/admin/CareerDashboard';
+import TechnicalCareerDashboard from './pages/admin/TechnicalCareerDashboard';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -204,11 +205,20 @@ function AppShell() {
                 </AdminRoute>
               }
             />
+            <Route path="/admin/careers" element={<Navigate to="/admin/careers/sales" replace />} />
             <Route
-              path="/admin/careers"
+              path="/admin/careers/sales"
               element={
                 <AdminRoute>
                   <CareerDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/careers/technical"
+              element={
+                <AdminRoute>
+                  <TechnicalCareerDashboard />
                 </AdminRoute>
               }
             />

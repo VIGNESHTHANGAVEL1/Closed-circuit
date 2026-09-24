@@ -10,6 +10,7 @@ import {
 } from '../models/contact.model.js';
 import { countAllClients } from '../models/client.model.js';
 import { countAllCareerApplications } from '../models/careerApplication.model.js';
+import { countAllTechnicalCareerApplications } from '../models/technicalCareerApplication.model.js';
 import {
   DEFAULT_ENQUIRY_STATUS,
   normalizeEnquiryStatus,
@@ -208,14 +209,31 @@ export async function updateEnquiryStatus(id, statusValue) {
 
 export async function getDashboardStats() {
   const todayDate = getTodayDateString();
-  const [totalEnquiries, newEnquiries, totalClients, todayScheduledCalls, totalCareerApplications] =
-    await Promise.all([
-      countAllContacts(),
-      countContactsByStatus(DEFAULT_ENQUIRY_STATUS),
-      countAllClients(),
-      countTodayScheduledContacts(todayDate),
-      countAllCareerApplications(),
-    ]);
+  const [
+    totalEnquiries,
+    newEnquiries,
+    totalClients,
+    todayScheduledCalls,
+    totalSalesCareerApplications,
+    totalTechnicalCareerApplications,
+  ] = await Promise.all([
+    countAllContacts(),
+    countContactsByStatus(DEFAULT_ENQUIRY_STATUS),
+    countAllClients(),
+    countTodayScheduledContacts(todayDate),
+    countAllCareerApplications(),
+    countAllTechnicalCareerApplications(),
+  ]);
 
-  return { totalEnquiries, newEnquiries, totalClients, todayScheduledCalls, totalCareerApplications };
+  const totalCareerApplications = totalSalesCareerApplications + totalTechnicalCareerApplications;
+
+  return {
+    totalEnquiries,
+    newEnquiries,
+    totalClients,
+    todayScheduledCalls,
+    totalCareerApplications,
+    totalSalesCareerApplications,
+    totalTechnicalCareerApplications,
+  };
 }

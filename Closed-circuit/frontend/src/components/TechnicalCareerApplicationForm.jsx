@@ -1,46 +1,32 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Send, CheckCircle, AlertCircle, Loader2, Upload } from 'lucide-react';
 import Card from './Card';
 import OtpVerificationModal from './OtpVerificationModal';
-import YesNoGroup from './careers/YesNoGroup';
 import { EDUCATION_OPTIONS, INDIAN_STATES } from './careers/careerFormConstants';
 import { apiFormRequest, apiRequest, isApiEnabled } from '../lib/api';
 
-const YES_NO_FIELDS = [
-  { name: 'hasLaptop', label: 'Do you have a laptop?' },
-  { name: 'hasMobilePhone', label: 'Do you have a mobile phone?' },
-  { name: 'hasSeparateSim', label: 'Do you have a separate SIM card that can be used for work?' },
-  { name: 'hasWorkstation', label: 'Do you have a proper workstation at home?' },
-  { name: 'hasInternet', label: 'Do you have a reliable internet connection?' },
-  { name: 'reviewedProduct', label: 'Have you fully gone through the Closed Circuit product and its features?' },
-  { name: 'watchedProductVideo', label: 'Have you watched the Closed Circuit product video provided above?' },
-  { name: 'watchedCareerVideo', label: 'Have you watched the Career Opportunity video completely?' },
-];
-
-export default function CareerApplicationForm({ submitPath = '/api/careers/sales' }) {
+export default function TechnicalCareerApplicationForm({ submitPath = '/api/careers/technical' }) {
   const initialFormData = {
     fullName: '',
     emailId: '',
     mobileNumber: '',
     latestEducation: '',
+    specialization: '',
+    yearOfPassout: '',
+    universityCollege: '',
+    totalExperience: '',
+    relevantExperience: '',
+    currentLastCompany: '',
+    currentLastDesignation: '',
     currentLocation: '',
     city: '',
     district: '',
     state: '',
-    salesExperience: '',
-    callsPerDay: '',
-    closuresPerDay: '',
-    languages: '',
-    hasLaptop: '',
-    hasMobilePhone: '',
-    hasSeparateSim: '',
-    hasWorkstation: '',
-    hasInternet: '',
-    reviewedProduct: '',
-    watchedProductVideo: '',
-    watchedCareerVideo: '',
-    productUnderstanding: '',
+    pinCode: '',
+    expectedSalary: '',
+    noticePeriod: '',
+    linkedinProfile: '',
+    githubPortfolio: '',
     declarationAccepted: false,
   };
 
@@ -78,21 +64,31 @@ export default function CareerApplicationForm({ submitPath = '/api/careers/sales
   const canEnterDetails = mobileVerified && emailVerified;
   const bothVerified = !useBackendApi || (mobileVerified && emailVerified);
 
+  const requiredStrings = [
+    'latestEducation',
+    'specialization',
+    'yearOfPassout',
+    'universityCollege',
+    'totalExperience',
+    'relevantExperience',
+    'currentLastCompany',
+    'currentLastDesignation',
+    'currentLocation',
+    'city',
+    'district',
+    'state',
+    'pinCode',
+    'expectedSalary',
+    'noticePeriod',
+    'linkedinProfile',
+    'githubPortfolio',
+  ];
+
   const allRequiredComplete =
     hasFullName &&
     isValidEmail(formData.emailId) &&
     isValidMobile(formData.mobileNumber) &&
-    Boolean(formData.latestEducation) &&
-    Boolean(formData.currentLocation.trim()) &&
-    Boolean(formData.city.trim()) &&
-    Boolean(formData.district.trim()) &&
-    Boolean(formData.state) &&
-    Boolean(formData.salesExperience.trim()) &&
-    Boolean(formData.callsPerDay.trim()) &&
-    Boolean(formData.closuresPerDay.trim()) &&
-    Boolean(formData.languages.trim()) &&
-    YES_NO_FIELDS.every(({ name }) => formData[name] === 'Yes' || formData[name] === 'No') &&
-    Boolean(formData.productUnderstanding.trim()) &&
+    requiredStrings.every((key) => Boolean(String(formData[key]).trim())) &&
     Boolean(resumeFile);
 
   const canSubmit = formData.declarationAccepted && allRequiredComplete && bothVerified;
@@ -131,6 +127,9 @@ export default function CareerApplicationForm({ submitPath = '/api/careers/sales
 
     if (name === 'mobileNumber') {
       nextValue = String(value).replace(/\D/g, '').slice(0, 10);
+    }
+    if (name === 'pinCode') {
+      nextValue = String(value).replace(/\D/g, '').slice(0, 6);
     }
 
     setFormData((prev) => {
@@ -318,114 +317,311 @@ export default function CareerApplicationForm({ submitPath = '/api/careers/sales
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className={labelClasses}>Full Name <span className="text-indigo-400">*</span></label>
+                <label className={labelClasses}>
+                  Full Name <span className="text-indigo-400">*</span>
+                </label>
                 <input name="fullName" value={formData.fullName} onChange={handleChange} className={inputClasses} required />
               </div>
               <div>
-                <label className={labelClasses}>Email Address <span className="text-indigo-400">*</span></label>
+                <label className={labelClasses}>
+                  Email Address <span className="text-indigo-400">*</span>
+                </label>
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <input name="emailId" type="email" value={formData.emailId} onChange={handleChange} disabled={!canEnterEmail} className={`${inputClasses} flex-1`} required />
-                  <button type="button" disabled={!canVerifyEmail} onClick={async () => { setOtpModal('email'); if (!emailOtpSent) await sendEmailOtp(); }} className={verifyButtonClasses(emailVerified)}>
+                  <input
+                    name="emailId"
+                    type="email"
+                    value={formData.emailId}
+                    onChange={handleChange}
+                    disabled={!canEnterEmail}
+                    className={`${inputClasses} flex-1`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    disabled={!canVerifyEmail}
+                    onClick={async () => {
+                      setOtpModal('email');
+                      if (!emailOtpSent) await sendEmailOtp();
+                    }}
+                    className={verifyButtonClasses(emailVerified)}
+                  >
                     {emailVerified ? 'Verified' : 'Verify Email'}
                   </button>
                 </div>
               </div>
               <div>
-                <label className={labelClasses}>Mobile Number <span className="text-indigo-400">*</span></label>
+                <label className={labelClasses}>
+                  Mobile Number <span className="text-indigo-400">*</span>
+                </label>
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <input name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} disabled={!canEnterMobile} className={`${inputClasses} flex-1`} required />
-                  <button type="button" disabled={!canVerifyMobile} onClick={async () => { setOtpModal('mobile'); if (!mobileOtpSent) await sendMobileOtp(); }} className={verifyButtonClasses(mobileVerified)}>
+                  <input
+                    name="mobileNumber"
+                    value={formData.mobileNumber}
+                    onChange={handleChange}
+                    disabled={!canEnterMobile}
+                    className={`${inputClasses} flex-1`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    disabled={!canVerifyMobile}
+                    onClick={async () => {
+                      setOtpModal('mobile');
+                      if (!mobileOtpSent) await sendMobileOtp();
+                    }}
+                    className={verifyButtonClasses(mobileVerified)}
+                  >
                     {mobileVerified ? 'Verified' : 'Verify Mobile'}
                   </button>
                 </div>
               </div>
               <div>
-                <label className={labelClasses}>Latest Educational Qualification <span className="text-indigo-400">*</span></label>
-                <select name="latestEducation" value={formData.latestEducation} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required>
+                <label className={labelClasses}>
+                  Latest Educational Qualification <span className="text-indigo-400">*</span>
+                </label>
+                <select
+                  name="latestEducation"
+                  value={formData.latestEducation}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                >
                   <option value="">Select qualification</option>
-                  {EDUCATION_OPTIONS.map((item) => <option key={item} value={item}>{item}</option>)}
+                  {EDUCATION_OPTIONS.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
-                <label className={labelClasses}>Current Location <span className="text-indigo-400">*</span></label>
-                <input name="currentLocation" value={formData.currentLocation} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
+                <label className={labelClasses}>
+                  Specialization <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="specialization"
+                  value={formData.specialization}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
               </div>
               <div>
-                <label className={labelClasses}>City <span className="text-indigo-400">*</span></label>
+                <label className={labelClasses}>
+                  Year of Pass-out <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="yearOfPassout"
+                  value={formData.yearOfPassout}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className={labelClasses}>
+                  University / College <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="universityCollege"
+                  value={formData.universityCollege}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  Total Experience <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="totalExperience"
+                  value={formData.totalExperience}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  Relevant Experience <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="relevantExperience"
+                  value={formData.relevantExperience}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  Current / Last Company <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="currentLastCompany"
+                  value={formData.currentLastCompany}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  Current / Last Designation <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="currentLastDesignation"
+                  value={formData.currentLastDesignation}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  Current Location <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="currentLocation"
+                  value={formData.currentLocation}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  City / Town <span className="text-indigo-400">*</span>
+                </label>
                 <input name="city" value={formData.city} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
               </div>
               <div>
-                <label className={labelClasses}>District <span className="text-indigo-400">*</span></label>
-                <input name="district" value={formData.district} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
+                <label className={labelClasses}>
+                  District <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="district"
+                  value={formData.district}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
               </div>
               <div>
-                <label className={labelClasses}>State <span className="text-indigo-400">*</span></label>
+                <label className={labelClasses}>
+                  State <span className="text-indigo-400">*</span>
+                </label>
                 <select name="state" value={formData.state} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required>
                   <option value="">Select state</option>
-                  {INDIAN_STATES.map((item) => <option key={item} value={item}>{item}</option>)}
+                  {INDIAN_STATES.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-4">
-              <h4 className="font-semibold text-white text-base sm:text-lg">Experience & Sales Capability</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className={labelClasses}>Sales / Telecalling Experience <span className="text-indigo-400">*</span></label>
-                  <input name="salesExperience" value={formData.salesExperience} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
-                </div>
-                <div>
-                  <label className={labelClasses}>Telephonic calls per day <span className="text-indigo-400">*</span></label>
-                  <input name="callsPerDay" value={formData.callsPerDay} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
-                </div>
-                <div>
-                  <label className={labelClasses}>Customers you can close per day <span className="text-indigo-400">*</span></label>
-                  <input name="closuresPerDay" value={formData.closuresPerDay} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
-                </div>
-                <div>
-                  <label className={labelClasses}>Languages you can communicate in <span className="text-indigo-400">*</span></label>
-                  <input name="languages" value={formData.languages} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-4">
-              <h4 className="font-semibold text-white text-base sm:text-lg">Work From Home Requirements</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {YES_NO_FIELDS.slice(0, 5).map(({ name, label }) => (
-                  <YesNoGroup key={name} name={name} label={label} value={formData[name]} onChange={handleChange} disabled={!canEnterDetails} />
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 space-y-4">
-              <h4 className="font-semibold text-white text-base sm:text-lg">Product Understanding</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {YES_NO_FIELDS.slice(5).map(({ name, label }) => (
-                  <YesNoGroup key={name} name={name} label={label} value={formData[name]} onChange={handleChange} disabled={!canEnterDetails} />
-                ))}
+              <div>
+                <label className={labelClasses}>
+                  PIN Code <span className="text-indigo-400">*</span>
+                </label>
+                <input name="pinCode" value={formData.pinCode} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
               </div>
               <div>
-                <label className={labelClasses}>Explain what you understand about Closed Circuit <span className="text-indigo-400">*</span></label>
-                <textarea name="productUnderstanding" rows={4} value={formData.productUnderstanding} onChange={handleChange} disabled={!canEnterDetails} className={inputClasses} required />
+                <label className={labelClasses}>
+                  Expected Salary <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="expectedSalary"
+                  value={formData.expectedSalary}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  Notice Period <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="noticePeriod"
+                  value={formData.noticePeriod}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  LinkedIn Profile <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="linkedinProfile"
+                  value={formData.linkedinProfile}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>
+                  GitHub / Portfolio <span className="text-indigo-400">*</span>
+                </label>
+                <input
+                  name="githubPortfolio"
+                  value={formData.githubPortfolio}
+                  onChange={handleChange}
+                  disabled={!canEnterDetails}
+                  className={inputClasses}
+                  required
+                />
               </div>
             </div>
 
             <div>
-              <label className={labelClasses}>Resume / CV (PDF, DOC, DOCX — max 5MB) <span className="text-indigo-400">*</span></label>
-              <label className={`flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-white/15 bg-[#0f172a]/40 px-4 py-4 ${!canEnterDetails ? 'opacity-50 pointer-events-none' : ''}`}>
+              <label className={labelClasses}>
+                Resume (PDF only — max 5MB) <span className="text-indigo-400">*</span>
+              </label>
+              <label
+                className={`flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-white/15 bg-[#0f172a]/40 px-4 py-4 ${!canEnterDetails ? 'opacity-50 pointer-events-none' : ''}`}
+              >
                 <Upload size={20} className="text-indigo-300" />
-                <span className="text-sm sm:text-base text-slate-300">{resumeFile ? resumeFile.name : 'Choose resume file'}</span>
-                <input type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" className="hidden" disabled={!canEnterDetails} onChange={(e) => setResumeFile(e.target.files?.[0] || null)} />
+                <span className="text-sm sm:text-base text-slate-300">{resumeFile ? resumeFile.name : 'Choose PDF resume'}</span>
+                <input
+                  type="file"
+                  accept=".pdf,application/pdf"
+                  className="hidden"
+                  disabled={!canEnterDetails}
+                  onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                />
               </label>
             </div>
 
             <label className={`flex items-start gap-3 text-sm sm:text-base leading-relaxed ${!canEnterDetails ? 'opacity-50' : ''}`}>
-              <input type="checkbox" name="declarationAccepted" checked={formData.declarationAccepted} onChange={handleChange} disabled={!canEnterDetails} className="mt-1 accent-indigo-500" />
+              <input
+                type="checkbox"
+                name="declarationAccepted"
+                checked={formData.declarationAccepted}
+                onChange={handleChange}
+                disabled={!canEnterDetails}
+                className="mt-1 accent-indigo-500"
+              />
               <span>
-                I confirm that the information provided by me is accurate and complete. I understand the nature of the
-                Inside Sales Executive position, have reviewed the product information, watched the relevant videos, and
-                accept the responsibilities and expectations associated with this role.
+                I confirm that I have knowledge of all the required technical skills listed above, the information provided
+                is accurate, and I am willing to take ownership and contribute to real-world projects at Closed Circuit.
               </span>
             </label>
 
@@ -435,8 +631,20 @@ export default function CareerApplicationForm({ submitPath = '/api/careers/sales
               </div>
             )}
 
-            <button type="submit" disabled={!canSubmit || status === 'loading'} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3 text-sm sm:text-base font-bold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50">
-              {status === 'loading' ? <><Loader2 className="animate-spin" size={18} /> Submitting...</> : <><Send size={18} /> Submit Application</>}
+            <button
+              type="submit"
+              disabled={!canSubmit || status === 'loading'}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-6 py-3 text-sm sm:text-base font-bold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {status === 'loading' ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} /> Submitting...
+                </>
+              ) : (
+                <>
+                  <Send size={18} /> Submit Application
+                </>
+              )}
             </button>
           </form>
         )}

@@ -102,6 +102,8 @@ export const config = {
     familyVideoFile: process.env.DO_SPACES_FAMILY_VIDEO_FILE || 'gifts_in_voice.mp4',
     videosFolder: (process.env.DO_SPACES_VIDEOS_FOLDER || 'Videos').replace(/^\/|\/$/g, ''),
     resumesFolder: (process.env.DO_SPACES_RESUMES_FOLDER || 'Resumes').replace(/^\/|\/$/g, ''),
+    salesResumesFolder: (process.env.DO_SPACES_SALES_RESUMES_FOLDER || 'Resumes/sales').replace(/^\/|\/$/g, ''),
+    technicalResumesFolder: (process.env.DO_SPACES_TECHNICAL_RESUMES_FOLDER || 'Resumes/technical').replace(/^\/|\/$/g, ''),
     maxResumeBytes: Number(process.env.RESUME_MAX_BYTES) || 5 * 1024 * 1024,
   },
   timezone: process.env.APP_TIMEZONE || 'Asia/Kolkata',
