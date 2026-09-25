@@ -340,7 +340,7 @@ export default function Contact() {
     } finally {
       mobileVerifyInProgress.current = false;
     }
-  }, [formData.mobileNumber, mobileOtp, mobileVerifyStatus]);
+  }, [formData.mobileNumber, mobileOtp]);
 
   const sendEmailOtp = async () => {
     setEmailSendingOtp(true);
@@ -402,7 +402,7 @@ export default function Contact() {
     } finally {
       emailVerifyInProgress.current = false;
     }
-  }, [emailOtp, emailVerifyStatus, formData.emailId]);
+  }, [emailOtp, formData.emailId]);
 
   const handleTimeChange = (field, value) => {
     const nextHour = field === 'hour' ? value : preferredHour;

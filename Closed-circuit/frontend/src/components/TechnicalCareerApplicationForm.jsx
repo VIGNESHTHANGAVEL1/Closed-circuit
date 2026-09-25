@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Send, CheckCircle, AlertCircle, Loader2, Upload } from 'lucide-react';
 import Card from './Card';
 import OtpVerificationModal from './OtpVerificationModal';
@@ -221,7 +221,7 @@ export default function TechnicalCareerApplicationForm({ submitPath = '/api/care
     } finally {
       emailVerifyInProgress.current = false;
     }
-  }, [emailOtp, emailVerifyStatus, formData.emailId]);
+  }, [emailOtp, formData.emailId]);
 
   const confirmMobileOtp = useCallback(async () => {
     if (mobileVerifyInProgress.current || mobileVerifyStatus === 'loading') return;
@@ -248,19 +248,7 @@ export default function TechnicalCareerApplicationForm({ submitPath = '/api/care
     } finally {
       mobileVerifyInProgress.current = false;
     }
-  }, [formData.mobileNumber, mobileOtp, mobileVerifyStatus]);
-
-  useEffect(() => {
-    if (otpModal === 'email' && emailOtpSent && !emailVerified && /^\d{6}$/.test(emailOtp.trim())) {
-      confirmEmailOtp();
-    }
-  }, [otpModal, emailOtp, emailOtpSent, emailVerified, confirmEmailOtp]);
-
-  useEffect(() => {
-    if (otpModal === 'mobile' && mobileOtpSent && !mobileVerified && /^\d{4}$/.test(mobileOtp.trim())) {
-      confirmMobileOtp();
-    }
-  }, [otpModal, mobileOtp, mobileOtpSent, mobileVerified, confirmMobileOtp]);
+  }, [formData.mobileNumber, mobileOtp]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

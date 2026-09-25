@@ -45,6 +45,12 @@ export default function OtpVerificationModal({
   }, [resendGeneration]);
 
   useEffect(() => {
+    if (value.length < otpLength) {
+      autoVerifyTriggeredRef.current = false;
+    }
+  }, [value.length, otpLength]);
+
+  useEffect(() => {
     if (
       isOpen &&
       otpSent &&
@@ -54,10 +60,6 @@ export default function OtpVerificationModal({
     ) {
       autoVerifyTriggeredRef.current = true;
       onVerify();
-    }
-
-    if (value.length < otpLength) {
-      autoVerifyTriggeredRef.current = false;
     }
   }, [isOpen, otpSent, isComplete, isLoading, value.length, otpLength, onVerify]);
 
