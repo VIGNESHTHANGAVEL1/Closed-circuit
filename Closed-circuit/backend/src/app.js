@@ -6,7 +6,7 @@ import { config } from './config/env.js';
 export function createApp() {
   const app = express();
 
-  app.set('trust proxy', 1);
+  app.set('trust proxy', true);
 
   const corsOptions =
     config.corsOrigin === '*'

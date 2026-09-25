@@ -51,6 +51,8 @@ export default function TechnicalCareerApplicationForm({ submitPath = '/api/care
   const [mobileSendingOtp, setMobileSendingOtp] = useState(false);
   const emailVerifyInProgress = useRef(false);
   const mobileVerifyInProgress = useRef(false);
+  const emailSendInProgress = useRef(false);
+  const mobileSendInProgress = useRef(false);
 
   const useBackendApi = isApiEnabled();
   const isValidMobile = (value) => String(value || '').replace(/\D/g, '').length === 10;
@@ -150,6 +152,8 @@ export default function TechnicalCareerApplicationForm({ submitPath = '/api/care
   };
 
   const sendEmailOtp = async () => {
+    if (emailSendInProgress.current) return;
+    emailSendInProgress.current = true;
     setEmailSendingOtp(true);
     setEmailVerifyStatus(null);
     setEmailVerifyMessage('');
@@ -167,11 +171,14 @@ export default function TechnicalCareerApplicationForm({ submitPath = '/api/care
       setEmailVerifyStatus('error');
       setEmailVerifyMessage(err.message || 'Unable to send email OTP.');
     } finally {
+      emailSendInProgress.current = false;
       setEmailSendingOtp(false);
     }
   };
 
   const sendMobileOtp = async () => {
+    if (mobileSendInProgress.current) return;
+    mobileSendInProgress.current = true;
     setMobileSendingOtp(true);
     setMobileVerifyStatus(null);
     setMobileVerifyMessage('');
@@ -192,6 +199,7 @@ export default function TechnicalCareerApplicationForm({ submitPath = '/api/care
       setMobileVerifyStatus('error');
       setMobileVerifyMessage(err.message || 'Unable to send mobile OTP.');
     } finally {
+      mobileSendInProgress.current = false;
       setMobileSendingOtp(false);
     }
   };

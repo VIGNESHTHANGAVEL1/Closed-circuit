@@ -4,6 +4,8 @@ import {
   findValidOtp,
   deleteOtpsForIdentifier,
   deleteExpiredOtps,
+  countRecentOtpSends,
+  secondsSinceLastOtpSend,
 } from '../models/verificationOtp.model.js';
 import {
   insertVerificationSession,
@@ -54,6 +56,27 @@ function assertDeliveryResult(sendResult, channel) {
 const MOBILE_OTP_MINUTES = 2;
 const EMAIL_OTP_MINUTES = 10;
 const VERIFICATION_SESSION_MINUTES = 30;
+const OTP_SEND_COOLDOWN_SECONDS = 45;
+const OTP_SEND_MAX_PER_IDENTIFIER = 25;
+const OTP_SEND_WINDOW_MINUTES = 15;
+async function assertOtpSendAllowed(channel, identifier) {
+  const recentSends = await countRecentOtpSends(channel, identifier, OTP_SEND_WINDOW_MINUTES);
+  if (recentSends >= OTP_SEND_MAX_PER_IDENTIFIER) {
+    throw createHttpError(
+      'Too many OTP requests for this contact. Please try again later.',
+      429
+    );
+  }
+
+  const sinceLastSend = await secondsSinceLastOtpSend(channel, identifier);
+  if (sinceLastSend !== null && sinceLastSend < OTP_SEND_COOLDOWN_SECONDS) {
+    const waitSeconds = OTP_SEND_COOLDOWN_SECONDS - sinceLastSend;
+    throw createHttpError(
+      `Please wait ${waitSeconds} second${waitSeconds === 1 ? '' : 's'} before requesting another OTP.`,
+      429
+    );
+  }
+}
 
 function createHttpError(message, statusCode = 400) {
   const error = new Error(message);
@@ -135,6 +158,7 @@ export async function sendMobileVerificationOtp({
   }
 
   await deleteExpiredOtps();
+  await assertOtpSendAllowed('MOBILE', mobile);
 
   const otp = generateOtp(4);
   const expiresAt = addMinutes(new Date(), MOBILE_OTP_MINUTES);
@@ -252,6 +276,7 @@ export async function sendEmailVerificationOtp({
   }
 
   await deleteExpiredOtps();
+  await assertOtpSendAllowed('EMAIL', email);
 
   const otp = generateOtp(6);
   const expiresAt = addMinutes(new Date(), EMAIL_OTP_MINUTES);

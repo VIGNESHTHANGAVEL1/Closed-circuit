@@ -77,6 +77,8 @@ export default function Contact() {
   const [showEmailSuccessBanner, setShowEmailSuccessBanner] = useState(false);
   const mobileVerifyInProgress = useRef(false);
   const emailVerifyInProgress = useRef(false);
+  const mobileSendInProgress = useRef(false);
+  const emailSendInProgress = useRef(false);
 
   const useBackendApi = isApiEnabled();
   const isValidMobile = (value) => {
@@ -281,6 +283,8 @@ export default function Contact() {
       return;
     }
 
+    if (mobileSendInProgress.current) return;
+    mobileSendInProgress.current = true;
     setMobileSendingOtp(true);
     setMobileVerifyStatus(null);
     setMobileVerifyMessage('');
@@ -299,6 +303,7 @@ export default function Contact() {
       setMobileVerifyStatus('error');
       setMobileVerifyMessage(err.message || 'Unable to send mobile OTP.');
     } finally {
+      mobileSendInProgress.current = false;
       setMobileSendingOtp(false);
     }
   };
@@ -343,6 +348,8 @@ export default function Contact() {
   }, [formData.mobileNumber, mobileOtp]);
 
   const sendEmailOtp = async () => {
+    if (emailSendInProgress.current) return;
+    emailSendInProgress.current = true;
     setEmailSendingOtp(true);
     setEmailVerifyStatus(null);
     setEmailVerifyMessage('');
@@ -361,6 +368,7 @@ export default function Contact() {
       setEmailVerifyStatus('error');
       setEmailVerifyMessage(err.message || 'Unable to send email OTP.');
     } finally {
+      emailSendInProgress.current = false;
       setEmailSendingOtp(false);
     }
   };
