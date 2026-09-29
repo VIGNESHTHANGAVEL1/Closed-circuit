@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Menu, X } from 'lucide-react';
+import { isEntrepreneurshipWebinarEnabled } from '../lib/features';
 
 const mainNavItems = [
   { label: 'Home', path: '/' },
@@ -36,13 +37,20 @@ const mainNavItems = [
   { label: 'Careers', path: '/careers' },
 ];
 
-const moreItems = [
+const baseMoreItems = [
   { label: 'Top 10 Reasons', path: '/top-reasons' },
   { label: 'Taglines', path: '/taglines' },
   { label: 'Social Media', path: '/social-media' },
   { label: 'Brochure', path: '/brochure' },
   { label: 'ISO Certification', path: '/iso-certification' },
+  { label: 'Entrepreneurship Webinar', path: '/entrepreneurship-webinar', feature: 'entrepreneurshipWebinar' },
 ];
+
+function getMoreItems() {
+  return baseMoreItems.filter(
+    (item) => item.feature !== 'entrepreneurshipWebinar' || isEntrepreneurshipWebinarEnabled()
+  );
+}
 
 const navLinkClass = (active) =>
   `block whitespace-nowrap rounded-full px-2 lg:px-2.5 py-1.5 text-sm lg:text-base font-semibold transition-all duration-200 border ${
@@ -91,6 +99,7 @@ export default function Navbar() {
   }, [activeDropdown]);
 
   const isActive = (path) => location.pathname === path;
+  const moreItems = getMoreItems();
   const isMoreActive = moreItems.some((item) => isActive(item.path));
 
   const handleDropdownToggle = (label) => {

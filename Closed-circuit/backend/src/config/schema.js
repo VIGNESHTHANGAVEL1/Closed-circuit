@@ -480,6 +480,56 @@ export const TABLE_DEFINITIONS = {
     },
     indexes: [{ name: 'idx_technical_career_applications_status', columns: 'status' }],
   },
+  entrepreneurship_webinar_participations: {
+    createSql: `
+      CREATE TABLE IF NOT EXISTS entrepreneurship_webinar_participations (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        fullName VARCHAR(255) NOT NULL,
+        emailId VARCHAR(255) NOT NULL,
+        mobileNumber VARCHAR(50) NOT NULL,
+        branch VARCHAR(255) NOT NULL,
+        yearOfPassout VARCHAR(50) NOT NULL,
+        college VARCHAR(255) NOT NULL,
+        university VARCHAR(255) NOT NULL,
+        city VARCHAR(255) NOT NULL,
+        state VARCHAR(255) NOT NULL,
+        pinCode VARCHAR(20) NOT NULL,
+        webinarAttendanceDate DATE NOT NULL,
+        reviewComment TEXT NULL,
+        rating TINYINT UNSIGNED NULL,
+        email_verified TINYINT(1) NOT NULL DEFAULT 0,
+        mobile_verified TINYINT(1) NOT NULL DEFAULT 0,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        INDEX idx_webinar_participations_created_at (created_at DESC),
+        INDEX idx_webinar_participations_review (reviewComment(64)),
+        INDEX idx_webinar_participations_rating (rating),
+        INDEX idx_webinar_participations_attendance_date (webinarAttendanceDate)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `,
+    columns: [
+      { name: 'id', definition: 'INT UNSIGNED NOT NULL AUTO_INCREMENT' },
+      { name: 'fullName', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'emailId', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'mobileNumber', definition: 'VARCHAR(50) NOT NULL' },
+      { name: 'branch', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'yearOfPassout', definition: 'VARCHAR(50) NOT NULL' },
+      { name: 'college', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'university', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'city', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'state', definition: 'VARCHAR(255) NOT NULL' },
+      { name: 'pinCode', definition: 'VARCHAR(20) NOT NULL' },
+      { name: 'webinarAttendanceDate', definition: 'DATE NOT NULL' },
+      { name: 'reviewComment', definition: 'TEXT NULL' },
+      { name: 'rating', definition: 'TINYINT UNSIGNED NULL' },
+      { name: 'email_verified', definition: 'TINYINT(1) NOT NULL DEFAULT 0' },
+      { name: 'mobile_verified', definition: 'TINYINT(1) NOT NULL DEFAULT 0' },
+      {
+        name: 'created_at',
+        definition: 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      },
+    ],
+  },
   verification_sessions: {
     createSql: `
       CREATE TABLE IF NOT EXISTS verification_sessions (

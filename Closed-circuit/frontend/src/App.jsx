@@ -34,6 +34,8 @@ import AboutUs from './pages/AboutUs';
 import Careers from './pages/Careers';
 import CareerDashboard from './pages/admin/CareerDashboard';
 import TechnicalCareerDashboard from './pages/admin/TechnicalCareerDashboard';
+import EntrepreneurshipWebinar from './pages/EntrepreneurshipWebinar';
+import { isEntrepreneurshipWebinarEnabled } from './lib/features';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -171,6 +173,9 @@ function AppShell() {
             <Route path="/social-media" element={<SocialMedia />} />
             <Route path="/brochure" element={<Brochure />} />
             <Route path="/iso-certification" element={<IsoCertification />} />
+            {isEntrepreneurshipWebinarEnabled() && (
+              <Route path="/entrepreneurship-webinar" element={<EntrepreneurshipWebinar />} />
+            )}
             <Route path="/client" element={<Navigate to="/clients" replace />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route

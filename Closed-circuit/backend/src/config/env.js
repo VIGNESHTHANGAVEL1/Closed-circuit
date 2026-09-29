@@ -142,4 +142,7 @@ export const config = {
     adminMobile: process.env.ADMIN_MOBILE || '',
     adminName: process.env.ADMIN_NAME || 'Admin',
   },
+  features: {
+    entrepreneurshipWebinar: process.env.ENTREPRENEURSHIP_WEBINAR_ENABLED !== 'false',
+  },
 };
