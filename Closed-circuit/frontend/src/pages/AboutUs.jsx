@@ -39,13 +39,13 @@ export default function AboutUs() {
       exit={{ opacity: 0 }}
       className="bg-[#030712] text-slate-300"
     >
-      <Hero title="About Us" contentClassName="page-container py-4 md:py-6 text-center" compact />
+      <Hero title="Privacy Is Not Just a Luxury. It's Your Right" contentClassName="page-container py-4 md:py-6 text-center" compact />
 
       <section className="relative py-6 md:py-10 border-b border-white/5 bg-[#030712] overflow-hidden">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-indigo-500/10 blur-[150px] pointer-events-none" />
         <div className="relative z-10 page-container">
           <div className="space-y-4 md:space-y-5">
-            <Section title="Founded by Ramesh" index={0}>
+            <Section title="Founded by Rameswara Reddy, fondly known as Ramesh" index={0}>
               <p>
                 Closed Circuit AI Pvt. Ltd. was founded by Ramesh, a technology professional and entrepreneur with 28+
                 years of IT experience across leading organizations including IBM, JF Welch, and Wipro. He has worked

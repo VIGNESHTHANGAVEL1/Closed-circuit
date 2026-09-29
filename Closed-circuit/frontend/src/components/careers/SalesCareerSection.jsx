@@ -92,8 +92,8 @@ export default function SalesCareerSection() {
               <p>This is a Work From Home opportunity, and candidates from any location can apply.</p>
             </div>
             <div className="flex flex-row md:flex-col justify-center md:justify-between gap-3 md:gap-4 md:min-w-[14rem] shrink-0">
-  <WfhBadge className="justify-center h-20 px-10 text-2xl" />
-</div>
+                <WfhBadge className="justify-center h-20 px-10 text-2xl" />
+            </div>
           </div>
         </Card>
 
