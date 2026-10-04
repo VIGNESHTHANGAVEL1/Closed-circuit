@@ -5,7 +5,7 @@ import {
   getWebinarReviewStats,
   findWebinarParticipationsAdmin,
   updateWebinarParticipationStatus,
-} from './entrepreneurshipWebinar.model.js';
+} from './leetcodeWebinar.model.js';
 import {
   DEFAULT_WEBINAR_STATUS,
   normalizeWebinarStatus,

@@ -35,6 +35,14 @@ export async function countAdminUsers() {
   return rows[0]?.total || 0;
 }
 
+export async function updateAdminPasswordHashByUsername(username, passwordHash) {
+  const [result] = await db.query(`UPDATE admin_users SET password_hash = ? WHERE username = ?`, [
+    passwordHash,
+    username,
+  ]);
+  return result.affectedRows > 0;
+}
+
 export async function createAdminUser({ username, passwordHash, role = 'admin' }) {
   const [result] = await db.query(
     `INSERT INTO admin_users (username, password_hash, role)

@@ -4,7 +4,8 @@ import { motion } from 'framer-motion';
 import { MessageSquare, Users, Sparkles, CalendarClock, Video, Briefcase } from 'lucide-react';
 import AdminShell from '../../components/AdminShell';
 import { apiRequest } from '../../lib/api';
-import { clearAuthSession, getStoredToken } from '../../lib/auth';
+import { clearAuthSession, getStoredToken, getStoredUser } from '../../lib/auth';
+import { hasPermission, normalizeRole } from '../../lib/adminPermissions';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -40,7 +41,9 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   }, [navigate]);
 
-  const cards = [
+  const role = normalizeRole(getStoredUser()?.role);
+
+  const allCards = [
     {
       title: 'Enquiries / Contact Data',
       description: 'View and manage contact form submissions',
@@ -49,6 +52,7 @@ export default function AdminDashboard() {
       stat: loading ? '…' : stats.totalEnquiries,
       statLabel: 'Total enquiries',
       accent: 'from-indigo-500/20 to-purple-600/10 border-indigo-500/30',
+      permission: 'enquiries',
     },
     {
       title: 'Sales Candidates',
@@ -58,6 +62,7 @@ export default function AdminDashboard() {
       stat: loading ? '…' : stats.totalSalesCareerApplications ?? stats.totalCareerApplications,
       statLabel: 'Sales applications',
       accent: 'from-cyan-500/20 to-blue-600/10 border-cyan-500/30',
+      permission: 'careers_sales',
     },
     {
       title: 'Technical Candidates',
@@ -67,6 +72,7 @@ export default function AdminDashboard() {
       stat: loading ? '…' : stats.totalTechnicalCareerApplications ?? 0,
       statLabel: 'Technical applications',
       accent: 'from-sky-500/20 to-indigo-600/10 border-sky-500/30',
+      permission: 'careers_technical',
     },
     {
       title: 'Clients',
@@ -76,6 +82,7 @@ export default function AdminDashboard() {
       stat: loading ? '…' : stats.totalClients,
       statLabel: 'Total clients',
       accent: 'from-emerald-500/20 to-teal-600/10 border-emerald-500/30',
+      permission: 'clients',
     },
     {
       title: 'Manage Demo Videos',
@@ -85,8 +92,31 @@ export default function AdminDashboard() {
       stat: '→',
       statLabel: 'Video library',
       accent: 'from-violet-500/20 to-purple-600/10 border-violet-500/30',
+      permission: 'demo_videos',
+    },
+    {
+      title: 'Entrepreneurship Webinar Candidates',
+      description: 'Webinar participation and certificate status',
+      path: '/admin/webinars/entrepreneurship',
+      icon: Briefcase,
+      stat: '→',
+      statLabel: 'Open list',
+      accent: 'from-fuchsia-500/20 to-purple-600/10 border-fuchsia-500/30',
+      permission: 'webinar_entrepreneurship',
+    },
+    {
+      title: 'LeetCode Webinar Candidates',
+      description: 'Webinar participation and certificate status',
+      path: '/admin/webinars/leetcode',
+      icon: Briefcase,
+      stat: '→',
+      statLabel: 'Open list',
+      accent: 'from-cyan-500/20 to-blue-600/10 border-cyan-500/30',
+      permission: 'webinar_leetcode',
     },
   ];
+
+  const cards = allCards.filter((card) => hasPermission(role, card.permission));
 
   return (
     <AdminShell title="Dashboard" subtitle="Closed Circuit administration overview">

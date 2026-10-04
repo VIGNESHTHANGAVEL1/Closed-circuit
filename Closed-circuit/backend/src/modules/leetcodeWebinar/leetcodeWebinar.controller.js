@@ -7,11 +7,11 @@ import {
   listAdminWebinarParticipations,
   getAdminWebinarParticipationDetail,
   updateAdminWebinarParticipationStatus,
-} from './entrepreneurshipWebinar.service.js';
+} from './leetcodeWebinar.service.js';
 
 function ensureFeatureEnabled(_req, res, next) {
-  if (!config.features.entrepreneurshipWebinar) {
-    return sendError(res, 'Entrepreneurship Webinar is not available.', 404);
+  if (!config.features.leetcodeWebinar) {
+    return sendError(res, 'LeetCode Webinar is not available.', 404);
   }
   return next();
 }
@@ -46,7 +46,7 @@ export async function submitWebinarParticipation(req, res) {
       res,
       {
         id: result.id,
-        message: 'Thank you for participating in the Entrepreneurship Webinar.',
+        message: 'Thank you for participating in the LeetCode Webinar.',
       },
       201
     );
@@ -64,7 +64,7 @@ export async function getAdminWebinarParticipations(req, res) {
     const data = await listAdminWebinarParticipations(req.query);
     return sendSuccess(res, data);
   } catch (err) {
-    console.error('[webinar/admin] list error:', err);
+    console.error('[leetcode-webinar/admin] list error:', err);
     return sendError(res, 'Unable to load webinar candidates.', 500);
   }
 }
@@ -75,7 +75,7 @@ export async function getAdminWebinarParticipationById(req, res) {
     if (!row) return sendError(res, 'Participation not found.', 404);
     return sendSuccess(res, { application: row });
   } catch (err) {
-    console.error('[webinar/admin] detail error:', err);
+    console.error('[leetcode-webinar/admin] detail error:', err);
     return sendError(res, 'Unable to load participation details.', 500);
   }
 }
@@ -87,7 +87,7 @@ export async function patchAdminWebinarParticipationStatus(req, res) {
   } catch (err) {
     if (err.statusCode === 400) return sendError(res, err.message, 400);
     if (err.statusCode === 404) return sendError(res, err.message, 404);
-    console.error('[webinar/admin] status error:', err);
+    console.error('[leetcode-webinar/admin] status error:', err);
     return sendError(res, 'Unable to update status.', 500);
   }
 }

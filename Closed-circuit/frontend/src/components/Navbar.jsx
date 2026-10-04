@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Menu, X } from 'lucide-react';
-import { isEntrepreneurshipWebinarEnabled } from '../lib/features';
+import { isEntrepreneurshipWebinarEnabled, isLeetcodeWebinarEnabled } from '../lib/features';
 
 const mainNavItems = [
   { label: 'Home', path: '/' },
@@ -44,12 +44,15 @@ const baseMoreItems = [
   { label: 'Brochure', path: '/brochure' },
   { label: 'ISO Certification', path: '/iso-certification' },
   { label: 'Entrepreneurship Webinar', path: '/entrepreneurship-webinar', feature: 'entrepreneurshipWebinar' },
+  { label: 'LeetCode Webinar', path: '/leetcode-webinar', feature: 'leetcodeWebinar' },
 ];
 
 function getMoreItems() {
-  return baseMoreItems.filter(
-    (item) => item.feature !== 'entrepreneurshipWebinar' || isEntrepreneurshipWebinarEnabled()
-  );
+  return baseMoreItems.filter((item) => {
+    if (item.feature === 'entrepreneurshipWebinar') return isEntrepreneurshipWebinarEnabled();
+    if (item.feature === 'leetcodeWebinar') return isLeetcodeWebinarEnabled();
+    return true;
+  });
 }
 
 const navLinkClass = (active) =>

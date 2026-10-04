@@ -23,7 +23,11 @@ function getWebinarDateBounds() {
   };
 }
 
-export default function WebinarParticipationForm({ onSubmitted }) {
+export default function WebinarParticipationForm({
+  onSubmitted,
+  submitPath = '/api/entrepreneurship-webinar/participations',
+  participationBadgeLabel = 'Participation',
+}) {
   const dateBounds = getWebinarDateBounds();
   const initialFormData = {
     fullName: '',
@@ -291,7 +295,7 @@ export default function WebinarParticipationForm({ onSubmitted }) {
         mobileVerificationToken,
         emailVerificationToken,
       };
-      const response = await apiRequest('/api/entrepreneurship-webinar/participations', {
+      const response = await apiRequest(submitPath, {
         method: 'POST',
         body: JSON.stringify(payload),
       });
@@ -312,7 +316,7 @@ export default function WebinarParticipationForm({ onSubmitted }) {
       <Card className="flex h-full flex-col border border-purple-500/30 bg-gradient-to-br from-[#071028] via-[#0A1025] to-[#111827] p-5 sm:p-6 md:p-8 shadow-[0_0_40px_rgba(168,85,247,0.2)]">
         <div className="mb-4 inline-flex max-w-full rounded-full border border-purple-500/40 bg-[#0b1235] px-4 py-2">
           <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.3em] text-purple-200">
-            Participation
+            {participationBadgeLabel}
           </span>
         </div>
         <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">Register Your Attendance</h2>

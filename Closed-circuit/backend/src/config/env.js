@@ -144,5 +144,6 @@ export const config = {
   },
   features: {
     entrepreneurshipWebinar: process.env.ENTREPRENEURSHIP_WEBINAR_ENABLED !== 'false',
+    leetcodeWebinar: process.env.LEETCODE_WEBINAR_ENABLED !== 'false',
   },
 };

@@ -1,7 +1,7 @@
 import { db } from '../../config/database.js';
 import { buildPrefixSearchClause } from '../webinar/webinarSearch.js';
 
-const TABLE = 'entrepreneurship_webinar_participations';
+const TABLE = 'leetcode_webinar_participations';
 const REVIEW_VISIBLE_SQL = `reviewComment IS NOT NULL AND TRIM(reviewComment) <> ''`;
 
 export async function insertWebinarParticipation(data) {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Search, Star, X } from 'lucide-react';
 import Card from '../Card';
@@ -10,13 +11,16 @@ function formatDate(value) {
   return new Date(value).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' });
 }
 
-export default function WebinarReviewsPanel({ refreshKey = 0 }) {
+export default function WebinarReviewsPanel({
+  refreshKey = 0,
+  reviewsApiBase = '/api/entrepreneurship-webinar/reviews',
+}) {
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
-  const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const debouncedSearch = useDebouncedValue(searchInput, 300);
   const [averageRating, setAverageRating] = useState(null);
   const [reviewCount, setReviewCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -35,8 +39,8 @@ export default function WebinarReviewsPanel({ refreshKey = 0 }) {
     setError('');
     try {
       const params = new URLSearchParams({ page: String(page), limit: String(limit) });
-      if (search.trim()) params.set('search', search.trim());
-      const data = await apiRequest(`/api/entrepreneurship-webinar/reviews?${params.toString()}`);
+      if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim());
+      const data = await apiRequest(`${reviewsApiBase}?${params.toString()}`);
       setRows(data.rows || []);
       setTotal(data.total || 0);
       setAverageRating(data.averageRating ?? null);
@@ -46,7 +50,11 @@ export default function WebinarReviewsPanel({ refreshKey = 0 }) {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, search, refreshKey]);
+  }, [page, limit, debouncedSearch, refreshKey, reviewsApiBase]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     loadReviews();
@@ -57,19 +65,13 @@ export default function WebinarReviewsPanel({ refreshKey = 0 }) {
   const openReview = async (row) => {
     setDetailLoading(true);
     try {
-      const data = await apiRequest(`/api/entrepreneurship-webinar/reviews/${row.id}`);
+      const data = await apiRequest(`${reviewsApiBase}/${row.id}`);
       setSelected(data.review || row);
     } catch {
       setSelected(row);
     } finally {
       setDetailLoading(false);
     }
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPage(1);
-    setSearch(searchInput);
   };
 
   return (
@@ -96,16 +98,17 @@ export default function WebinarReviewsPanel({ refreshKey = 0 }) {
           </span>
         </div>
 
-        <form onSubmit={handleSearch} className="mt-4 relative">
+        <div className="mt-4 relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="search"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search reviews, college, name…"
+            placeholder="Search by name, college, city… (starts with)"
+            aria-label="Search reviews"
             className="w-full rounded-xl border border-white/10 bg-[#0f172a]/60 py-2.5 pl-9 pr-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
           />
-        </form>
+        </div>
 
         {error && (
           <p className="mt-4 text-sm text-red-300">{error}</p>

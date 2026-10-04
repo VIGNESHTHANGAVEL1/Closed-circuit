@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Lock, LogIn, AlertCircle } from 'lucide-react';
 import { apiRequest } from '../../lib/api';
 import { isAuthenticated, setAuthSession } from '../../lib/auth';
+import { getDefaultAdminPath } from '../../lib/adminPermissions';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -31,7 +32,9 @@ export default function AdminLogin() {
       });
 
       setAuthSession(data.token, data.user);
-      navigate(redirectTo, { replace: true });
+      const destination =
+        redirectTo === '/admin/dashboard' ? getDefaultAdminPath(data.user?.role) : redirectTo;
+      navigate(destination, { replace: true });
     } catch (error) {
       setStatus('error');
       setMessage(error.data?.message || 'Login failed. Please try again.');

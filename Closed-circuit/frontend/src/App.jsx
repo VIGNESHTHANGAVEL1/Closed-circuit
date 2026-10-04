@@ -35,7 +35,10 @@ import Careers from './pages/Careers';
 import CareerDashboard from './pages/admin/CareerDashboard';
 import TechnicalCareerDashboard from './pages/admin/TechnicalCareerDashboard';
 import EntrepreneurshipWebinar from './pages/EntrepreneurshipWebinar';
-import { isEntrepreneurshipWebinarEnabled } from './lib/features';
+import LeetCodeWebinar from './pages/LeetCodeWebinar';
+import EntrepreneurshipWebinarCandidates from './pages/admin/EntrepreneurshipWebinarCandidates';
+import LeetCodeWebinarCandidates from './pages/admin/LeetCodeWebinarCandidates';
+import { isEntrepreneurshipWebinarEnabled, isLeetcodeWebinarEnabled } from './lib/features';
 
 // Scroll to top on route change
 function ScrollToTop() {
@@ -176,12 +179,15 @@ function AppShell() {
             {isEntrepreneurshipWebinarEnabled() && (
               <Route path="/entrepreneurship-webinar" element={<EntrepreneurshipWebinar />} />
             )}
+            {isLeetcodeWebinarEnabled() && (
+              <Route path="/leetcode-webinar" element={<LeetCodeWebinar />} />
+            )}
             <Route path="/client" element={<Navigate to="/clients" replace />} />
             <Route path="/login" element={<AdminLogin />} />
             <Route
               path="/admin/dashboard"
               element={
-                <AdminRoute>
+                <AdminRoute permission="dashboard">
                   <AdminDashboard />
                 </AdminRoute>
               }
@@ -189,7 +195,7 @@ function AppShell() {
             <Route
               path="/admin/enquiries"
               element={
-                <AdminRoute>
+                <AdminRoute permission="enquiries">
                   <EnquiryDashboard />
                 </AdminRoute>
               }
@@ -197,7 +203,7 @@ function AppShell() {
             <Route
               path="/admin/clients"
               element={
-                <AdminRoute>
+                <AdminRoute permission="clients">
                   <ClientManagement />
                 </AdminRoute>
               }
@@ -205,7 +211,7 @@ function AppShell() {
             <Route
               path="/admin/demo-videos"
               element={
-                <AdminRoute>
+                <AdminRoute permission="demo_videos">
                   <DemoVideoManagement />
                 </AdminRoute>
               }
@@ -214,7 +220,7 @@ function AppShell() {
             <Route
               path="/admin/careers/sales"
               element={
-                <AdminRoute>
+                <AdminRoute permission="careers_sales">
                   <CareerDashboard />
                 </AdminRoute>
               }
@@ -222,15 +228,31 @@ function AppShell() {
             <Route
               path="/admin/careers/technical"
               element={
-                <AdminRoute>
+                <AdminRoute permission="careers_technical">
                   <TechnicalCareerDashboard />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/webinars/entrepreneurship"
+              element={
+                <AdminRoute permission="webinar_entrepreneurship">
+                  <EntrepreneurshipWebinarCandidates />
+                </AdminRoute>
+              }
+            />
+            <Route
+              path="/admin/webinars/leetcode"
+              element={
+                <AdminRoute permission="webinar_leetcode">
+                  <LeetCodeWebinarCandidates />
                 </AdminRoute>
               }
             />
             <Route
               path="/admin/change-password"
               element={
-                <AdminRoute>
+                <AdminRoute permission="change_password">
                   <ChangePassword />
                 </AdminRoute>
               }

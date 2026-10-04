@@ -1,6 +1,7 @@
 import { normalizeContactInput, validateContactPayload } from '../services/enquiry.service.js';
 import { normalizeEnquiryStatus } from '../constants/enquiryStatus.js';
 import { normalizeCareerStatus } from '../constants/careerStatus.js';
+import { normalizeWebinarStatus } from '../constants/webinarStatus.js';
 
 export function validateEnquiryBody(req, res, next) {
   const payload = normalizeContactInput(req.body);
@@ -83,6 +84,24 @@ export function validateClientDisplayStatusBody(req, res, next) {
   next();
 }
 
+export function validateSetRolePasswordBody(req, res, next) {
+  const username = String(req.body?.username || '').trim();
+  const newPassword = req.body?.newPassword;
+
+  if (!username) {
+    return res.status(400).json({ success: false, message: 'Username is required.' });
+  }
+
+  if (!newPassword || String(newPassword).length < 8) {
+    return res.status(400).json({
+      success: false,
+      message: 'New password must be at least 8 characters.',
+    });
+  }
+
+  next();
+}
+
 export function validateChangePasswordBody(req, res, next) {
   const { currentPassword, newPassword, confirmPassword } = req.body || {};
 
@@ -142,6 +161,20 @@ export function validateCareerStatusBody(req, res, next) {
     return res.status(400).json({
       success: false,
       message: 'Invalid status. Allowed: New, Processing, Selected/Accepted, Rejected.',
+    });
+  }
+
+  req.validatedStatus = status;
+  next();
+}
+
+export function validateWebinarStatusBody(req, res, next) {
+  const status = normalizeWebinarStatus(req.body?.status);
+
+  if (!status) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid status. Allowed: New, Certificate Issued.',
     });
   }
 

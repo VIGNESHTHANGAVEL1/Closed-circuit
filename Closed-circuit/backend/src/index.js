@@ -1,7 +1,7 @@
 import { config } from './config/env.js';
 import { bootstrapDatabase } from './config/bootstrap.js';
 import { createApp } from './app.js';
-import { seedDefaultAdmin } from './scripts/seedAdmin.js';
+import { seedRoleAdminUsers } from './scripts/seedRoleAdmins.js';
 import { seedDefaultTemplates } from './scripts/seedTemplates.js';
 import {
   ensureClientFoldersExist,
@@ -44,7 +44,7 @@ function handleStartupError(err) {
 
 try {
   await bootstrapDatabase();
-  await seedDefaultAdmin();
+  await seedRoleAdminUsers();
   await seedDefaultTemplates();
   logNotificationConfigStatus();
   await ensureClientFoldersExist();
