@@ -84,15 +84,38 @@ export function validateClientDisplayStatusBody(req, res, next) {
   next();
 }
 
+const ROLE_PASSWORD_USERNAMES = new Set(['ise', 'hr', 'webinar_admin']);
+
 export function validateSetRolePasswordBody(req, res, next) {
   const username = String(req.body?.username || '').trim();
-  const newPassword = req.body?.newPassword;
+  const { currentPassword, newPassword, confirmPassword } = req.body || {};
 
   if (!username) {
     return res.status(400).json({ success: false, message: 'Username is required.' });
   }
 
-  if (!newPassword || String(newPassword).length < 8) {
+  if (!ROLE_PASSWORD_USERNAMES.has(username)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Password can only be changed for ise, hr, or webinar_admin.',
+    });
+  }
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return res.status(400).json({
+      success: false,
+      message: 'Current password, new password, and confirm password are required.',
+    });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({
+      success: false,
+      message: 'New password and confirm password must match.',
+    });
+  }
+
+  if (String(newPassword).length < 8) {
     return res.status(400).json({
       success: false,
       message: 'New password must be at least 8 characters.',

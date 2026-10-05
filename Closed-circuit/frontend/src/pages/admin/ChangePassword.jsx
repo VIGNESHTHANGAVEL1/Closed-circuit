@@ -7,13 +7,18 @@ import { clearAuthSession, getStoredToken, getStoredUser } from '../../lib/auth'
 import { ADMIN_ROLES, normalizeRole } from '../../lib/adminPermissions';
 
 const ROLE_ACCOUNTS = [
-  { username: 'admin', label: 'Admin' },
   { username: 'ise', label: 'ISE — Inside Sales Executive' },
   { username: 'hr', label: 'HR' },
   { username: 'webinar_admin', label: 'Webinar Admin' },
 ];
 
-function PasswordField({ label, name, value, onChange, show, onToggle, autoComplete }) {
+const emptyRoleFields = () => ({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+});
+
+function PasswordField({ label, name, value, onChange, show, onToggle, autoComplete, required = true }) {
   return (
     <div>
       <label className="block text-xs font-semibold text-white mb-1.5">{label}</label>
@@ -23,7 +28,7 @@ function PasswordField({ label, name, value, onChange, show, onToggle, autoCompl
           name={name}
           value={value}
           onChange={onChange}
-          required
+          required={required}
           autoComplete={autoComplete}
           className="w-full px-3 py-2 pr-10 bg-[#0f172a]/80 text-white border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
         />
@@ -52,21 +57,58 @@ export default function ChangePassword() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState(null);
-  const [rolePasswords, setRolePasswords] = useState(() =>
-    Object.fromEntries(ROLE_ACCOUNTS.map(({ username }) => [username, '']))
+  const [roleFields, setRoleFields] = useState(() =>
+    Object.fromEntries(ROLE_ACCOUNTS.map(({ username }) => [username, emptyRoleFields()]))
+  );
+  const [roleShow, setRoleShow] = useState(() =>
+    Object.fromEntries(
+      ROLE_ACCOUNTS.map(({ username }) => [
+        username,
+        { current: false, new: false, confirm: false },
+      ])
+    )
   );
   const [roleSaving, setRoleSaving] = useState(null);
 
-  const handleRolePasswordSave = async (username) => {
+  const updateRoleField = (username, field, value) => {
+    setRoleFields((prev) => ({
+      ...prev,
+      [username]: { ...prev[username], [field]: value },
+    }));
+  };
+
+  const toggleRoleShow = (username, key) => {
+    setRoleShow((prev) => ({
+      ...prev,
+      [username]: { ...prev[username], [key]: !prev[username][key] },
+    }));
+  };
+
+  const handleRolePasswordSave = async (username, label) => {
     const token = getStoredToken();
     if (!token) {
       navigate('/login', { replace: true });
       return;
     }
 
-    const newPassword = rolePasswords[username];
-    if (!newPassword || newPassword.length < 8) {
-      setFeedback({ type: 'error', message: 'Each new password must be at least 8 characters.' });
+    const { currentPassword: roleCurrent, newPassword: roleNew, confirmPassword: roleConfirm } =
+      roleFields[username];
+
+    if (roleNew !== roleConfirm) {
+      setFeedback({
+        type: 'error',
+        message: `${label}: new password and confirm password must match.`,
+      });
+      return;
+    }
+
+    if (!roleNew || roleNew.length < 8) {
+      setFeedback({ type: 'error', message: `${label}: new password must be at least 8 characters.` });
+      return;
+    }
+
+    if (!roleCurrent) {
+      setFeedback({ type: 'error', message: `${label}: current password is required.` });
       return;
     }
 
@@ -76,14 +118,19 @@ export default function ChangePassword() {
       const data = await apiRequest('/api/admin/role-password', {
         token,
         method: 'POST',
-        body: JSON.stringify({ username, newPassword }),
+        body: JSON.stringify({
+          username,
+          currentPassword: roleCurrent,
+          newPassword: roleNew,
+          confirmPassword: roleConfirm,
+        }),
       });
-      setFeedback({ type: 'success', message: data.message || 'Password updated.' });
-      setRolePasswords((prev) => ({ ...prev, [username]: '' }));
+      setFeedback({ type: 'success', message: data.message || `Password updated for ${username}.` });
+      setRoleFields((prev) => ({ ...prev, [username]: emptyRoleFields() }));
     } catch (err) {
       setFeedback({
         type: 'error',
-        message: err.data?.message || 'Unable to update role password.',
+        message: err.data?.message || `Unable to update password for ${username}.`,
       });
     } finally {
       setRoleSaving(null);
@@ -149,38 +196,69 @@ export default function ChangePassword() {
       )}
 
       {isAdmin && (
-        <div className="mb-8 max-w-2xl rounded-2xl border border-white/10 bg-[#0f172a]/60 p-6 shadow-2xl backdrop-blur-xl space-y-5">
-          <h2 className="text-lg font-bold text-white">Role account passwords</h2>
-          <p className="text-sm text-slate-400">
-            Fixed usernames: <span className="text-slate-200">admin</span>,{' '}
-            <span className="text-slate-200">ise</span>, <span className="text-slate-200">hr</span>,{' '}
-            <span className="text-slate-200">webinar_admin</span>. Set a new password for each role without
-            the current password.
-          </p>
-          {ROLE_ACCOUNTS.map(({ username, label }) => (
-            <div key={username} className="flex flex-col sm:flex-row gap-3 sm:items-end">
-              <div className="flex-1">
-                <label className="block text-xs font-semibold text-white mb-1.5">{label}</label>
-                <input
-                  type="password"
-                  value={rolePasswords[username]}
-                  onChange={(e) =>
-                    setRolePasswords((prev) => ({ ...prev, [username]: e.target.value }))
-                  }
-                  placeholder={`New password for ${username}`}
-                  className="w-full px-3 py-2 bg-[#0f172a]/80 text-white border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
-                />
-              </div>
-              <button
-                type="button"
-                disabled={roleSaving === username}
-                onClick={() => handleRolePasswordSave(username)}
-                className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600 disabled:opacity-60"
+        <div className="mb-8 max-w-md space-y-6">
+          <div>
+            <h2 className="text-lg font-bold text-white">Role account passwords</h2>
+            <p className="mt-1 text-sm text-slate-400">
+              Fixed usernames: <span className="text-slate-200">ise</span>,{' '}
+              <span className="text-slate-200">hr</span>,{' '}
+              <span className="text-slate-200">webinar_admin</span>. Enter that account&apos;s current
+              password to set a new one.
+            </p>
+          </div>
+          {ROLE_ACCOUNTS.map(({ username, label }) => {
+            const fields = roleFields[username];
+            const show = roleShow[username];
+            return (
+              <form
+                key={username}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleRolePasswordSave(username, label);
+                }}
+                className="rounded-2xl border border-white/10 bg-[#0f172a]/60 p-6 shadow-2xl backdrop-blur-xl space-y-4"
               >
-                {roleSaving === username ? 'Saving…' : 'Update'}
-              </button>
-            </div>
-          ))}
+                <h3 className="text-base font-bold text-white">{label}</h3>
+                <p className="text-xs text-slate-400">
+                  Username: <span className="text-slate-200">{username}</span>
+                </p>
+                <PasswordField
+                  label="Current Password"
+                  name={`${username}-current`}
+                  value={fields.currentPassword}
+                  onChange={(e) => updateRoleField(username, 'currentPassword', e.target.value)}
+                  show={show.current}
+                  onToggle={() => toggleRoleShow(username, 'current')}
+                  autoComplete="off"
+                />
+                <PasswordField
+                  label="New Password"
+                  name={`${username}-new`}
+                  value={fields.newPassword}
+                  onChange={(e) => updateRoleField(username, 'newPassword', e.target.value)}
+                  show={show.new}
+                  onToggle={() => toggleRoleShow(username, 'new')}
+                  autoComplete="new-password"
+                />
+                <PasswordField
+                  label="Confirm New Password"
+                  name={`${username}-confirm`}
+                  value={fields.confirmPassword}
+                  onChange={(e) => updateRoleField(username, 'confirmPassword', e.target.value)}
+                  show={show.confirm}
+                  onToggle={() => toggleRoleShow(username, 'confirm')}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="submit"
+                  disabled={roleSaving === username}
+                  className="w-full rounded-lg bg-indigo-500 py-2.5 text-sm font-semibold text-white hover:bg-indigo-600 disabled:opacity-60"
+                >
+                  {roleSaving === username ? 'Updating…' : 'Update Password'}
+                </button>
+              </form>
+            );
+          })}
         </div>
       )}
 

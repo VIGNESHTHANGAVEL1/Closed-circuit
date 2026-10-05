@@ -7,7 +7,7 @@ import {
   updateAdminPasswordHash,
   updateAdminPasswordHashByUsername,
 } from '../models/adminUser.model.js';
-import { FIXED_ADMIN_USERNAMES, normalizeAdminRole } from '../constants/adminRoles.js';
+import { ADMIN_ROLES, FIXED_ADMIN_USERNAMES, normalizeAdminRole } from '../constants/adminRoles.js';
 
 export async function authenticateAdmin(username, password) {
   const admin = await findAdminByUsername(username);
@@ -68,21 +68,31 @@ export async function changeAdminPassword(userId, currentPassword, newPassword) 
   return { ok: true };
 }
 
-export async function setAdminPasswordByUsername(username, newPassword) {
+const ROLE_PASSWORD_USERNAMES = new Set([
+  FIXED_ADMIN_USERNAMES[ADMIN_ROLES.ISE],
+  FIXED_ADMIN_USERNAMES[ADMIN_ROLES.HR],
+  FIXED_ADMIN_USERNAMES[ADMIN_ROLES.WEBINAR_ADMIN],
+]);
+
+export async function changeRoleAccountPassword(username, currentPassword, newPassword) {
   const normalizedUsername = String(username || '').trim();
-  const allowedUsernames = new Set(Object.values(FIXED_ADMIN_USERNAMES));
-  if (!allowedUsernames.has(normalizedUsername)) {
-    return { ok: false, message: 'Invalid admin username.' };
+  if (!ROLE_PASSWORD_USERNAMES.has(normalizedUsername)) {
+    return { ok: false, message: 'Invalid role account username.' };
   }
 
   const admin = await findAdminByUsername(normalizedUsername);
   if (!admin) {
-    return { ok: false, message: 'Admin account not found.' };
+    return { ok: false, message: 'Role account not found.' };
   }
 
   const expectedRole = Object.entries(FIXED_ADMIN_USERNAMES).find(([, u]) => u === normalizedUsername)?.[0];
   if (expectedRole && normalizeAdminRole(admin.role) !== expectedRole) {
-    return { ok: false, message: 'Admin account role mismatch.' };
+    return { ok: false, message: 'Role account mismatch.' };
+  }
+
+  const isValid = await bcrypt.compare(currentPassword, admin.password_hash);
+  if (!isValid) {
+    return { ok: false, message: 'Current password is incorrect.' };
   }
 
   const passwordHash = await hashPassword(newPassword);

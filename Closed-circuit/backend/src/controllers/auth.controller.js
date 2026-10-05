@@ -2,7 +2,7 @@ import {
   authenticateAdmin,
   createAccessToken,
   changeAdminPassword,
-  setAdminPasswordByUsername,
+  changeRoleAccountPassword,
 } from '../services/auth.service.js';
 import { sendSuccess, sendError } from '../utils/response.js';
 
@@ -37,8 +37,8 @@ export async function getAdminProfile(req, res) {
 
 export async function setRolePassword(req, res) {
   try {
-    const { username, newPassword } = req.body;
-    const result = await setAdminPasswordByUsername(username, newPassword);
+    const { username, currentPassword, newPassword } = req.body;
+    const result = await changeRoleAccountPassword(username, currentPassword, newPassword);
 
     if (!result.ok) {
       return sendError(res, result.message, 400);
